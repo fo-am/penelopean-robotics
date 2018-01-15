@@ -48,8 +48,8 @@ class compiler:
         # change robot.c registers to match here
 
         self.regs = {
-            "PC_MIRROR": 0,
-            "STACK_MIRROR": 1,
+            "ROBOT_ID": 0,
+            "PC_MIRROR": 1,
             "LED": 2,
             "COMP_ANGLE": 3,
             "COMP_DELTA_RESET": 4,

@@ -33,13 +33,13 @@ class swarm:
         ]
         self.bpm=120
         self.beat=0
-        self.beats_per_cycle = 4
+        self.beats_per_cycle = 1
         self.ms_per_beat = self.bpm_to_mspb(self.bpm)    
         self.last_sync = time.time()
 
-        self.weft_swarm=[0]
-        self.warp_swarm=[1]
-        self.state="weft-ready"
+        self.warp_swarm=[0]
+        self.weft_swarm=[1]
+        self.state="weft-walking"
         
         self.compiler = yarn.compiler()
         #self.osc_server = OSCServer(("localhost", 8000))
@@ -50,10 +50,10 @@ class swarm:
         # load code here
         #self.swarm[0].load_asm("../asm/comptest.asm",self.compiler,self.radio)
 
-        for id in self.weft_swarm:
-            self.swarm[id].load_asm("../asm/warp.asm",self.compiler,self.radio)
-        for id in self.warp_swarm:
-            self.swarm[id].load_asm("../asm/warp.asm",self.compiler,self.radio)
+        #for id in self.weft_swarm:
+        #    self.swarm[id].load_asm("../asm/warp.asm",self.compiler,self.radio)
+        #for id in self.warp_swarm:
+        #    self.swarm[id].load_asm("../asm/warp.asm",self.compiler,self.radio)
 
         #self.swarm[0].load_asm("../asm/slow_led.asm",self.compiler,self.radio)
         #self.swarm[0].load_asm("../asm/back_forward2.asm",self.compiler,self.radio)
@@ -76,15 +76,15 @@ class swarm:
         self.last_sync = time.time()
         self.ms_per_beat = self.bpm_to_mspb(bpm)
         # update all robots in swarm at once (will cause small delays)
-        for robot in self.swarm:
+        #for robot in self.swarm:
             # send sync here, which updates telemetry
-            robot.sync(self.radio,beat,self.ms_per_beat)
+            #robot.sync(self.radio,beat,self.ms_per_beat)
             #robot.update(self.radio)
 
         # alternatively update one at a time at the right sync time
         # (will cause slower telemetry update - do we care?)
-        #self.swarm[self.sync_pos].sync(self.radio,beat,self.ms_per_beat)
-        #self.sync_pos=(self.sync_pos+1)%len(self.swarm)
+        self.swarm[self.sync_pos].sync(self.radio,beat,self.ms_per_beat)
+        self.sync_pos=(self.sync_pos+1)%len(self.swarm)
 
         
     def upload_code(self,robot_id,fn):
@@ -101,21 +101,10 @@ class swarm:
             self.state="warp-ready"
 
     def update(self):
-        print(self.state)
-        print("weft 2 walking: "+str(self.swarm[self.weft_swarm[0]].is_walking(self.compiler)))
-        print("warp 1 walking: "+str(self.swarm[self.warp_swarm[0]].is_walking(self.compiler)))
-
-        if self.state=="weft-ready":
-            all_walking=True
-            for id in self.weft_swarm:
-                print("send start walking to weft")
-                self.swarm[id].send_start_walking(self.compiler)
-                if not self.swarm[id].is_walking(self.compiler):
-                    all_walking=False
-            # try not changing state till we are all walking
-            if all_walking:
-                self.state="weft-walking"
-
+        #print(self.state)
+        #for r in self.swarm:
+        #    r.pretty_print(self.compiler)
+        
         if self.state=="weft-walking":
             # start warp swarm
             all_ready=True
@@ -124,12 +113,11 @@ class swarm:
                     all_ready=False
             # try not changing state till we have all stopped
             if all_ready:
-                self.state="warp-ready"
-
-        if self.state=="warp-ready":
+                self.state="warp-start"
+        
+        if self.state=="warp-start":
             all_walking=True
             for id in self.warp_swarm:
-                print("send start walking to warp")
                 self.swarm[id].send_start_walking(self.compiler)
                 if not self.swarm[id].is_walking(self.compiler):
                     all_walking=False
@@ -138,14 +126,24 @@ class swarm:
                 self.state="warp-walking"
 
         if self.state=="warp-walking":
-            # start warp swarm
             all_ready=True
             for id in self.warp_swarm:
                 if self.swarm[id].is_walking(self.compiler):
                     all_ready=False
             # try not changing state till we have all stopped
             if all_ready:
-                self.state="weft-ready"
+                self.state="weft-start"
+
+        if self.state=="weft-start":
+            all_walking=True
+            for id in self.weft_swarm:
+                self.swarm[id].send_start_walking(self.compiler)
+                if not self.swarm[id].is_walking(self.compiler):
+                    all_walking=False
+            # try not changing state till we are all walking
+            if all_walking:
+                self.state="weft-walking"
+
         
         if time.time()>self.last_sync+self.ms_per_beat/1000.0:
             self.sync(self.beat,self.bpm)
@@ -160,4 +158,4 @@ if __name__ == "__main__":
     s = swarm()
     while True:
         s.update()
-        time.sleep(0.5)
+        time.sleep(1)

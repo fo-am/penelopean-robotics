@@ -12,7 +12,7 @@ class radio:
         self.address = address
         self.destination_address = [0xa7, 0xa7, 0xa7, 0xa7, 0x01]
         self.max_retries = 1 # can be a bit cleverer than this
-        self.time_between_sends=1
+        self.time_between_sends=0
         self.telemetry=[]
         self.update_callback = False
         self.update_context = False
@@ -30,7 +30,7 @@ class radio:
         self.device.setPayloadSize(32)
         self.device.setChannel(100)
         self.device.write_register(NRF24.FEATURE, 0)
-        self.device.setPALevel(NRF24.PA_MIN)
+        self.device.setPALevel(NRF24.PA_MAX)
         self.device.setAutoAck(True)
         self.device.enableDynamicPayloads()
         self.device.enableAckPayload()
@@ -82,7 +82,8 @@ class radio:
         self.set_destination(addr)
         self.update_callback=callback
         self.update_context=context
-        self.send(self.build_sync(beat,ms_per_step,a_reg_set,a_reg_val))
+        if a_reg_set==1: print("starting: "+str(addr[4]))
+        self.send(self.build_sync(beat,ms_per_step,a_reg_set,a_reg_val,1,a_reg_val))
 
     def update(self):
         if self.device.isAckPayloadAvailable():
@@ -111,7 +112,7 @@ class radio:
             while status!=32 and retries<self.max_retries: 
                 status = self.device.write(b)
                 time.sleep(self.time_between_sends)
-                if status!=32: print("send failed, retries: "+str(retries)+" "+str(status))
+                if status!=32: print("send failed to "+str(self.destination_address[4])+" retries: "+str(retries)+" "+str(status))
                 retries+=1
             return status
             
@@ -124,8 +125,9 @@ class radio:
     def build_reset(self):
         return struct.pack("cxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx","R")
 
-    def build_sync(self,beat,ms_per_step,a_reg_set,a_reg_val):
-        return struct.pack("cxHHHHxxxxxxxxxxxxxxxxxxxxxx","S",beat,ms_per_step,a_reg_set,a_reg_val)
+    def build_sync(self,beat,ms_per_step,a_reg_set,a_reg_val,led_set,led_val):
+        #print(a_reg_set,a_reg_val)
+        return struct.pack("cxHHHHHHxxxxxxxxxxxxxxxxxx","S",beat,ms_per_step,a_reg_set,a_reg_val,led_set,led_val)
 
     def build_calibrate(self,samples):
         return struct.pack("cxHxxxxxxxxxxxxxxxxxxxxxxxxxxx","C",samples)
