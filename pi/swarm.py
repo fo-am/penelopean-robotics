@@ -8,12 +8,13 @@ import threading
 global _swarm 
 
 def sync_callback(path, tags, args, source):
-    print("osc sync"+str(args[0])+" "+str(args[1]))
+    print("osc sync "+str(args[0])+" "+str(args[1]))
     _swarm.sync(args[0],args[1])
     
 def osc_loop(swarm):
     global _swarm
     _swarm = swarm
+    print("running osc")
     while not swarm.radio.stop_osc:
         #while not swarm.osc_server.timed_out:
         swarm.osc_server.handle_request()
@@ -42,7 +43,7 @@ class swarm:
         self.state="weft-walking"
         
         self.compiler = yarn.compiler()
-        self.osc_server = OSCServer(("localhost", 8000))
+        self.osc_server = OSCServer(("192.168.0.1", 8000))
         #self.osc_server.timeout = 0
         self.osc_server.addMsgHandler("/sync", sync_callback)
         self.sync_pos=0
@@ -72,9 +73,9 @@ class swarm:
         #self.leds_off()
         self.weave_pattern()
         
-        if time.time()>self.last_sync+self.ms_per_beat/1000.0:
-            self.sync(self.beat,self.bpm)
-            self.beat+=1
+        #if time.time()>self.last_sync+self.ms_per_beat/1000.0:
+        #    self.sync(self.beat,self.bpm)
+        #    self.beat+=1
 
         for robot in self.swarm:
             robot.update(self.radio)
@@ -88,12 +89,14 @@ class swarm:
         return 1/beats_per_ms
 
     def sync(self,beat,bpm):
+        print(beat,bpm)
+        self.beat = int(beat)
         if self.beat%self.beats_per_cycle !=0: return
-        #print(beat,bpm)
+
         # check beat number? 
         # clamp bpm??
         self.bpm=bpm
-        self.last_sync = self.last_sync+1/(bpm/60)
+        self.last_sync = self.last_sync+1/(bpm/60.0)
         self.ms_per_beat = self.bpm_to_mspb(bpm)
         # update all robots in swarm at once (will cause small delays)
         #for robot in self.swarm:
