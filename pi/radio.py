@@ -18,6 +18,7 @@ class radio:
         self.update_context = False
         self.startup()
         self.debug()
+        self.stop_osc=False
         
     def debug(self):
         self.device.printDetails()        
@@ -41,10 +42,7 @@ class radio:
     def set_destination(self,addr):
         if self.destination_address!=addr:
             self.destination_address=addr
-            print(addr)
-            #self.device.openReadingPipe(1, self.address)
             self.device.openWritingPipe(addr)
-            #time.sleep(1)
             
     def request_telemetry(self,addr,callback,context):
         self.set_destination(addr)
@@ -81,12 +79,12 @@ class radio:
             self.send(self.build_write(yarn.compiler.code_start,code))
         self.send(self.build_reset())                
 
-    def send_sync(self,addr,beat,ms_per_step,a_reg_set,a_reg_val,callback,context):
+    def send_sync(self,addr,beat,ms_per_step,a_reg_set,a_reg_val,led_set,led_val,callback,context):
         self.set_destination(addr)
         self.update_callback=callback
         self.update_context=context
         if a_reg_set==1: print("starting: "+str(addr[4]))
-        self.send(self.build_sync(beat,ms_per_step,a_reg_set,a_reg_val,1,a_reg_val))
+        self.send(self.build_sync(beat,ms_per_step,a_reg_set,a_reg_val,led_set,led_val))
 
     def update(self):
         if self.device.isAckPayloadAvailable():
@@ -115,9 +113,16 @@ class radio:
             while status!=32 and retries<self.max_retries: 
                 status = self.device.write(b)
                 time.sleep(self.time_between_sends)
-                if status!=32: print("send failed to "+str(self.destination_address[4])+" retries: "+str(retries)+" "+str(status))
-                retries+=1
-            return status
+                if status!=32:
+                    print("send failed to "+str(self.destination_address[4])+" retries: "+str(retries)+" "+str(status))
+                    #self.device.stopListening()
+                    self.device.powerDown()
+                    time.sleep(1)
+                    self.device.powerUp()
+                    retries+=1
+                    self.stop_osc=True
+                    exit(0)
+                return status
             
     def build_ping(self):
         return struct.pack("cxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx","P")

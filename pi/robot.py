@@ -16,6 +16,8 @@ class robot:
         self.watchdog_timeout=10
         self.ping_duration=2
         self.start_walking=False
+        self.set_led=False
+        self.led_state=False
         
     def telemetry_callback(self,data):
         if self.state=="disconnected" or self.state=="waiting":        
@@ -40,7 +42,11 @@ class robot:
             a_reg_val=1
             a_reg_set=1            
             self.start_walking=False
-        radio.send_sync(self.address,beat,ms_per_beat,a_reg_set,a_reg_val,telemetry_callback,self)
+        if self.set_led:
+            print("setting led to "+str(self.led_state)+" for robot "+str(self.address[4]))
+            radio.send_sync(self.address,beat,ms_per_beat,0,0,1,self.led_state,telemetry_callback,self)
+        else:
+            radio.send_sync(self.address,beat,ms_per_beat,a_reg_set,a_reg_val,1,a_reg_val,telemetry_callback,self)
         radio.update()
         # stop update requesting telemetry for a bit
         self.ping_time=time.time()
@@ -53,9 +59,13 @@ class robot:
 
     # A register is cleared when the robot reaches it's end position
     # and set by the Pi when we are ready to start again
-    def send_start_walking(self,compiler):
+    def start_walking_set(self):
         #radio.send_set(self.address,compiler.regs["A"],1)
         self.start_walking=True
+
+    def led_set(self,state):
+        self.set_led=True
+        self.led_state=state
 
     # has been set above, and returned in a telemetry packet...
     def is_walking(self,compiler):

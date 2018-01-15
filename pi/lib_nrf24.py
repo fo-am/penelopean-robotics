@@ -476,6 +476,7 @@ class NRF24:
             self.ack_payload_available = True              ## bl
 
         return result
+        #return 32
 
     def startWrite(self, buf):
         # Transmitter power-up
