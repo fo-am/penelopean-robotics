@@ -1,8 +1,8 @@
-#import RPi.GPIO as GPIO
-#GPIO.setmode(GPIO.BCM)
+import RPi.GPIO as GPIO
+GPIO.setmode(GPIO.BCM)
 from lib_nrf24 import NRF24
 import time
-#import spidev
+import spidev
 import struct
 import math
 import yarn
@@ -12,7 +12,7 @@ class radio:
         self.address = address
         self.destination_address = [0xa7, 0xa7, 0xa7, 0xa7, 0x01]
         self.max_retries = 1 # can be a bit cleverer than this
-        self.time_between_sends=0
+        self.time_between_sends=1
         self.telemetry=[]
         self.update_callback = False
         self.update_context = False
@@ -20,29 +20,28 @@ class radio:
         self.debug()
         
     def debug(self):
-        #self.device.printDetails()
-        pass
+        self.device.printDetails()        
 
     def startup(self):
-        # self.device = NRF24(GPIO, spidev.SpiDev())
-        # self.device.begin(0, 17)
-        # time.sleep(1)
-        # self.device.setRetries(15,15)
-        # self.device.setPayloadSize(32)
-        # self.device.setChannel(100)
-        # self.device.write_register(NRF24.FEATURE, 0)
-        # self.device.setPALevel(NRF24.PA_MIN)
-        # self.device.setAutoAck(True)
-        # self.device.enableDynamicPayloads()
-        # self.device.enableAckPayload()
-        # self.device.openReadingPipe(1, self.address)
-        # self.device.openWritingPipe(self.destination_address)
-        pass
+        self.device = NRF24(GPIO, spidev.SpiDev())
+        self.device.begin(0, 17)
+        time.sleep(1)
+        self.device.setRetries(15,15)
+        self.device.setPayloadSize(32)
+        self.device.setChannel(100)
+        self.device.write_register(NRF24.FEATURE, 0)
+        self.device.setPALevel(NRF24.PA_MIN)
+        self.device.setAutoAck(True)
+        self.device.enableDynamicPayloads()
+        self.device.enableAckPayload()
+        self.device.openReadingPipe(1, self.address)
+        self.device.openWritingPipe(self.destination_address)
+
 
     def set_destination(self,addr):
         if self.destination_address!=addr:
             self.destination_address=addr
-            #self.device.openWritingPipe(addr)
+            self.device.openWritingPipe(addr)
 
     def request_telemetry(self,addr,callback,context):
         self.set_destination(addr)
@@ -79,24 +78,25 @@ class radio:
             self.send(self.build_write(yarn.compiler.code_start,code))
         self.send(self.build_reset())                
 
-    def send_sync(self,addr,beat,ms_per_step,a_reg_set,a_reg_val):
+    def send_sync(self,addr,beat,ms_per_step,a_reg_set,a_reg_val,callback,context):
         self.set_destination(addr)
+        self.update_callback=callback
+        self.update_context=context
         self.send(self.build_sync(beat,ms_per_step,a_reg_set,a_reg_val))
 
     def update(self):
-        # if self.device.isAckPayloadAvailable():
-        #     data=[]
-        #     size = self.device.getDynamicPayloadSize()
-        #     self.device.read(data, size)
-        #     if size==32:
-        #         i = struct.unpack_from("hhhhhhhhhhhhhhhh","".join(map(chr,data)))
-        #         if self.update_context and self.update_callback:
-        #             self.update_callback(self.update_context,i)
-        #             self.update_callback=False
-        #             self.update_context=False
-        #     else:
-        #         print("ack payload size other than 32 bytes need supporting")
-        pass
+        if self.device.isAckPayloadAvailable():
+            data=[]
+            size = self.device.getDynamicPayloadSize()
+            self.device.read(data, size)
+            if size==32:
+                i = struct.unpack_from("hhhhhhhhhhhhhhhh","".join(map(chr,data)))
+                if self.update_context and self.update_callback:
+                    self.update_callback(self.update_context,i)
+                    self.update_callback=False
+                    self.update_context=False
+            else:
+                print("ack payload size other than 32 bytes need supporting")
     
     def send(self,b):
         #print("sending "+b[0]+" to "+str(self.destination_address))
@@ -109,11 +109,10 @@ class radio:
             # attempt failed ones while still sending others...
             # tx_ok bit set??
             while status!=32 and retries<self.max_retries: 
-                status = 32
-                #status = self.device.write(b)
+                status = self.device.write(b)
                 time.sleep(self.time_between_sends)
+                if status!=32: print("send failed, retries: "+str(retries)+" "+str(status))
                 retries+=1
-                if status!=32: print("send failed, retries: "+str(retries))
             return status
             
     def build_ping(self):

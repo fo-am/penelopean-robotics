@@ -56,7 +56,7 @@ class swarm:
             self.swarm[id].load_asm("../asm/warp.asm",self.compiler,self.radio)
 
         #self.swarm[0].load_asm("../asm/slow_led.asm",self.compiler,self.radio)
-        self.swarm[0].load_asm("../asm/back_forward2.asm",self.compiler,self.radio)
+        #self.swarm[0].load_asm("../asm/back_forward2.asm",self.compiler,self.radio)
 
         # start sync osc server
         #t = threading.Thread(target=osc_loop, args=(self,))
@@ -69,7 +69,7 @@ class swarm:
 
     def sync(self,beat,bpm):
         if self.beat%self.beats_per_cycle !=0: return
-        print(beat,bpm)
+        #print(beat,bpm)
         # check beat number? 
         # clamp bpm??
         self.bpm=bpm
@@ -101,9 +101,14 @@ class swarm:
             self.state="warp-ready"
 
     def update(self):
+        print(self.state)
+        print("weft 2 walking: "+str(self.swarm[self.weft_swarm[0]].is_walking(self.compiler)))
+        print("warp 1 walking: "+str(self.swarm[self.warp_swarm[0]].is_walking(self.compiler)))
+
         if self.state=="weft-ready":
             all_walking=True
             for id in self.weft_swarm:
+                print("send start walking to weft")
                 self.swarm[id].send_start_walking(self.compiler)
                 if not self.swarm[id].is_walking(self.compiler):
                     all_walking=False
@@ -119,11 +124,12 @@ class swarm:
                     all_ready=False
             # try not changing state till we have all stopped
             if all_ready:
-                self.state="warp-wait"
+                self.state="warp-ready"
 
         if self.state=="warp-ready":
             all_walking=True
             for id in self.warp_swarm:
+                print("send start walking to warp")
                 self.swarm[id].send_start_walking(self.compiler)
                 if not self.swarm[id].is_walking(self.compiler):
                     all_walking=False
@@ -139,7 +145,7 @@ class swarm:
                     all_ready=False
             # try not changing state till we have all stopped
             if all_ready:
-                self.state="weft-wait"
+                self.state="weft-ready"
         
         if time.time()>self.last_sync+self.ms_per_beat/1000.0:
             self.sync(self.beat,self.bpm)

@@ -21,7 +21,7 @@ class robot:
         if self.state=="disconnected" or self.state=="waiting":        
             self.state="connected"
         self.telemetry=data
-        print(data[0],data[3])
+        print(self.address[4],data[0],data[9],data[3])
         self.ping_time=time.time()
 
     def sync(self,radio,beat,ms_per_beat):
@@ -32,10 +32,12 @@ class robot:
             a_reg_val=1
             a_reg_set=1            
             self.start_walking=False
-        radio.send_sync(self.address,beat,ms_per_beat,a_reg_set,a_reg_val)
+        radio.send_sync(self.address,beat,ms_per_beat,a_reg_set,a_reg_val,telemetry_callback,self)
         # stop update requesting telemetry for a bit
         self.ping_time=time.time()
-            
+        radio.update()
+
+        
     def load_asm(self,fn,compiler,radio):
         with open(fn, 'r') as f:
             self.source=f.read()
@@ -56,6 +58,7 @@ class robot:
             self.state="waiting"        
             self.ping_time=time.time()
             radio.request_telemetry(self.address,telemetry_callback,self)
+            radio.update()
 
         if self.state=="waiting":
             if time.time()-self.ping_time>self.watchdog_timeout:
@@ -67,6 +70,7 @@ class robot:
             if time.time()-self.ping_time>self.ping_duration:
                 self.ping_time=time.time()
                 radio.request_telemetry(self.address,telemetry_callback,self)
+                radio.update()
             if self.code!=[]:
                 radio.send_code(self.address,self.code)
                 self.state="running"
@@ -77,6 +81,7 @@ class robot:
             if time.time()-self.ping_time>self.ping_duration:
                 self.ping_time=time.time()
                 radio.request_telemetry(self.address,telemetry_callback,self)
+                radio.update()
 
     def update_regs(self,regs,c):
         regs["state"]=self.state

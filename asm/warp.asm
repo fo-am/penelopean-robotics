@@ -5,8 +5,8 @@ wait1:	ld   	A 		;; wait for A to be set to 1
 	ldl  	WALK_FORWARD
 	st   	NEXT_PATTERN
 xx:  	ld 	STEP_COUNT   
-	ld   	5            	        
-	gte                       	
+	ldl   	5		
+	lte                       	
 	jpz  	xx
 	ldl  	ALL_STOP
 	st   	NEXT_PATTERN	
@@ -19,8 +19,8 @@ wait2:	ld   	A		;; wait for A to be set to 1
 	ldl  	1
 	st  	STEP_COUNT_RESET
 yy:  	ld   	STEP_COUNT   
-	ld   	5	        
-	gte                       	
+	ldl   	5	        
+	lte                       	
 	jpz  	yy
 	ldl  	ALL_STOP
 	st   	NEXT_PATTERN
