@@ -21,7 +21,7 @@ class robot:
         if self.state=="disconnected" or self.state=="waiting":        
             self.state="connected"
         self.telemetry=data
-        print("telemetry: "+str(self.address[4])+" "+str(data[9]))
+        print("telemetry: "+str(self.address[4])+" "+str(data[0])+" "+str(data[9]))
         self.ping_time=time.time()
 
     def pretty_print(self,c):

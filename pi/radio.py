@@ -41,8 +41,11 @@ class radio:
     def set_destination(self,addr):
         if self.destination_address!=addr:
             self.destination_address=addr
+            print(addr)
+            #self.device.openReadingPipe(1, self.address)
             self.device.openWritingPipe(addr)
-
+            #time.sleep(1)
+            
     def request_telemetry(self,addr,callback,context):
         self.set_destination(addr)
         self.update_callback=callback

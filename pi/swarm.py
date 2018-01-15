@@ -23,22 +23,22 @@ class swarm:
         self.radio = radio.radio([0xa7, 0xa7, 0xa7, 0xa7, 0xaa])
         self.swarm = [robot.robot([0xa7, 0xa7, 0xa7, 0xa7, 0x01]),
                       robot.robot([0xa7, 0xa7, 0xa7, 0xa7, 0x02]),
-                      #robot.robot([0xa7, 0xa7, 0xa7, 0xa7, 0x03]),
-                      #robot.robot([0xa7, 0xa7, 0xa7, 0xa7, 0x04]),
-                      #robot.robot([0xa7, 0xa7, 0xa7, 0xa7, 0x05]),
-                      #robot.robot([0xa7, 0xa7, 0xa7, 0xa7, 0x06]),
-                      #robot.robot([0xa7, 0xa7, 0xa7, 0xa7, 0x07]),
-                      #robot.robot([0xa7, 0xa7, 0xa7, 0xa7, 0x08]),
-                      #robot.robot([0xa7, 0xa7, 0xa7, 0xa7, 0x09])
+                      robot.robot([0xa7, 0xa7, 0xa7, 0xa7, 0x03]),
+                      robot.robot([0xa7, 0xa7, 0xa7, 0xa7, 0x04]),
+                      robot.robot([0xa7, 0xa7, 0xa7, 0xa7, 0x05]),
+                      robot.robot([0xa7, 0xa7, 0xa7, 0xa7, 0x06]),
+                      robot.robot([0xa7, 0xa7, 0xa7, 0xa7, 0x07]),
+                      #robot.robot([0xa7, 0xa7, 0xa7, 0xa7, 0x08])
         ]
+    
         self.bpm=120
         self.beat=0
         self.beats_per_cycle = 1
         self.ms_per_beat = self.bpm_to_mspb(self.bpm)    
         self.last_sync = time.time()
 
-        self.warp_swarm=[0]
-        self.weft_swarm=[1]
+        self.weft_swarm=[0,1,2,3]
+        self.warp_swarm=[4,5,6]
         self.state="weft-walking"
         
         self.compiler = yarn.compiler()
@@ -104,6 +104,11 @@ class swarm:
         #print(self.state)
         #for r in self.swarm:
         #    r.pretty_print(self.compiler)
+
+        #self.swarm[0].send_start_walking(self.compiler)
+        #self.swarm[3].send_start_walking(self.compiler)
+        #self.swarm[4].send_start_walking(self.compiler)
+        #self.swarm[3].send_start_walking(self.compiler)
         
         if self.state=="weft-walking":
             # start warp swarm
