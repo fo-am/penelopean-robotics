@@ -548,6 +548,9 @@ class NRF24:
         return {'tx_ok': tx_ok, "tx_fail": tx_fail, "rx_ready": rx_ready}
 
     def openWritingPipe(self, value):
+        # seems on failed write this does not get cleared
+        # meaning packets get send to the wrong address
+        self.flush_tx()
         # Note that the NRF24L01(+)
         # expects it LSB first.
 

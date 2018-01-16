@@ -68,6 +68,7 @@ class swarm:
         #for r in self.swarm:
         #    r.pretty_print(self.compiler)
 
+        #self.some_leds_on([4,5,6,7])
 
         self.leds_on()
         #self.leds_off()
@@ -127,6 +128,11 @@ class swarm:
     def leds_on(self):
         for r in self.swarm:
             r.led_set(True)
+            
+    def some_leds_on(self,sel):
+        for i,r in enumerate(self.swarm):
+            if i in sel: r.led_set(True)
+            else: r.led_set(False)
 
     def leds_off(self):
         for r in self.swarm:
