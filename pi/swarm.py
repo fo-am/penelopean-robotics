@@ -69,8 +69,9 @@ class swarm:
         #    r.pretty_print(self.compiler)
 
         #self.some_leds_on([4,5,6,7])
+        self.some_leds_on([0,1,2,3])
 
-        self.leds_on()
+        #self.leds_on()
         #self.leds_off()
         #self.weave_pattern()
         

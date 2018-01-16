@@ -105,6 +105,7 @@ class robot:
     def update_regs(self,regs,c):
         regs["state"]=self.state
         regs["ping"]=time.time()-self.ping_time
+        regs["robot"]=self.telemetry[c.regs["ROBOT_ID"]]
         regs["pc"]=self.telemetry[c.regs["PC_MIRROR"]]
         regs["a"]=self.telemetry[c.regs["A"]]
         regs["b"]=self.telemetry[c.regs["B"]]

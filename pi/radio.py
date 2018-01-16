@@ -115,10 +115,10 @@ class radio:
                 time.sleep(self.time_between_sends)
                 if status!=32:
                     print("send failed to "+str(self.destination_address[4])+" retries: "+str(retries)+" "+str(status))
-                    self.device.stopListening()
-                    self.device.powerDown()
-                    time.sleep(1)
-                    self.device.powerUp()
+                    #self.device.stopListening()
+                    #self.device.powerDown()
+                    #time.sleep(1)
+                    #self.device.powerUp()
                     retries+=1
                     #self.stop_osc=True
                     #exit(0)
