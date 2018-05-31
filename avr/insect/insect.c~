@@ -1,0 +1,12 @@
+#include <avr/interrupt.h>
+#include <avr/io.h>
+#include <util/delay.h>
+#include "../libs/servo.h"
+
+
+
+int main (void) {
+  for(;;) {
+    _delay_ms(20);
+  }
+}

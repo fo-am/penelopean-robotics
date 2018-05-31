@@ -1,0 +1,838 @@
+   1               		.file	"servo.c"
+   2               	__SP_H__ = 0x3e
+   3               	__SP_L__ = 0x3d
+   4               	__SREG__ = 0x3f
+   5               	__tmp_reg__ = 0
+   6               	__zero_reg__ = 1
+   7               		.text
+   8               	.Ltext0:
+   9               		.cfi_sections	.debug_frame
+  10               	.global	servo_init
+  12               	servo_init:
+  13               	.LFB0:
+  14               		.file 1 "../libs/servo.c"
+   1:../libs/servo.c **** #include "servo.h"
+   2:../libs/servo.c **** 
+   3:../libs/servo.c **** // initial pulse times in us for servo 0, 1, 2...7 (last value 6000 is the synchro gap)
+   4:../libs/servo.c **** unsigned int servo_pulse[9] = {1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 6000};
+   5:../libs/servo.c **** 
+   6:../libs/servo.c **** void servo_init() {
+  15               		.loc 1 6 0
+  16               		.cfi_startproc
+  17               	/* prologue: function */
+  18               	/* frame size = 0 */
+  19               	/* stack size = 0 */
+  20               	.L__stack_usage = 0
+   7:../libs/servo.c ****   SERVO_DDR = 0xff>>(8-SERVO_NUM);                  // portb output
+  21               		.loc 1 7 0
+  22 0000 87E0      		ldi r24,lo8(7)
+  23 0002 87B9      		out 0x7,r24
+   8:../libs/servo.c ****   TCCR1B |= (1<<WGM12) | (1<<CS11);  // pwm mode 4,CTC, prescale=8
+  24               		.loc 1 8 0
+  25 0004 E1E8      		ldi r30,lo8(-127)
+  26 0006 F0E0      		ldi r31,0
+  27 0008 8081      		ld r24,Z
+  28 000a 8A60      		ori r24,lo8(10)
+  29 000c 8083      		st Z,r24
+   9:../libs/servo.c ****   TIMSK1 |= (1<<OCIE1A);             // enable T1_compareA interrupt 
+  30               		.loc 1 9 0
+  31 000e EFE6      		ldi r30,lo8(111)
+  32 0010 F0E0      		ldi r31,0
+  33 0012 8081      		ld r24,Z
+  34 0014 8260      		ori r24,lo8(2)
+  35 0016 8083      		st Z,r24
+  10:../libs/servo.c ****   TCNT1 = 65530;
+  36               		.loc 1 10 0
+  37 0018 8AEF      		ldi r24,lo8(-6)
+  38 001a 9FEF      		ldi r25,lo8(-1)
+  39 001c 9093 8500 		sts 132+1,r25
+  40 0020 8093 8400 		sts 132,r24
+  41 0024 0895      		ret
+  42               		.cfi_endproc
+  43               	.LFE0:
+  45               	.global	ISR
+  47               	ISR:
+  48               	.LFB1:
+  11:../libs/servo.c **** }
+  12:../libs/servo.c **** 
+  13:../libs/servo.c **** ISR(TIMER1_COMPA_vect) {
+  49               		.loc 1 13 0
+  50               		.cfi_startproc
+  51               	.LVL0:
+  52               	/* prologue: function */
+  53               	/* frame size = 0 */
+  54               	/* stack size = 0 */
+  55               	.L__stack_usage = 0
+  14:../libs/servo.c ****   static unsigned char servo_num;
+  15:../libs/servo.c ****   if(servo_num < SERVO_NUM) {
+  56               		.loc 1 15 0
+  57 0026 2091 0000 		lds r18,servo_num.1539
+  58 002a 2330      		cpi r18,lo8(3)
+  59 002c 00F4      		brsh .L3
+  16:../libs/servo.c ****     PORTB = (1<<servo_num);          // end pulse for servo (n), start pulse for servo (n+1)  
+  60               		.loc 1 16 0
+  61 002e 81E0      		ldi r24,lo8(1)
+  62 0030 90E0      		ldi r25,0
+  63               	.LVL1:
+  64 0032 00C0      		rjmp 2f
+  65               		1:
+  66 0034 880F      		lsl r24
+  67               		2:
+  68 0036 2A95      		dec r18
+  69 0038 02F4      		brpl 1b
+  70 003a 85B9      		out 0x5,r24
+  71               	.L3:
+  17:../libs/servo.c ****   }          
+  18:../libs/servo.c ****   OCR1A = servo_pulse[servo_num];        // set width of pulse
+  72               		.loc 1 18 0
+  73 003c 2091 0000 		lds r18,servo_num.1539
+  74 0040 E22F      		mov r30,r18
+  75 0042 F0E0      		ldi r31,0
+  76 0044 EE0F      		lsl r30
+  77 0046 FF1F      		rol r31
+  78 0048 E050      		subi r30,lo8(-(servo_pulse))
+  79 004a F040      		sbci r31,hi8(-(servo_pulse))
+  80 004c 8081      		ld r24,Z
+  81 004e 9181      		ldd r25,Z+1
+  82 0050 9093 8900 		sts 136+1,r25
+  83 0054 8093 8800 		sts 136,r24
+  19:../libs/servo.c ****   servo_num++;                     // prepare next servo 
+  84               		.loc 1 19 0
+  85 0058 81E0      		ldi r24,lo8(1)
+  86 005a 820F      		add r24,r18
+  20:../libs/servo.c ****   if(servo_num > 8) servo_num = 0; // again from servo 0;
+  87               		.loc 1 20 0
+  88 005c 8930      		cpi r24,lo8(9)
+  89 005e 00F4      		brsh .L4
+  19:../libs/servo.c ****   servo_num++;                     // prepare next servo 
+  90               		.loc 1 19 0
+  91 0060 8093 0000 		sts servo_num.1539,r24
+  92 0064 0895      		ret
+  93               	.L4:
+  94               		.loc 1 20 0 discriminator 1
+  95 0066 1092 0000 		sts servo_num.1539,__zero_reg__
+  21:../libs/servo.c **** }
+  96               		.loc 1 21 0 discriminator 1
+  97 006a 0895      		ret
+  98               		.cfi_endproc
+  99               	.LFE1:
+ 101               	.global	degrees_to_pulse
+ 103               	degrees_to_pulse:
+ 104               	.LFB2:
+  22:../libs/servo.c **** 
+  23:../libs/servo.c **** ////////////////////////////////////////////////////////////
+  24:../libs/servo.c **** 
+  25:../libs/servo.c **** unsigned int degrees_to_pulse(int degrees) {
+ 105               		.loc 1 25 0
+ 106               		.cfi_startproc
+ 107               	.LVL2:
+ 108               	/* prologue: function */
+ 109               	/* frame size = 0 */
+ 110               	/* stack size = 0 */
+ 111               	.L__stack_usage = 0
+  26:../libs/servo.c ****   unsigned int range = SERVO_DEG_MAX-SERVO_DEG_MIN;
+  27:../libs/servo.c ****   unsigned int t = ((degrees-SERVO_DEG_MIN)*FIXED)/range;
+ 112               		.loc 1 27 0
+ 113 006c AC01      		movw r20,r24
+ 114 006e 465A      		subi r20,-90
+ 115 0070 5F4F      		sbci r21,-1
+ 116 0072 20E1      		ldi r18,lo8(16)
+ 117 0074 37E2      		ldi r19,lo8(39)
+ 118 0076 429F      		mul r20,r18
+ 119 0078 C001      		movw r24,r0
+ 120 007a 439F      		mul r20,r19
+ 121 007c 900D      		add r25,r0
+ 122 007e 529F      		mul r21,r18
+ 123 0080 900D      		add r25,r0
+ 124 0082 1124      		clr r1
+ 125               	.LVL3:
+ 126 0084 64EB      		ldi r22,lo8(-76)
+ 127 0086 70E0      		ldi r23,0
+ 128 0088 0E94 0000 		call __udivmodhi4
+ 129               	.LVL4:
+  28:../libs/servo.c ****   return (SERVO_MIN+t*(SERVO_MAX-SERVO_MIN))/FIXED;
+ 130               		.loc 1 28 0
+ 131 008c 4CEA      		ldi r20,lo8(-84)
+ 132 008e 5DE0      		ldi r21,lo8(13)
+ 133               	.LVL5:
+ 134 0090 649F      		mul r22,r20
+ 135 0092 C001      		movw r24,r0
+ 136 0094 659F      		mul r22,r21
+ 137 0096 900D      		add r25,r0
+ 138 0098 749F      		mul r23,r20
+ 139 009a 900D      		add r25,r0
+ 140 009c 1124      		clr r1
+ 141 009e 8851      		subi r24,24
+ 142 00a0 9C4F      		sbci r25,-4
+ 143 00a2 B901      		movw r22,r18
+ 144               	.LVL6:
+ 145 00a4 0E94 0000 		call __udivmodhi4
+ 146 00a8 CB01      		movw r24,r22
+  29:../libs/servo.c **** } 
+ 147               		.loc 1 29 0
+ 148 00aa 0895      		ret
+ 149               		.cfi_endproc
+ 150               	.LFE2:
+ 152               	.global	servo_state_init
+ 154               	servo_state_init:
+ 155               	.LFB3:
+  30:../libs/servo.c **** 
+  31:../libs/servo.c **** void servo_state_init(servo_state *state, unsigned char id) {
+ 156               		.loc 1 31 0
+ 157               		.cfi_startproc
+ 158               	.LVL7:
+ 159               	/* prologue: function */
+ 160               	/* frame size = 0 */
+ 161               	/* stack size = 0 */
+ 162               	.L__stack_usage = 0
+ 163 00ac FC01      		movw r30,r24
+  32:../libs/servo.c ****   state->id = id;
+ 164               		.loc 1 32 0
+ 165 00ae 6083      		st Z,r22
+  33:../libs/servo.c ****   state->start_degrees = 0;
+ 166               		.loc 1 33 0
+ 167 00b0 1282      		std Z+2,__zero_reg__
+ 168 00b2 1182      		std Z+1,__zero_reg__
+  34:../libs/servo.c ****   state->end_degrees = 0;
+ 169               		.loc 1 34 0
+ 170 00b4 1482      		std Z+4,__zero_reg__
+ 171 00b6 1382      		std Z+3,__zero_reg__
+  35:../libs/servo.c ****   state->time = 0;
+ 172               		.loc 1 35 0
+ 173 00b8 1682      		std Z+6,__zero_reg__
+ 174 00ba 1582      		std Z+5,__zero_reg__
+  36:../libs/servo.c ****   state->speed = 0;
+ 175               		.loc 1 36 0
+ 176 00bc 1086      		std Z+8,__zero_reg__
+ 177 00be 1782      		std Z+7,__zero_reg__
+ 178 00c0 0895      		ret
+ 179               		.cfi_endproc
+ 180               	.LFE3:
+ 182               	.global	servo_current_degrees
+ 184               	servo_current_degrees:
+ 185               	.LFB4:
+  37:../libs/servo.c **** }
+  38:../libs/servo.c **** 
+  39:../libs/servo.c **** int servo_current_degrees(servo_state *state) {
+ 186               		.loc 1 39 0
+ 187               		.cfi_startproc
+ 188               	.LVL8:
+ 189 00c2 CF93      		push r28
+ 190               	.LCFI0:
+ 191               		.cfi_def_cfa_offset 3
+ 192               		.cfi_offset 28, -2
+ 193 00c4 DF93      		push r29
+ 194               	.LCFI1:
+ 195               		.cfi_def_cfa_offset 4
+ 196               		.cfi_offset 29, -3
+ 197               	/* prologue: function */
+ 198               	/* frame size = 0 */
+ 199               	/* stack size = 2 */
+ 200               	.L__stack_usage = 2
+ 201 00c6 FC01      		movw r30,r24
+  40:../libs/servo.c ****   return state->start_degrees + 
+  41:../libs/servo.c ****     ((signed int)state->time*(state->end_degrees-state->start_degrees)/FIXED);
+ 202               		.loc 1 41 0
+ 203 00c8 C181      		ldd r28,Z+1
+ 204 00ca D281      		ldd r29,Z+2
+ 205 00cc 2381      		ldd r18,Z+3
+ 206 00ce 3481      		ldd r19,Z+4
+ 207 00d0 2C1B      		sub r18,r28
+ 208 00d2 3D0B      		sbc r19,r29
+ 209 00d4 4581      		ldd r20,Z+5
+ 210 00d6 5681      		ldd r21,Z+6
+ 211 00d8 249F      		mul r18,r20
+ 212 00da C001      		movw r24,r0
+ 213 00dc 259F      		mul r18,r21
+ 214 00de 900D      		add r25,r0
+ 215 00e0 349F      		mul r19,r20
+ 216 00e2 900D      		add r25,r0
+ 217 00e4 1124      		clr r1
+ 218               	.LVL9:
+ 219 00e6 60E1      		ldi r22,lo8(16)
+ 220 00e8 77E2      		ldi r23,lo8(39)
+ 221 00ea 0E94 0000 		call __divmodhi4
+  42:../libs/servo.c **** }
+ 222               		.loc 1 42 0
+ 223 00ee CE01      		movw r24,r28
+ 224 00f0 860F      		add r24,r22
+ 225 00f2 971F      		adc r25,r23
+ 226               	/* epilogue start */
+ 227 00f4 DF91      		pop r29
+ 228 00f6 CF91      		pop r28
+ 229 00f8 0895      		ret
+ 230               		.cfi_endproc
+ 231               	.LFE4:
+ 233               	.global	servo_modify
+ 235               	servo_modify:
+ 236               	.LFB5:
+  43:../libs/servo.c **** 
+  44:../libs/servo.c **** // start moving (or interrupt a current move) with 
+  45:../libs/servo.c **** // a new target position and speed
+  46:../libs/servo.c **** void servo_modify(servo_state *state, int target_degrees, unsigned int speed) {
+ 237               		.loc 1 46 0
+ 238               		.cfi_startproc
+ 239               	.LVL10:
+ 240 00fa EF92      		push r14
+ 241               	.LCFI2:
+ 242               		.cfi_def_cfa_offset 3
+ 243               		.cfi_offset 14, -2
+ 244 00fc FF92      		push r15
+ 245               	.LCFI3:
+ 246               		.cfi_def_cfa_offset 4
+ 247               		.cfi_offset 15, -3
+ 248 00fe 0F93      		push r16
+ 249               	.LCFI4:
+ 250               		.cfi_def_cfa_offset 5
+ 251               		.cfi_offset 16, -4
+ 252 0100 1F93      		push r17
+ 253               	.LCFI5:
+ 254               		.cfi_def_cfa_offset 6
+ 255               		.cfi_offset 17, -5
+ 256 0102 CF93      		push r28
+ 257               	.LCFI6:
+ 258               		.cfi_def_cfa_offset 7
+ 259               		.cfi_offset 28, -6
+ 260 0104 DF93      		push r29
+ 261               	.LCFI7:
+ 262               		.cfi_def_cfa_offset 8
+ 263               		.cfi_offset 29, -7
+ 264               	/* prologue: function */
+ 265               	/* frame size = 0 */
+ 266               	/* stack size = 6 */
+ 267               	.L__stack_usage = 6
+ 268 0106 EC01      		movw r28,r24
+ 269 0108 7B01      		movw r14,r22
+ 270 010a 8A01      		movw r16,r20
+  47:../libs/servo.c ****   state->start_degrees = servo_current_degrees(state);
+ 271               		.loc 1 47 0
+ 272 010c 0E94 0000 		call servo_current_degrees
+ 273               	.LVL11:
+ 274 0110 9A83      		std Y+2,r25
+ 275 0112 8983      		std Y+1,r24
+  48:../libs/servo.c ****   state->end_degrees = target_degrees;
+ 276               		.loc 1 48 0
+ 277 0114 FC82      		std Y+4,r15
+ 278 0116 EB82      		std Y+3,r14
+  49:../libs/servo.c ****   state->time = 0;
+ 279               		.loc 1 49 0
+ 280 0118 1E82      		std Y+6,__zero_reg__
+ 281 011a 1D82      		std Y+5,__zero_reg__
+  50:../libs/servo.c ****   state->speed = speed;
+ 282               		.loc 1 50 0
+ 283 011c 1887      		std Y+8,r17
+ 284 011e 0F83      		std Y+7,r16
+ 285               	/* epilogue start */
+  51:../libs/servo.c **** }
+ 286               		.loc 1 51 0
+ 287 0120 DF91      		pop r29
+ 288 0122 CF91      		pop r28
+ 289               	.LVL12:
+ 290 0124 1F91      		pop r17
+ 291 0126 0F91      		pop r16
+ 292               	.LVL13:
+ 293 0128 FF90      		pop r15
+ 294 012a EF90      		pop r14
+ 295               	.LVL14:
+ 296 012c 0895      		ret
+ 297               		.cfi_endproc
+ 298               	.LFE5:
+ 300               	.global	__floatunsisf
+ 301               	.global	__gesf2
+ 302               	.global	servo_update
+ 304               	servo_update:
+ 305               	.LFB6:
+  52:../libs/servo.c **** 
+  53:../libs/servo.c **** void servo_update(servo_state *state) {
+ 306               		.loc 1 53 0
+ 307               		.cfi_startproc
+ 308               	.LVL15:
+ 309 012e 0F93      		push r16
+ 310               	.LCFI8:
+ 311               		.cfi_def_cfa_offset 3
+ 312               		.cfi_offset 16, -2
+ 313 0130 1F93      		push r17
+ 314               	.LCFI9:
+ 315               		.cfi_def_cfa_offset 4
+ 316               		.cfi_offset 17, -3
+ 317 0132 CF93      		push r28
+ 318               	.LCFI10:
+ 319               		.cfi_def_cfa_offset 5
+ 320               		.cfi_offset 28, -4
+ 321 0134 DF93      		push r29
+ 322               	.LCFI11:
+ 323               		.cfi_def_cfa_offset 6
+ 324               		.cfi_offset 29, -5
+ 325               	/* prologue: function */
+ 326               	/* frame size = 0 */
+ 327               	/* stack size = 4 */
+ 328               	.L__stack_usage = 4
+ 329 0136 EC01      		movw r28,r24
+  54:../libs/servo.c ****   if (state->time >= MAKE_FIXED(1.0)) {
+ 330               		.loc 1 54 0
+ 331 0138 0D81      		ldd r16,Y+5
+ 332 013a 1E81      		ldd r17,Y+6
+ 333 013c B801      		movw r22,r16
+ 334 013e 80E0      		ldi r24,0
+ 335 0140 90E0      		ldi r25,0
+ 336               	.LVL16:
+ 337 0142 0E94 0000 		call __floatunsisf
+ 338               	.LVL17:
+ 339 0146 20E0      		ldi r18,0
+ 340 0148 30E4      		ldi r19,lo8(64)
+ 341 014a 4CE1      		ldi r20,lo8(28)
+ 342 014c 56E4      		ldi r21,lo8(70)
+ 343 014e 0E94 0000 		call __gesf2
+ 344               	.LVL18:
+ 345 0152 87FD      		sbrc r24,7
+ 346 0154 00C0      		rjmp .L17
+  55:../libs/servo.c ****     state->time = MAKE_FIXED(1.0);
+ 347               		.loc 1 55 0
+ 348 0156 80E1      		ldi r24,lo8(16)
+ 349 0158 97E2      		ldi r25,lo8(39)
+ 350 015a 00C0      		rjmp .L18
+ 351               	.L17:
+  56:../libs/servo.c ****   } else {
+  57:../libs/servo.c ****     state->time += state->speed;
+ 352               		.loc 1 57 0
+ 353 015c 8F81      		ldd r24,Y+7
+ 354 015e 9885      		ldd r25,Y+8
+ 355 0160 800F      		add r24,r16
+ 356 0162 911F      		adc r25,r17
+ 357               	.L18:
+ 358 0164 9E83      		std Y+6,r25
+ 359 0166 8D83      		std Y+5,r24
+  58:../libs/servo.c ****   }
+  59:../libs/servo.c ****   
+  60:../libs/servo.c ****   servo_pulse[state->id] = 
+  61:../libs/servo.c ****     degrees_to_pulse(servo_current_degrees(state));
+ 360               		.loc 1 61 0
+ 361 0168 CE01      		movw r24,r28
+ 362 016a 0E94 0000 		call servo_current_degrees
+ 363               	.LVL19:
+ 364 016e 0E94 0000 		call degrees_to_pulse
+ 365               	.LVL20:
+  60:../libs/servo.c ****   servo_pulse[state->id] = 
+ 366               		.loc 1 60 0
+ 367 0172 E881      		ld r30,Y
+ 368 0174 F0E0      		ldi r31,0
+ 369 0176 EE0F      		lsl r30
+ 370 0178 FF1F      		rol r31
+ 371 017a E050      		subi r30,lo8(-(servo_pulse))
+ 372 017c F040      		sbci r31,hi8(-(servo_pulse))
+ 373 017e 9183      		std Z+1,r25
+ 374 0180 8083      		st Z,r24
+ 375               	/* epilogue start */
+  62:../libs/servo.c **** }
+ 376               		.loc 1 62 0
+ 377 0182 DF91      		pop r29
+ 378 0184 CF91      		pop r28
+ 379               	.LVL21:
+ 380 0186 1F91      		pop r17
+ 381 0188 0F91      		pop r16
+ 382 018a 0895      		ret
+ 383               		.cfi_endproc
+ 384               	.LFE6:
+ 386               	.global	servo_motion_seq_init
+ 388               	servo_motion_seq_init:
+ 389               	.LFB7:
+  63:../libs/servo.c **** 
+  64:../libs/servo.c **** void servo_motion_seq_init(unsigned char id, servo_motion_seq* seq, unsigned int length) {
+ 390               		.loc 1 64 0
+ 391               		.cfi_startproc
+ 392               	.LVL22:
+ 393               	/* prologue: function */
+ 394               	/* frame size = 0 */
+ 395               	/* stack size = 0 */
+ 396               	.L__stack_usage = 0
+ 397 018c FB01      		movw r30,r22
+ 398               	.LVL23:
+ 399 018e DB01      		movw r26,r22
+ 400 0190 9B01      		movw r18,r22
+ 401 0192 240F      		add r18,r20
+ 402 0194 351F      		adc r19,r21
+  65:../libs/servo.c ****   unsigned int i;
+  66:../libs/servo.c ****   for (i=0; i<length; i++) {
+  67:../libs/servo.c ****     seq->pattern[i]='0';
+ 403               		.loc 1 67 0
+ 404 0196 90E3      		ldi r25,lo8(48)
+ 405               	.LVL24:
+ 406               	.L20:
+  66:../libs/servo.c ****   for (i=0; i<length; i++) {
+ 407               		.loc 1 66 0 discriminator 1
+ 408 0198 A217      		cp r26,r18
+ 409 019a B307      		cpc r27,r19
+ 410 019c 01F0      		breq .L22
+ 411               		.loc 1 67 0 discriminator 2
+ 412 019e 9D93      		st X+,r25
+ 413               	.LVL25:
+ 414 01a0 00C0      		rjmp .L20
+ 415               	.L22:
+  68:../libs/servo.c ****   }
+  69:../libs/servo.c ****   seq->length = length;
+ 416               		.loc 1 69 0
+ 417 01a2 5387      		std Z+11,r21
+ 418 01a4 4287      		std Z+10,r20
+  70:../libs/servo.c ****   seq->position = 0;
+ 419               		.loc 1 70 0
+ 420 01a6 1586      		std Z+13,__zero_reg__
+ 421 01a8 1486      		std Z+12,__zero_reg__
+  71:../libs/servo.c ****   seq->timer = 0;
+ 422               		.loc 1 71 0
+ 423 01aa 118A      		std Z+17,__zero_reg__
+ 424 01ac 108A      		std Z+16,__zero_reg__
+  72:../libs/servo.c ****   seq->speed = MAKE_FIXED(1.0);
+ 425               		.loc 1 72 0
+ 426 01ae 20E1      		ldi r18,lo8(16)
+ 427 01b0 37E2      		ldi r19,lo8(39)
+ 428 01b2 3787      		std Z+15,r19
+ 429 01b4 2687      		std Z+14,r18
+ 430               	.LVL26:
+ 431               	.LBB4:
+ 432               	.LBB5:
+  32:../libs/servo.c ****   state->id = id;
+ 433               		.loc 1 32 0
+ 434 01b6 828B      		std Z+18,r24
+  33:../libs/servo.c ****   state->start_degrees = 0;
+ 435               		.loc 1 33 0
+ 436 01b8 148A      		std Z+20,__zero_reg__
+ 437 01ba 138A      		std Z+19,__zero_reg__
+  34:../libs/servo.c ****   state->end_degrees = 0;
+ 438               		.loc 1 34 0
+ 439 01bc 168A      		std Z+22,__zero_reg__
+ 440 01be 158A      		std Z+21,__zero_reg__
+  35:../libs/servo.c ****   state->time = 0;
+ 441               		.loc 1 35 0
+ 442 01c0 108E      		std Z+24,__zero_reg__
+ 443 01c2 178A      		std Z+23,__zero_reg__
+  36:../libs/servo.c ****   state->speed = 0;
+ 444               		.loc 1 36 0
+ 445 01c4 128E      		std Z+26,__zero_reg__
+ 446 01c6 118E      		std Z+25,__zero_reg__
+ 447 01c8 0895      		ret
+ 448               	.LBE5:
+ 449               	.LBE4:
+ 450               		.cfi_endproc
+ 451               	.LFE7:
+ 453               	.global	servo_motion_seq_pattern
+ 455               	servo_motion_seq_pattern:
+ 456               	.LFB8:
+  73:../libs/servo.c ****   servo_state_init(&seq->servo, id);
+  74:../libs/servo.c **** }
+  75:../libs/servo.c **** 
+  76:../libs/servo.c **** void servo_motion_seq_pattern(servo_motion_seq* seq, unsigned char *pattern) {
+ 457               		.loc 1 76 0
+ 458               		.cfi_startproc
+ 459               	.LVL27:
+ 460               	/* prologue: function */
+ 461               	/* frame size = 0 */
+ 462               	/* stack size = 0 */
+ 463               	.L__stack_usage = 0
+ 464 01ca FC01      		movw r30,r24
+ 465 01cc 2285      		ldd r18,Z+10
+ 466 01ce 3385      		ldd r19,Z+11
+ 467 01d0 260F      		add r18,r22
+ 468 01d2 371F      		adc r19,r23
+ 469               	.LVL28:
+ 470               	.L24:
+  77:../libs/servo.c ****   unsigned int i;
+  78:../libs/servo.c ****   for (i=0; i<seq->length; i++) {
+ 471               		.loc 1 78 0 discriminator 1
+ 472 01d4 6217      		cp r22,r18
+ 473 01d6 7307      		cpc r23,r19
+ 474 01d8 01F0      		breq .L26
+  79:../libs/servo.c ****     seq->pattern[i]=pattern[i];
+ 475               		.loc 1 79 0 discriminator 2
+ 476 01da DB01      		movw r26,r22
+ 477 01dc 8D91      		ld r24,X+
+ 478 01de BD01      		movw r22,r26
+ 479               	.LVL29:
+ 480 01e0 8193      		st Z+,r24
+ 481               	.LVL30:
+ 482 01e2 00C0      		rjmp .L24
+ 483               	.L26:
+ 484               	/* epilogue start */
+  80:../libs/servo.c ****   }
+  81:../libs/servo.c **** }
+ 485               		.loc 1 81 0
+ 486 01e4 0895      		ret
+ 487               		.cfi_endproc
+ 488               	.LFE8:
+ 490               	.global	servo_motion_seq_update
+ 492               	servo_motion_seq_update:
+ 493               	.LFB9:
+  82:../libs/servo.c **** 
+  83:../libs/servo.c **** void servo_motion_seq_update(servo_motion_seq* seq) {
+ 494               		.loc 1 83 0
+ 495               		.cfi_startproc
+ 496               	.LVL31:
+ 497 01e6 CF92      		push r12
+ 498               	.LCFI12:
+ 499               		.cfi_def_cfa_offset 3
+ 500               		.cfi_offset 12, -2
+ 501 01e8 DF92      		push r13
+ 502               	.LCFI13:
+ 503               		.cfi_def_cfa_offset 4
+ 504               		.cfi_offset 13, -3
+ 505 01ea EF92      		push r14
+ 506               	.LCFI14:
+ 507               		.cfi_def_cfa_offset 5
+ 508               		.cfi_offset 14, -4
+ 509 01ec FF92      		push r15
+ 510               	.LCFI15:
+ 511               		.cfi_def_cfa_offset 6
+ 512               		.cfi_offset 15, -5
+ 513 01ee 0F93      		push r16
+ 514               	.LCFI16:
+ 515               		.cfi_def_cfa_offset 7
+ 516               		.cfi_offset 16, -6
+ 517 01f0 1F93      		push r17
+ 518               	.LCFI17:
+ 519               		.cfi_def_cfa_offset 8
+ 520               		.cfi_offset 17, -7
+ 521 01f2 CF93      		push r28
+ 522               	.LCFI18:
+ 523               		.cfi_def_cfa_offset 9
+ 524               		.cfi_offset 28, -8
+ 525 01f4 DF93      		push r29
+ 526               	.LCFI19:
+ 527               		.cfi_def_cfa_offset 10
+ 528               		.cfi_offset 29, -9
+ 529               	/* prologue: function */
+ 530               	/* frame size = 0 */
+ 531               	/* stack size = 8 */
+ 532               	.L__stack_usage = 8
+ 533 01f6 EC01      		movw r28,r24
+  84:../libs/servo.c ****   seq->timer += seq->speed;
+ 534               		.loc 1 84 0
+ 535 01f8 0E85      		ldd r16,Y+14
+ 536 01fa 1F85      		ldd r17,Y+15
+ 537 01fc E888      		ldd r14,Y+16
+ 538 01fe F988      		ldd r15,Y+17
+ 539 0200 E00E      		add r14,r16
+ 540 0202 F11E      		adc r15,r17
+  85:../libs/servo.c ****   if (seq->timer>=MAKE_FIXED(1.0)) {
+ 541               		.loc 1 85 0
+ 542 0204 B701      		movw r22,r14
+ 543 0206 80E0      		ldi r24,0
+ 544 0208 90E0      		ldi r25,0
+ 545               	.LVL32:
+ 546 020a 0E94 0000 		call __floatunsisf
+ 547               	.LVL33:
+ 548 020e 20E0      		ldi r18,0
+ 549 0210 30E4      		ldi r19,lo8(64)
+ 550 0212 4CE1      		ldi r20,lo8(28)
+ 551 0214 56E4      		ldi r21,lo8(70)
+ 552 0216 0E94 0000 		call __gesf2
+ 553               	.LVL34:
+ 554 021a 9E01      		movw r18,r28
+ 555 021c 2E5E      		subi r18,-18
+ 556 021e 3F4F      		sbci r19,-1
+ 557 0220 6901      		movw r12,r18
+ 558 0222 87FF      		sbrs r24,7
+ 559 0224 00C0      		rjmp .L28
+  84:../libs/servo.c ****   seq->timer += seq->speed;
+ 560               		.loc 1 84 0
+ 561 0226 F98A      		std Y+17,r15
+ 562 0228 E88A      		std Y+16,r14
+ 563 022a 00C0      		rjmp .L29
+ 564               	.L28:
+  86:../libs/servo.c ****     seq->timer = 0;
+ 565               		.loc 1 86 0
+ 566 022c 198A      		std Y+17,__zero_reg__
+ 567 022e 188A      		std Y+16,__zero_reg__
+  87:../libs/servo.c ****     seq->position++;
+ 568               		.loc 1 87 0
+ 569 0230 8C85      		ldd r24,Y+12
+ 570 0232 9D85      		ldd r25,Y+13
+ 571 0234 0196      		adiw r24,1
+ 572 0236 9D87      		std Y+13,r25
+ 573 0238 8C87      		std Y+12,r24
+  88:../libs/servo.c ****     if (seq->position>=seq->length) seq->position=0;
+ 574               		.loc 1 88 0
+ 575 023a 2A85      		ldd r18,Y+10
+ 576 023c 3B85      		ldd r19,Y+11
+ 577 023e 8217      		cp r24,r18
+ 578 0240 9307      		cpc r25,r19
+ 579 0242 00F0      		brlo .L30
+ 580               		.loc 1 88 0 is_stmt 0 discriminator 1
+ 581 0244 1D86      		std Y+13,__zero_reg__
+ 582 0246 1C86      		std Y+12,__zero_reg__
+ 583               	.L30:
+  89:../libs/servo.c **** 
+  90:../libs/servo.c ****     switch (seq->pattern[seq->position]) {
+ 584               		.loc 1 90 0 is_stmt 1
+ 585 0248 EC85      		ldd r30,Y+12
+ 586 024a FD85      		ldd r31,Y+13
+ 587 024c EC0F      		add r30,r28
+ 588 024e FD1F      		adc r31,r29
+ 589 0250 8081      		ld r24,Z
+ 590 0252 8434      		cpi r24,lo8(68)
+ 591 0254 01F0      		breq .L31
+ 592 0256 00F4      		brsh .L32
+ 593 0258 8134      		cpi r24,lo8(65)
+ 594 025a 01F0      		breq .L33
+ 595 025c 00F4      		brsh .L34
+ 596 025e 8033      		cpi r24,lo8(48)
+ 597 0260 01F4      		brne .L29
+  91:../libs/servo.c ****     case 'D': servo_modify(&seq->servo, 90, seq->speed); break;
+  92:../libs/servo.c ****     case 'C': servo_modify(&seq->servo, 68, seq->speed); break;
+  93:../libs/servo.c ****     case 'B': servo_modify(&seq->servo, 45, seq->speed); break;
+  94:../libs/servo.c ****     case 'A': servo_modify(&seq->servo, 23, seq->speed); break;
+  95:../libs/servo.c ****     case '0': servo_modify(&seq->servo, 0, seq->speed); break;
+ 598               		.loc 1 95 0
+ 599 0262 A801      		movw r20,r16
+ 600 0264 60E0      		ldi r22,0
+ 601 0266 70E0      		ldi r23,0
+ 602 0268 00C0      		rjmp .L43
+ 603               	.L34:
+  90:../libs/servo.c ****     switch (seq->pattern[seq->position]) {
+ 604               		.loc 1 90 0
+ 605 026a 8234      		cpi r24,lo8(66)
+ 606 026c 01F0      		breq .L36
+ 607 026e 8334      		cpi r24,lo8(67)
+ 608 0270 01F4      		brne .L29
+  92:../libs/servo.c ****     case 'C': servo_modify(&seq->servo, 68, seq->speed); break;
+ 609               		.loc 1 92 0
+ 610 0272 A801      		movw r20,r16
+ 611 0274 64E4      		ldi r22,lo8(68)
+ 612 0276 70E0      		ldi r23,0
+ 613 0278 00C0      		rjmp .L43
+ 614               	.L32:
+  90:../libs/servo.c ****     switch (seq->pattern[seq->position]) {
+ 615               		.loc 1 90 0
+ 616 027a 8236      		cpi r24,lo8(98)
+ 617 027c 01F0      		breq .L38
+ 618 027e 00F4      		brsh .L39
+ 619 0280 8136      		cpi r24,lo8(97)
+ 620 0282 01F4      		brne .L29
+  96:../libs/servo.c ****     case 'a': servo_modify(&seq->servo, -23, seq->speed); break;
+ 621               		.loc 1 96 0
+ 622 0284 A801      		movw r20,r16
+ 623 0286 69EE      		ldi r22,lo8(-23)
+ 624 0288 7FEF      		ldi r23,lo8(-1)
+ 625 028a 00C0      		rjmp .L43
+ 626               	.L39:
+  90:../libs/servo.c ****     switch (seq->pattern[seq->position]) {
+ 627               		.loc 1 90 0
+ 628 028c 8336      		cpi r24,lo8(99)
+ 629 028e 01F0      		breq .L41
+ 630 0290 8436      		cpi r24,lo8(100)
+ 631 0292 01F4      		brne .L29
+  97:../libs/servo.c ****     case 'b': servo_modify(&seq->servo, -45, seq->speed); break;
+  98:../libs/servo.c ****     case 'c': servo_modify(&seq->servo, -68, seq->speed); break;
+  99:../libs/servo.c ****     case 'd': servo_modify(&seq->servo, -90, seq->speed); break;
+ 632               		.loc 1 99 0
+ 633 0294 A801      		movw r20,r16
+ 634 0296 66EA      		ldi r22,lo8(-90)
+ 635 0298 7FEF      		ldi r23,lo8(-1)
+ 636 029a 00C0      		rjmp .L43
+ 637               	.L31:
+  91:../libs/servo.c ****     case 'D': servo_modify(&seq->servo, 90, seq->speed); break;
+ 638               		.loc 1 91 0
+ 639 029c A801      		movw r20,r16
+ 640 029e 6AE5      		ldi r22,lo8(90)
+ 641 02a0 70E0      		ldi r23,0
+ 642 02a2 00C0      		rjmp .L43
+ 643               	.L36:
+  93:../libs/servo.c ****     case 'B': servo_modify(&seq->servo, 45, seq->speed); break;
+ 644               		.loc 1 93 0
+ 645 02a4 A801      		movw r20,r16
+ 646 02a6 6DE2      		ldi r22,lo8(45)
+ 647 02a8 70E0      		ldi r23,0
+ 648 02aa 00C0      		rjmp .L43
+ 649               	.L33:
+  94:../libs/servo.c ****     case 'A': servo_modify(&seq->servo, 23, seq->speed); break;
+ 650               		.loc 1 94 0
+ 651 02ac A801      		movw r20,r16
+ 652 02ae 67E1      		ldi r22,lo8(23)
+ 653 02b0 70E0      		ldi r23,0
+ 654 02b2 00C0      		rjmp .L43
+ 655               	.L38:
+  97:../libs/servo.c ****     case 'b': servo_modify(&seq->servo, -45, seq->speed); break;
+ 656               		.loc 1 97 0
+ 657 02b4 A801      		movw r20,r16
+ 658 02b6 63ED      		ldi r22,lo8(-45)
+ 659 02b8 7FEF      		ldi r23,lo8(-1)
+ 660 02ba 00C0      		rjmp .L43
+ 661               	.L41:
+  98:../libs/servo.c ****     case 'c': servo_modify(&seq->servo, -68, seq->speed); break;
+ 662               		.loc 1 98 0
+ 663 02bc A801      		movw r20,r16
+ 664 02be 6CEB      		ldi r22,lo8(-68)
+ 665 02c0 7FEF      		ldi r23,lo8(-1)
+ 666               	.L43:
+ 667               		.loc 1 99 0
+ 668 02c2 C601      		movw r24,r12
+ 669 02c4 0E94 0000 		call servo_modify
+ 670               	.LVL35:
+ 671               	.L29:
+ 100:../libs/servo.c ****     }
+ 101:../libs/servo.c ****   }
+ 102:../libs/servo.c ****   servo_update(&seq->servo);
+ 672               		.loc 1 102 0
+ 673 02c8 C601      		movw r24,r12
+ 674               	/* epilogue start */
+ 103:../libs/servo.c **** }
+ 675               		.loc 1 103 0
+ 676 02ca DF91      		pop r29
+ 677 02cc CF91      		pop r28
+ 678               	.LVL36:
+ 679 02ce 1F91      		pop r17
+ 680 02d0 0F91      		pop r16
+ 681 02d2 FF90      		pop r15
+ 682 02d4 EF90      		pop r14
+ 683 02d6 DF90      		pop r13
+ 684 02d8 CF90      		pop r12
+ 685               	.LVL37:
+ 102:../libs/servo.c ****   servo_update(&seq->servo);
+ 686               		.loc 1 102 0
+ 687 02da 0C94 0000 		jmp servo_update
+ 688               	.LVL38:
+ 689               		.cfi_endproc
+ 690               	.LFE9:
+ 692               		.local	servo_num.1539
+ 693               		.comm	servo_num.1539,1,1
+ 694               	.global	servo_pulse
+ 695               		.data
+ 698               	servo_pulse:
+ 699 0000 DC05      		.word	1500
+ 700 0002 DC05      		.word	1500
+ 701 0004 DC05      		.word	1500
+ 702 0006 DC05      		.word	1500
+ 703 0008 DC05      		.word	1500
+ 704 000a DC05      		.word	1500
+ 705 000c DC05      		.word	1500
+ 706 000e DC05      		.word	1500
+ 707 0010 7017      		.word	6000
+ 708               		.text
+ 709               	.Letext0:
+ 710               		.file 2 "/usr/lib/avr/include/stdint.h"
+ 711               		.file 3 "../libs/servo.h"
+DEFINED SYMBOLS
+                            *ABS*:0000000000000000 servo.c
+     /tmp/ccSR8HUI.s:2      *ABS*:000000000000003e __SP_H__
+     /tmp/ccSR8HUI.s:3      *ABS*:000000000000003d __SP_L__
+     /tmp/ccSR8HUI.s:4      *ABS*:000000000000003f __SREG__
+     /tmp/ccSR8HUI.s:5      *ABS*:0000000000000000 __tmp_reg__
+     /tmp/ccSR8HUI.s:6      *ABS*:0000000000000001 __zero_reg__
+     /tmp/ccSR8HUI.s:12     .text:0000000000000000 servo_init
+     /tmp/ccSR8HUI.s:47     .text:0000000000000026 ISR
+                             .bss:0000000000000000 servo_num.1539
+     /tmp/ccSR8HUI.s:698    .data:0000000000000000 servo_pulse
+     /tmp/ccSR8HUI.s:103    .text:000000000000006c degrees_to_pulse
+     /tmp/ccSR8HUI.s:154    .text:00000000000000ac servo_state_init
+     /tmp/ccSR8HUI.s:184    .text:00000000000000c2 servo_current_degrees
+     /tmp/ccSR8HUI.s:235    .text:00000000000000fa servo_modify
+     /tmp/ccSR8HUI.s:304    .text:000000000000012e servo_update
+     /tmp/ccSR8HUI.s:388    .text:000000000000018c servo_motion_seq_init
+     /tmp/ccSR8HUI.s:455    .text:00000000000001ca servo_motion_seq_pattern
+     /tmp/ccSR8HUI.s:492    .text:00000000000001e6 servo_motion_seq_update
+
+UNDEFINED SYMBOLS
+__udivmodhi4
+__divmodhi4
+__floatunsisf
+__gesf2
+__do_copy_data
+__do_clear_bss
