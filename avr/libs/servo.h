@@ -36,7 +36,8 @@ int servo_current_degrees(servo_state *state);
 void servo_modify(servo_state *state, int target_degrees, unsigned int speed);
 void servo_update(servo_state *state);
 
-#define MAX_PATTERN_LENGTH 10
+// to fit 32 byte radio packet
+#define MAX_PATTERN_LENGTH 26 
 
 typedef struct {
   unsigned char pattern[MAX_PATTERN_LENGTH];

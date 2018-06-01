@@ -14,8 +14,8 @@ typedef struct {
   unsigned char id;              // 1
   unsigned int speed;            // 2 (fixed -> *= 1000)
   unsigned int length;           // 2 
-  char pattern[MAX_PATTERN_LENGTH]; // 10
-} message_packet;                 // = 16 bytes
+  char pattern[MAX_PATTERN_LENGTH]; // 26
+} message_packet;                 // = 32 bytes
 
 ISR(TIMER1_COMPA_vect) {
   servo_pulse_update();
@@ -57,33 +57,34 @@ int main (void) {
       servo_motion_seq_update(&seq[i]);
     }
 
-    /* if (safepulse&0x20) servo_pulse[0]=degrees_to_pulse(90);  */
-    /* else servo_pulse[0]=degrees_to_pulse(0);  */
-    /* safepulse+=1; */
-    /* if (safepulse>4500) safepulse=1000; */
-
-
     if (nRF24L01p_read_status(nRF24L01p_PIPE_0)) {
-      nRF24L01p_read(str, 32, nRF24L01p_PIPE_0);
+      nRF24L01p_read(&message, 32, nRF24L01p_PIPE_0);
+      PORTB |= 0x01;
+      _delay_ms(50);
+      PORTB &= ~0x01;
       
-      if (str[0]=='H' && 
-	  str[1]=='E' && 
-	  str[2]=='L' && 
-	  str[3]=='O') {
+      if (message.type=='H') {
 	PORTB |= 0x01;
-	_delay_ms(100);
+	_delay_ms(50);
+	PORTB &= ~0x01;
+	_delay_ms(50);
+	PORTB |= 0x01;
+	_delay_ms(50);
 	PORTB &= ~0x01;
       }
 
       // msgtype id speed speed len data ...
-      /*      if (message.type=='M') {
+      if (message.type=='M') {
+	PORTB |= 0x01;
+	_delay_ms(100);
+	PORTB &= ~0x01;
 	
 	seq[message.id].speed = message.speed;
 	seq[message.id].length = message.length;
 	for (i=0; i<seq[message.id].length; i++) {
 	  seq[message.id].pattern[i] = message.pattern[i];
 	}	  
-	}   */   
+      }  
     }
     
     _delay_ms(RATE);
