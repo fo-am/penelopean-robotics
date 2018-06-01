@@ -1,10 +1,11 @@
-
-
 #include <avr/io.h>
 
 #define SERVO_PORT PORTC
 #define SERVO_DDR DDRC
 #define SERVO_NUM 3
+
+//#include <stdio.h>
+//#define int short
 
 #define SERVO_MIN 1000
 #define SERVO_MAX 4500
@@ -12,10 +13,13 @@
 #define SERVO_DEG_MAX 90
 
 void servo_init();
+void servo_pulse_update();
 
 // fixed point maths ftw
-#define FIXED 10000
+#define FIXED 1000
 #define MAKE_FIXED(x) (FIXED*x)
+
+unsigned int servo_pulse[9];
 
 unsigned int degrees_to_pulse(int degrees);
 
@@ -44,5 +48,5 @@ typedef struct {
 } servo_motion_seq;
 
 void servo_motion_seq_init(unsigned char id, servo_motion_seq* seq, unsigned int length);
-void servo_motion_seq_pattern(servo_motion_seq* seq, unsigned char *pattern);
+void servo_motion_seq_pattern(servo_motion_seq* seq, char *pattern);
 void servo_motion_seq_update(servo_motion_seq* seq);

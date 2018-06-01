@@ -15,36 +15,37 @@ int main(void)
   // Wait for the nRF24L01p to be ready.
   _delay_us(nRF24L01p_TIMING_INITIAL_US);
 
-  DDRC = 0xff;
-  PORTC = 0xff;
-
   // Initialize the nRF24L01p.
   // TODO: Actual info for arguments.
   nRF24L01p_init(0, 0);
 
   // Enable pipe 0.
-  nRF24L01p_config_pipe(nRF24L01p_PIPE_0, 0x0101010101, 32);
+  nRF24L01p_config_pipe(nRF24L01p_PIPE_0, 0xA7A7A7A7A7, 32);
+  nRF24L01p_config_channel(100);
 
   // Set RX mode.
   nRF24L01p_config_transceiver_mode(nRF24L01p_VALUE_CONFIG_PRIM_RX);
 
-  byte str[96];
+  DDRB |= 0x01;
+  PORTB |= 0x01;
+  _delay_ms(1000);
+  PORTB &= ~0x01;
 
-  PORTC = 0x00;
+  byte str[96];
 
   while (1)
   {
     if (nRF24L01p_read_status(nRF24L01p_PIPE_0))
     {
-      nRF24L01p_read(str, 96, nRF24L01p_PIPE_0);
+      nRF24L01p_read(str, 32, nRF24L01p_PIPE_0);
       
       if (str[0]=='H' && 
 	  str[1]=='E' && 
 	  str[2]=='L' && 
 	  str[3]=='O') {
-	PORTC = 0xff;
-	_delay_ms(50);
-	PORTC = 0x00;
+	PORTB |= 0x01;
+	_delay_ms(100);
+	PORTB &= ~0x01;
       }
       
       //printf("%s\n", str);
@@ -54,3 +55,4 @@ int main(void)
 
   return 0;
 }
+

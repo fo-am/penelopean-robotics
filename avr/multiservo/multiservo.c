@@ -20,16 +20,16 @@ unsigned int servo[9] = {1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 6000};
 ISR(TIMER1_COMPA_vect)
 {
   static unsigned char servo_num;
-   PORTB = (1<<servo_num);          // end pulse for servo (n), start pulse for servo (n+1)            
-   OCR1A = servo[servo_num];        // set width of pulse
-   servo_num++;                     // prepare next servo 
-   if(servo_num > 8) servo_num = 0; // again from servo 0;
+  PORTC = (1<<servo_num);          // end pulse for servo (n), start pulse for servo (n+1)            
+  OCR1A = servo[servo_num];        // set width of pulse
+  servo_num++;                     // prepare next servo 
+  if(servo_num > 8) servo_num = 0; // again from servo 0;
 }
 
 
 int main (void)
 {
-      DDRB = 255;                        // portb output
+      DDRC = 255;                        // portb output
       TCCR1B |= (1<<WGM12) | (1<<CS11);  // pwm mode 4,CTC, prescale=8
       TIMSK1 |= (1<<OCIE1A);             // enable T1_compareA interrupt 
       TCNT1 = 65530;
