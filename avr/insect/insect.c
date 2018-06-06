@@ -42,26 +42,30 @@ int main (void) {
 
   servo_motion_seq seq[PENELOPE_NUM_SERVOS];
   for (i=0; i<PENELOPE_NUM_SERVOS; i++) {  
-    servo_motion_seq_init(i, &seq[i], 4);
+    servo_motion_seq_init(i, &seq[i], 16);
     seq[i].speed=MAKE_FIXED(1/RATE);
-    servo_motion_seq_pattern(&seq[i], "A0a0");
+    servo_motion_seq_pattern(&seq[i], "aAaA00ccccdddd000000000");
   }
 
   message_packet message;
-  byte str[96];
-
-  unsigned int safepulse = 1000;
+  unsigned int safepulse=SERVO_MIN;
+  char dir=0;
 
   for(;;) {
     for (i=0; i<PENELOPE_NUM_SERVOS; i++) {  
       servo_motion_seq_update(&seq[i]);
     }
 
+    //if (dir==0) safepulse+=20;
+    //else safepulse-=20;
+    //servo_pulse[0]=safepulse;
+    ////servo_pulse[0]=SERVO_MIN+(SERVO_MAX-SERVO_MIN)/2;
+    //if (safepulse>SERVO_MAX) dir=1;
+    //if (safepulse<SERVO_MIN) dir=0;
+    
     if (nRF24L01p_read_status(nRF24L01p_PIPE_0)) {
       nRF24L01p_read(&message, 32, nRF24L01p_PIPE_0);
       PORTB |= 0x01;
-      _delay_ms(50);
-      PORTB &= ~0x01;
       
       if (message.type=='H') {
 	PORTB |= 0x01;
@@ -75,10 +79,6 @@ int main (void) {
 
       // msgtype id speed speed len data ...
       if (message.type=='M') {
-	PORTB |= 0x01;
-	_delay_ms(100);
-	PORTB &= ~0x01;
-	
 	seq[message.id].speed = message.speed;
 	seq[message.id].length = message.length;
 	for (i=0; i<seq[message.id].length; i++) {
@@ -88,5 +88,6 @@ int main (void) {
     }
     
     _delay_ms(RATE);
+    PORTB &= ~0x01;
   }
 }

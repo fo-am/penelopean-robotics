@@ -1,6 +1,6 @@
 # MCU name
 #MCU = atmega328p
-MCU = atmega168p
+MCU = atmega168
 
 # Main Oscillator Frequency
 # This is only used to define F_OSC in all assembler and c-sources.

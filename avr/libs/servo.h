@@ -1,11 +1,19 @@
+//#define UNIT_TEST
+
+#ifndef UNIT_TEST
+
 #include <avr/io.h>
 
 #define SERVO_PORT PORTC
 #define SERVO_DDR DDRC
 #define SERVO_NUM 3
 
-//#include <stdio.h>
-//#define int short
+#else
+
+#include <stdio.h>
+#define int short
+
+#endif
 
 #define SERVO_MIN 1000
 #define SERVO_MAX 4500
