@@ -72,7 +72,7 @@ void servo_update(servo_state *state) {
   servo_pulse[state->id] = 
     smooth(servo_pulse[state->id],
 	   degrees_to_pulse(servo_current_degrees(state)),
-	   0.1);
+	   0.3);
 }
 
 void servo_motion_seq_init(unsigned char id, servo_motion_seq* seq, unsigned int length) {
@@ -98,8 +98,6 @@ void servo_motion_seq_update(servo_motion_seq* seq) {
   seq->timer += seq->speed;
   if (seq->timer>=MAKE_FIXED(1.0)) {
     seq->timer = 0;
-    seq->position++;
-    if (seq->position>=seq->length) seq->position=0;
 
     switch (seq->pattern[seq->position]) {
     case 'D': servo_modify(&seq->servo, 90, seq->speed); break;
@@ -113,6 +111,10 @@ void servo_motion_seq_update(servo_motion_seq* seq) {
     case 'd': servo_modify(&seq->servo, -90, seq->speed); break;
     default: break;
     }
+
+    seq->position++;
+    if (seq->position>=seq->length) seq->position=0;
+
   }
   servo_update(&seq->servo);
 }

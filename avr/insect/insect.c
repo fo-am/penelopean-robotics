@@ -23,6 +23,20 @@ ISR(TIMER1_COMPA_vect) {
 
 #define RATE 20
 
+void walk_pattern(servo_motion_seq *seq) {
+  servo_motion_seq_init(0, &seq[0], 4);
+  seq[0].speed=20;
+  servo_motion_seq_pattern(&seq[0], "AAaa0000000000000000000000");
+
+  servo_motion_seq_init(0, &seq[1], 4);
+  seq[1].speed=20;
+  servo_motion_seq_pattern(&seq[1], "bBBb0000000000000000000000");
+
+  servo_motion_seq_init(0, &seq[2], 4);
+  seq[2].speed=20;
+  servo_motion_seq_pattern(&seq[2], "AAaa0000000000000000000000");
+}
+
 int main (void) {
   _delay_us(nRF24L01p_TIMING_INITIAL_US);
   nRF24L01p_init(0, 0);
@@ -42,12 +56,30 @@ int main (void) {
 
   servo_motion_seq seq[PENELOPE_NUM_SERVOS];
   for (i=0; i<PENELOPE_NUM_SERVOS; i++) {  
-    servo_motion_seq_init(i, &seq[i], 16);
+    servo_motion_seq_init(i, &seq[i], 4);
     seq[i].speed=MAKE_FIXED(1/RATE);
-    servo_motion_seq_pattern(&seq[i], "aAaA00ccccdddd000000000");
+    servo_motion_seq_pattern(&seq[i], "00000000000000000000000000");
   }
 
+  /* servo_motion_seq_init(0, &seq[0], 4); */
+  /* seq[0].speed=20; */
+  /* servo_motion_seq_pattern(&seq[0], "AAaa0000000000000000000000"); */
+
+  /* servo_motion_seq_init(1, &seq[1], 4); */
+  /* seq[1].speed=20; */
+  /* servo_motion_seq_pattern(&seq[1], "bBBb0000000000000000000000"); */
+
+  /* servo_motion_seq_init(2, &seq[2], 4); */
+  /* seq[2].speed=20; */
+  /* servo_motion_seq_pattern(&seq[2], "AAaa0000000000000000000000"); */
+
+
   message_packet message;
+  // clear packet as it might be possible to 
+  // parse junk on startup if nrf status is set
+  // due to noise but no message is present
+  memset(&message, 0, sizeof(message_packet));
+  
   unsigned int safepulse=SERVO_MIN;
   char dir=0;
 
@@ -79,12 +111,26 @@ int main (void) {
 
       // msgtype id speed speed len data ...
       if (message.type=='M') {
-	seq[message.id].speed = message.speed;
-	seq[message.id].length = message.length;
-	for (i=0; i<seq[message.id].length; i++) {
-	  seq[message.id].pattern[i] = message.pattern[i];
-	}	  
-      }  
+	//seq[message.id].speed = message.speed;
+	int pos=0;
+	for (i=0; i<PENELOPE_NUM_SERVOS; i++) {  
+	  seq[i].speed = message.speed;
+	  seq[i].length = message.length;
+	  for (int n=0; n<message.length; n++) {
+	    seq[i].pattern[n] = message.pattern[n+pos];
+	  }
+	  pos += message.length;
+	}  
+      }
+
+      // sync
+      if (message.type=='S') {
+	for (i=0; i<PENELOPE_NUM_SERVOS; i++) {  
+	  seq[i].timer = MAKE_FIXED(1.0); // cause next update to trigger 0
+	  seq[i].position = 0;
+	}
+      }
+
     }
     
     _delay_ms(RATE);
