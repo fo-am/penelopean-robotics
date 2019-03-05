@@ -61,18 +61,17 @@ int main (void) {
     servo_motion_seq_pattern(&seq[i], "00000000000000000000000000");
   }
 
-  /* servo_motion_seq_init(0, &seq[0], 4); */
-  /* seq[0].speed=20; */
-  /* servo_motion_seq_pattern(&seq[0], "AAaa0000000000000000000000"); */
+  servo_motion_seq_init(0, &seq[0], 4);
+  seq[0].speed=40;
+  servo_motion_seq_pattern(&seq[0], "AAaa0000000000000000000000");
 
-  /* servo_motion_seq_init(1, &seq[1], 4); */
-  /* seq[1].speed=20; */
-  /* servo_motion_seq_pattern(&seq[1], "bBBb0000000000000000000000"); */
+  servo_motion_seq_init(1, &seq[1], 4);
+  seq[1].speed=40;
+  servo_motion_seq_pattern(&seq[1], "bBBb0000000000000000000000");
 
-  /* servo_motion_seq_init(2, &seq[2], 4); */
-  /* seq[2].speed=20; */
-  /* servo_motion_seq_pattern(&seq[2], "AAaa0000000000000000000000"); */
-
+  servo_motion_seq_init(2, &seq[2], 4);
+  seq[2].speed=40;
+  servo_motion_seq_pattern(&seq[2], "AAaa0000000000000000000000");
 
   message_packet message;
   // clear packet as it might be possible to 

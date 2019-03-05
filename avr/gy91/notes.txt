@@ -1,0 +1,16 @@
+GY-91 sensor module
+-------------------
+
+i2c addr:0x68 MPU 6500 accelerometer/gyro
+
+MPU-9150 magnetometer
+to turn on:
+(# set bypass mode for magnetometer
+ self.bus.write_byte_data(self.addr, 0x37, 0x02))
+
+i2c addr:0x0c AK8963 magnetometer
+
+
+i2c addr:0x76 BMP280 digital pressure sensor
+
+(d0 = 0x58 chip id)
