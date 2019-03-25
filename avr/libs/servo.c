@@ -41,6 +41,9 @@ void servo_state_init(servo_state *state, unsigned char id) {
   state->end_degrees = 0;
   state->time = 0;
   state->speed = 0;
+  state->amplitude = MAKE_FIXED(0.0);
+  state->bias_degrees = 0;
+  state->smooth = MAKE_FIXED(0.2);
 }
 
 int servo_current_degrees(servo_state *state) {
@@ -71,8 +74,10 @@ void servo_update(servo_state *state) {
   }  
   servo_pulse[state->id] = 
     smooth(servo_pulse[state->id],
-	   degrees_to_pulse(servo_current_degrees(state)),
-	   0.3);
+	   degrees_to_pulse((servo_current_degrees(state)*
+			     FIXED_TO_FLOAT(state->amplitude))+
+			    state->bias_degrees),
+	   FIXED_TO_FLOAT(state->smooth));
 }
 
 void servo_motion_seq_init(unsigned char id, servo_motion_seq* seq, unsigned int length) {

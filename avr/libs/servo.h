@@ -26,6 +26,7 @@ void servo_pulse_update();
 // fixed point maths ftw
 #define FIXED 1000
 #define MAKE_FIXED(x) (FIXED*x)
+#define FIXED_TO_FLOAT(x) (x/(float)FIXED)
 
 unsigned int servo_pulse[9];
 
@@ -37,6 +38,9 @@ typedef struct {
   int end_degrees;
   unsigned int time; // fixed point
   unsigned int speed; // fixed point
+  unsigned int amplitude; // fixed
+  unsigned int bias_degrees; // degrees
+  unsigned int smooth; // fixed
 } servo_state;
 
 void servo_state_init(servo_state *state, unsigned char id);

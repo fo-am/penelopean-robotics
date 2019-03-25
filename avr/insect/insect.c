@@ -7,15 +7,34 @@
 #define UPDATE_FREQ_HZ 10.0
 #define PENELOPE_NUM_SERVOS 3
 
-// incoming data packet over the radio
-// todo - use type to dispatch to different message types
+// registers
+
+// 0x00: ping LEDs command
+// 0x01: sync command 
+// 0x03: servo 1 amp [fixed]
+// 0x04: servo 1 bias_degrees
+// 0x05: servo 1 sequence speed [fixed]
+// 0x06: servo 1 smoothing [fixed]
+// 0x07 - 0x0a servo 2
+// 0x0b - 0x0e servo 3
+
+// new packet for modifying registers
 typedef struct {
-  unsigned char type;            // 1
-  unsigned char id;              // 1
-  unsigned int speed;            // 2 (fixed -> *= 1000)
+  unsigned char id;              // 1 - not needed
+  unsigned int address;
+  int value; // could be fixed point in some circumstances
+} register_write_packet;
+
+// incoming data packet over the radio
+// this is the original packet used for the motion sequencer
+typedef struct {
+  unsigned char id;              // 1 - not needed
+  // [sequence speed depreciated, via registers instead]
+  unsigned int speed;            // 2 (fixed -> *= 1000) 
   unsigned int length;           // 2 
   char pattern[MAX_PATTERN_LENGTH]; // 26
-} message_packet;                 // = 32 bytes
+} seq_pattern_packet;                 // = 32 bytes
+
 
 ISR(TIMER1_COMPA_vect) {
   servo_pulse_update();
@@ -61,6 +80,7 @@ int main (void) {
     servo_motion_seq_pattern(&seq[i], "00000000000000000000000000");
   }
 
+  /*
   servo_motion_seq_init(0, &seq[0], 4);
   seq[0].speed=40;
   servo_motion_seq_pattern(&seq[0], "AAaa0000000000000000000000");
@@ -72,64 +92,114 @@ int main (void) {
   servo_motion_seq_init(2, &seq[2], 4);
   seq[2].speed=40;
   servo_motion_seq_pattern(&seq[2], "AAaa0000000000000000000000");
+  */
 
-  message_packet message;
+  char msg[32];
   // clear packet as it might be possible to 
   // parse junk on startup if nrf status is set
   // due to noise but no message is present
-  memset(&message, 0, sizeof(message_packet));
+  memset(&msg, 0, 32);
   
-  unsigned int safepulse=SERVO_MIN;
-  char dir=0;
-
   for(;;) {
     for (i=0; i<PENELOPE_NUM_SERVOS; i++) {  
       servo_motion_seq_update(&seq[i]);
     }
-
-    //if (dir==0) safepulse+=20;
-    //else safepulse-=20;
-    //servo_pulse[0]=safepulse;
-    ////servo_pulse[0]=SERVO_MIN+(SERVO_MAX-SERVO_MIN)/2;
-    //if (safepulse>SERVO_MAX) dir=1;
-    //if (safepulse<SERVO_MIN) dir=0;
     
     if (nRF24L01p_read_status(nRF24L01p_PIPE_0)) {
-      nRF24L01p_read(&message, 32, nRF24L01p_PIPE_0);
+      nRF24L01p_read((void*)msg, 32, nRF24L01p_PIPE_0);
       PORTB |= 0x01;
-      
-      if (message.type=='H') {
-	PORTB |= 0x01;
-	_delay_ms(50);
-	PORTB &= ~0x01;
-	_delay_ms(50);
-	PORTB |= 0x01;
-	_delay_ms(50);
-	PORTB &= ~0x01;
-      }
 
+      char msg_type = msg[0];
+      
       // msgtype id speed speed len data ...
-      if (message.type=='M') {
+      if (msg_type=='M') {
 	//seq[message.id].speed = message.speed;
+	seq_pattern_packet *p=(seq_pattern_packet *)&msg[1];
+ 
 	int pos=0;
 	for (i=0; i<PENELOPE_NUM_SERVOS; i++) {  
-	  seq[i].speed = message.speed;
-	  seq[i].length = message.length;
-	  for (int n=0; n<message.length; n++) {
-	    seq[i].pattern[n] = message.pattern[n+pos];
+	  seq[i].speed = p->speed;
+	  seq[i].length = p->length;
+	  for (int n=0; n<p->length; n++) {
+	    seq[i].pattern[n] = p->pattern[n+pos];
 	  }
-	  pos += message.length;
+	  pos += p->length;
 	}  
       }
+      
+      // update a register/carry out a command
+      if (msg_type=='W') {
+	register_write_packet *p = (register_write_packet*)&msg[1];	
+	switch (p->address) {  
+	
+	  // flash LEDs
+	case 0x00 : {	
+	  PORTB |= 0x01;
+	  _delay_ms(50);
+	  PORTB &= ~0x01;
+	  _delay_ms(50);
+	  PORTB |= 0x01;
+	  _delay_ms(50);
+	  PORTB &= ~0x01;
+	} break;
 
-      // sync
-      if (message.type=='S') {
-	for (i=0; i<PENELOPE_NUM_SERVOS; i++) {  
-	  seq[i].timer = MAKE_FIXED(1.0); // cause next update to trigger 0
-	  seq[i].position = 0;
-	}
+	  // flash LEDs slowly
+	case 0x99 : {	
+	  PORTB |= 0x01;
+	  _delay_ms(500);
+	  PORTB &= ~0x01;
+	  _delay_ms(500);
+	  PORTB |= 0x01;
+	  _delay_ms(500);
+	  PORTB &= ~0x01;
+	} break;
+	
+	  // sync
+	case 0x02: {
+	  for (i=0; i<PENELOPE_NUM_SERVOS; i++) {  
+	    seq[i].timer = MAKE_FIXED(1.0); // cause next update to trigger 0
+	    seq[i].position = 0;
+	  }
+	} break;
+
+	  // servo control registers
+	case 0x03: 
+	  seq[0].servo.amplitude = p->value; 
+
+	  if (p->value!=0) {
+	    PORTB |= 0x01;
+	    _delay_ms(50);
+	    PORTB &= ~0x01;
+	    _delay_ms(50);
+	    PORTB |= 0x01;
+	    _delay_ms(50);
+	    PORTB &= ~0x01;
+	    _delay_ms(50);
+	    PORTB |= 0x01;
+	    _delay_ms(50);
+	    PORTB &= ~0x01;
+	    _delay_ms(50);
+	    PORTB |= 0x01;
+	    _delay_ms(50);
+	    PORTB &= ~0x01;
+	  }
+	  break;
+	case 0x04: seq[0].servo.bias_degrees = p->value; break;
+	case 0x05: seq[0].servo.speed = p->value; break;
+	case 0x06: seq[0].servo.smooth = p->value; break;
+
+	case 0x07: seq[1].servo.amplitude = p->value; break;
+	case 0x08: seq[1].servo.bias_degrees = p->value; break;
+	case 0x09: seq[1].servo.speed = p->value; break;
+	case 0x0a: seq[1].servo.smooth = p->value; break;
+
+	case 0x0b: seq[2].servo.amplitude = p->value; break;
+	case 0x0c: seq[2].servo.bias_degrees = p->value; break;
+	case 0x0d: seq[2].servo.speed = p->value; break;
+	case 0x0e: seq[2].servo.smooth = p->value; break;
+
+	}	
       }
-
     }
     
     _delay_ms(RATE);
