@@ -1,10 +1,10 @@
 <?xml version="1.0" standalone="no"?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
 "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<svg width="4394" height="3854" viewBox="0 0 4394 3854" version="1.1"
+<svg width="4294" height="3794" viewBox="0 0 4294 3794" version="1.1"
 xmlns="http://www.w3.org/2000/svg"
 xmlns:xlink="http://www.w3.org/1999/xlink">
-<g fill-rule="evenodd"><path d="M 0,3854 L 0,0 L 4393,0 L 4393,3854 L 0,3854 z " style="fill-opacity:0.300000;fill:rgb(103,198,105);"/></g>
-<g fill-rule="evenodd"><path d="M 1111,3830 L 12,1932 L 9,1926 L 8,1919 L 8,1913 L 10,1906 L 12,1900 L 1171,22 L 1176,16 L 1182,11 L 1190,8 L 1198,7 L 3315,7 L 3322,8 L 3328,10 L 3334,13 L 3339,18 L 3342,23 L 4381,1841 L 4384,1848 L 4385,1856 L 4384,1864 L 4381,1872 L 3323,3829 L 3319,3835 L 3314,3839 L 3308,3843 L 3302,3845 L 3295,3846 L 1138,3846 L 1130,3845 L 1122,3841 L 1116,3836 L 1111,3830 z " style="fill-opacity:0.600000;fill:rgb(103,198,105);stroke:rgb(0,0,0);stroke-width:2"/></g>
-<g fill-rule="evenodd"><path d="M 1138,3814 L 39,1917 L 1198,39 L 3315,39 L 4354,1857 L 3295,3814 L 1138,3814 z " style="fill-opacity:1.000000;fill:rgb(103,198,105);stroke:rgb(0,0,0);stroke-width:2"/></g>
+<g fill-rule="evenodd"><path d="M 0,3794 L 0,0 L 4293,0 L 4293,3794 L 0,3794 z " style="fill-opacity:0.300000;fill:rgb(103,198,105);"/></g>
+<g fill-rule="evenodd"><path d="M 1098,7 L 3215,7 L 3222,8 L 3228,10 L 3234,13 L 3239,18 L 3242,23 L 4281,1841 L 4284,1848 L 4285,1856 L 4284,1864 L 4281,1872 L 3223,3769 L 3219,3775 L 3214,3779 L 3208,3783 L 3202,3785 L 3195,3786 L 1218,3786 L 1210,3785 L 1202,3781 L 1196,3776 L 1191,3770 L 12,1752 L 9,1746 L 8,1740 L 8,1733 L 10,1726 L 13,1720 L 1071,22 L 1076,16 L 1083,11 L 1090,8 L 1098,7 z " style="fill-opacity:0.600000;fill:rgb(103,198,105);stroke:rgb(0,0,0);stroke-width:2"/></g>
+<g fill-rule="evenodd"><path d="M 1098,39 L 3215,39 L 4254,1857 L 3195,3754 L 1218,3754 L 39,1737 L 1098,39 z " style="fill-opacity:1.000000;fill:rgb(103,198,105);stroke:rgb(0,0,0);stroke-width:2"/></g>
 </svg>

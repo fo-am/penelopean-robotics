@@ -1,19 +1,12 @@
-//#define UNIT_TEST
-
-#ifndef UNIT_TEST
-
 #include <avr/io.h>
+#include <fixed.h>
+
+#ifndef PENELOPE_SERVO
+#define PENELOPE_SERVO
 
 #define SERVO_PORT PORTC
 #define SERVO_DDR DDRC
 #define SERVO_NUM 3
-
-#else
-
-#include <stdio.h>
-#define int short
-
-#endif
 
 #define SERVO_MIN 1000
 #define SERVO_MAX 4500
@@ -22,11 +15,6 @@
 
 void servo_init();
 void servo_pulse_update();
-
-// fixed point maths ftw
-#define FIXED 1000
-#define MAKE_FIXED(x) (FIXED*x)
-#define FIXED_TO_FLOAT(x) (x/(float)FIXED)
 
 unsigned int servo_pulse[9];
 
@@ -50,16 +38,23 @@ void servo_update(servo_state *state);
 
 // to fit 32 byte radio packet
 #define MAX_PATTERN_LENGTH 26 
+#define MOTION_SEQ_CONTINUOUS 0
+#define MOTION_SEQ_STEP 1
+#define NUM_SERVOS 3
 
 typedef struct {
   unsigned char pattern[MAX_PATTERN_LENGTH];
+  unsigned char mode;
+  unsigned char running;
   unsigned int length;
   unsigned int position;
   unsigned int speed; // fixed
   unsigned int timer; // fixed
-  servo_state servo;
+  servo_state servo[NUM_SERVOS];
 } servo_motion_seq;
 
-void servo_motion_seq_init(unsigned char id, servo_motion_seq* seq, unsigned int length);
+void servo_motion_seq_init(servo_motion_seq* seq, unsigned int length);
 void servo_motion_seq_pattern(servo_motion_seq* seq, char *pattern);
 void servo_motion_seq_update(servo_motion_seq* seq);
+
+#endif

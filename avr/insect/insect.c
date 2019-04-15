@@ -1,8 +1,9 @@
 #include <avr/interrupt.h>
 #include <avr/io.h>
 #include <util/delay.h>
-#include <servo.h>
 #include <nrf24l01.h>
+#include <i2c-master.h>
+#include <robot.h>
 
 #define UPDATE_FREQ_HZ 10.0
 #define PENELOPE_NUM_SERVOS 3
@@ -40,70 +41,65 @@ ISR(TIMER1_COMPA_vect) {
   servo_pulse_update();
 }
 
-#define RATE 20
-
-void walk_pattern(servo_motion_seq *seq) {
-  servo_motion_seq_init(0, &seq[0], 4);
-  seq[0].speed=20;
-  servo_motion_seq_pattern(&seq[0], "AAaa0000000000000000000000");
-
-  servo_motion_seq_init(0, &seq[1], 4);
-  seq[1].speed=20;
-  servo_motion_seq_pattern(&seq[1], "bBBb0000000000000000000000");
-
-  servo_motion_seq_init(0, &seq[2], 4);
-  seq[2].speed=20;
-  servo_motion_seq_pattern(&seq[2], "AAaa0000000000000000000000");
+// for switching between tx and rx via standby I
+void nRF24L01p_reboot() {
+  nRF24L01p_disable();
+  _delay_ms(10);
+  nRF24L01p_enable();
+  _delay_ms(10);
 }
+
+#define RATE 20
+const unsigned int telemetry_count = 100;
+unsigned int telemetry_tick = 0;
 
 int main (void) {
   _delay_us(nRF24L01p_TIMING_INITIAL_US);
   nRF24L01p_init(0, 0);
-  nRF24L01p_config_pipe(nRF24L01p_PIPE_0, 0xA7A7A7A7A7, 32);
+  nRF24L01p_config_pipe(nRF24L01p_PIPE_0, 0xA7A7A7A7A7, 32); 
+  nRF24L01p_config_pipe(nRF24L01p_PIPE_1, 0xA7A7A7A7AA, 32); 
   nRF24L01p_config_channel(100);
+  nRF24L01p_config_auto_ack(nRF24L01p_MASK_EN_AA_ENAA_ALL, TRUE);
   nRF24L01p_config_transceiver_mode(nRF24L01p_VALUE_CONFIG_PRIM_RX);
+  //nRF24L01p_config_transceiver_mode(nRF24L01p_VALUE_CONFIG_PRIM_TX);
+
+  nRF24L01p_enable_ack_payload();
+  char ack_payload[] = "Ack Payload\n";
+  nRF24L01p_ack_payload(0,ack_payload,12);
   
+  i2c_init();
+  gy91_init();
+
+  servo_init();
+  sei();   
+
   DDRB |= 0x01;
   PORTB |= 0x01;
   _delay_ms(1000);
   PORTB &= ~0x01;
 
-  unsigned int i;
+  // init walk pattern (running starts as off)
 
-  servo_init();
-  sei();   
-
-  servo_motion_seq seq[PENELOPE_NUM_SERVOS];
-  for (i=0; i<PENELOPE_NUM_SERVOS; i++) {  
-    servo_motion_seq_init(i, &seq[i], 4);
-    seq[i].speed=MAKE_FIXED(1/RATE);
-    servo_motion_seq_pattern(&seq[i], "00000000000000000000000000");
-  }
-
-  /*
-  servo_motion_seq_init(0, &seq[0], 4);
-  seq[0].speed=40;
-  servo_motion_seq_pattern(&seq[0], "AAaa0000000000000000000000");
-
-  servo_motion_seq_init(1, &seq[1], 4);
-  seq[1].speed=40;
-  servo_motion_seq_pattern(&seq[1], "bBBb0000000000000000000000");
-
-  servo_motion_seq_init(2, &seq[2], 4);
-  seq[2].speed=40;
-  servo_motion_seq_pattern(&seq[2], "AAaa0000000000000000000000");
-  */
+  robot_t robot;
+  robot_init(&robot);
 
   char msg[32];
   // clear packet as it might be possible to 
   // parse junk on startup if nrf status is set
   // due to noise but no message is present
   memset(&msg, 0, 32);
+
+  float x,y,z;
   
-  for(;;) {
-    for (i=0; i<PENELOPE_NUM_SERVOS; i++) {  
-      servo_motion_seq_update(&seq[i]);
-    }
+  for(;;) {    
+    robot_tick(&robot);
+    
+    /*    gy91_read_accel(&x,&y,&z);
+    
+    if (y>0.1) {
+      PORTB |= 0x01;
+      _delay_ms(50);
+      } */
     
     if (nRF24L01p_read_status(nRF24L01p_PIPE_0)) {
       nRF24L01p_read((void*)msg, 32, nRF24L01p_PIPE_0);
@@ -111,20 +107,22 @@ int main (void) {
 
       char msg_type = msg[0];
       
+      // update servo pattern
       // msgtype id speed speed len data ...
       if (msg_type=='M') {
 	//seq[message.id].speed = message.speed;
 	seq_pattern_packet *p=(seq_pattern_packet *)&msg[1];
- 
-	int pos=0;
-	for (i=0; i<PENELOPE_NUM_SERVOS; i++) {  
-	  seq[i].speed = p->speed;
-	  seq[i].length = p->length;
-	  for (int n=0; n<p->length; n++) {
-	    seq[i].pattern[n] = p->pattern[n+pos];
-	  }
-	  pos += p->length;
-	}  
+	robot.seq.speed = p->speed;
+	robot.seq.length = p->length;
+	for (int n=0; n<p->length*NUM_SERVOS; n++) {
+	  robot.seq.pattern[n] = p->pattern[n];
+	}
+      }
+
+      // returns telemetry information (1 message latency)
+      if (msg_type=='T') {
+	nRF24L01p_enable_ack_payload();
+	nRF24L01p_ack_payload(0,(byte *)robot.machine.m_heap,32);	
       }
       
       // update a register/carry out a command
@@ -142,66 +140,55 @@ int main (void) {
 	  _delay_ms(50);
 	  PORTB &= ~0x01;
 	} break;
-
-	  // flash LEDs slowly
-	case 0x99 : {	
-	  PORTB |= 0x01;
-	  _delay_ms(500);
-	  PORTB &= ~0x01;
-	  _delay_ms(500);
-	  PORTB |= 0x01;
-	  _delay_ms(500);
-	  PORTB &= ~0x01;
-	} break;
 	
 	  // sync
 	case 0x02: {
-	  for (i=0; i<PENELOPE_NUM_SERVOS; i++) {  
-	    seq[i].timer = MAKE_FIXED(1.0); // cause next update to trigger 0
-	    seq[i].position = 0;
-	  }
+	  robot.seq.timer = MAKE_FIXED(1.0); // cause next update to trigger 0
+	  robot.seq.position = 0;
 	} break;
-
-	  // servo control registers
-	case 0x03: 
-	  seq[0].servo.amplitude = p->value; 
-
-	  if (p->value!=0) {
-	    PORTB |= 0x01;
-	    _delay_ms(50);
-	    PORTB &= ~0x01;
-	    _delay_ms(50);
-	    PORTB |= 0x01;
-	    _delay_ms(50);
-	    PORTB &= ~0x01;
-	    _delay_ms(50);
-	    PORTB |= 0x01;
-	    _delay_ms(50);
-	    PORTB &= ~0x01;
-	    _delay_ms(50);
-	    PORTB |= 0x01;
-	    _delay_ms(50);
-	    PORTB &= ~0x01;
-	  }
-	  break;
-	case 0x04: seq[0].servo.bias_degrees = p->value; break;
-	case 0x05: seq[0].servo.speed = p->value; break;
-	case 0x06: seq[0].servo.smooth = p->value; break;
-
-	case 0x07: seq[1].servo.amplitude = p->value; break;
-	case 0x08: seq[1].servo.bias_degrees = p->value; break;
-	case 0x09: seq[1].servo.speed = p->value; break;
-	case 0x0a: seq[1].servo.smooth = p->value; break;
-
-	case 0x0b: seq[2].servo.amplitude = p->value; break;
-	case 0x0c: seq[2].servo.bias_degrees = p->value; break;
-	case 0x0d: seq[2].servo.speed = p->value; break;
-	case 0x0e: seq[2].servo.smooth = p->value; break;
 
 	}	
       }
     }
-    
+
+    /*    if (telemetry_tick>telemetry_count) {
+      telemetry_tick=0;
+      PORTB |= 0x01;
+      // Set TX mode.
+      nRF24L01p_config_transceiver_mode(nRF24L01p_VALUE_CONFIG_PRIM_TX);
+      nRF24L01p_disable();
+      //nRF24L01p_reboot();
+      nRF24L01p_config_transceiver_mode(nRF24L01p_VALUE_CONFIG_PRIM_TX);
+
+      nRF24L01p_write((byte *)robot.machine.m_heap, 32, nRF24L01p_PIPE_1);
+      _delay_ms(100);
+
+      ////nRF24L01p_status_tx_sent_clear();
+
+
+      nRF24L01p_disable();
+     nRF24L01p_config_transceiver_mode(nRF24L01p_VALUE_CONFIG_PRIM_RX);
+
+  // Flush the FIFOs
+  nRF24L01p_tx_fifo_flush();
+  nRF24L01p_rx_fifo_flush();
+
+  // Clear the interrupts.
+  nRF24L01p_status_rx_ready_clear();
+  nRF24L01p_status_tx_sent_clear();
+  nRF24L01p_status_max_retries_clear();
+
+
+      nRF24L01p_enable();
+      
+  //    nRF24L01p_reboot();
+      nRF24L01p_config_transceiver_mode(nRF24L01p_VALUE_CONFIG_PRIM_RX);
+
+      PORTB &= ~0x01;
+    }
+
+    telemetry_tick++;
+    */
     _delay_ms(RATE);
     PORTB &= ~0x01;
   }

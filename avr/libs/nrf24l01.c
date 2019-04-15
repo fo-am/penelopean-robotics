@@ -763,6 +763,35 @@ int nRF24L01p_tx_fifo_write(const byte *payload, byte size)
   return size; // TODO: catch FIFO full IRQ.
 }
 
+void nRF24L01p_enable_ack_payload()
+{
+  //spi_start();
+  //spi_transfer(nRF24L01p_SPI_ACTIVATE);
+  //nRF24L01p_SPI_ACTIVATE_MAGIC?
+  //spi_transfer(0x73);
+  //spi_end();
+
+  byte feature = nRF24L01p_get_register8(nRF24L01p_REGISTER_FEATURE);
+  nRF24L01p_set_register8(nRF24L01p_REGISTER_FEATURE,
+			  feature | 
+			  nRF24L01p_MASK_FEATURE_EN_DPL |
+			  nRF24L01p_MASK_FEATURE_EN_ACK_PAY);
+
+  nRF24L01p_set_register8(nRF24L01p_REGISTER_DYNPD,
+			  nRF24L01p_MASK_DYNPD_DPL_P0 |
+			  nRF24L01p_MASK_DYNPD_DPL_P1);
+
+}
+
+// max payload is 32 bytes
+void nRF24L01p_ack_payload(byte pipe, const byte *payload, byte size)
+{
+  spi_start();
+  spi_transfer(nRF24L01p_SPI_W_ACK_PAYLOAD|(pipe&0x07));
+  for (byte i = 0; i < size; i++)
+    spi_transfer(*payload++);
+  spi_end();
+}
 
 //
 // nRF24L01p_tx_fifo_flush implementation.

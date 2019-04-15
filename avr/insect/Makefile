@@ -16,7 +16,11 @@ TARGET = insect
 # List C source files here. (C dependencies are automatically generated.)
 SRC = $(TARGET).c  \
 	../libs/servo.c \
-	../libs/nrf24l01.c
+	../libs/nrf24l01.c \
+	../libs/gy91.c \
+	../libs/i2c-master.c \
+	../libs/yarn.c \
+	robot.c
 
 # List Assembler source files here.
 # Make them always end in a capital .S.  Files ending in a lowercase .s

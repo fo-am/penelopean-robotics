@@ -6,7 +6,7 @@ unsigned int servo_pulse[9] = {1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 6
 void servo_init() {
 #ifndef UNIT_TEST
   //SERVO_DDR = 0xff>>(8-SERVO_NUM);
-  SERVO_DDR = 0xff;
+  SERVO_DDR = 0x07; 
   TCCR1B |= (1<<WGM12) | (1<<CS11);  // pwm mode 4,CTC, prescale=8
   TIMSK1 |= (1<<OCIE1A);             // enable T1_compareA interrupt 
   TCNT1 = 65530;
@@ -16,9 +16,9 @@ void servo_init() {
 void servo_pulse_update() {
 #ifndef UNIT_TEST
   static unsigned char servo_num = 0;
-  //if(servo_num < SERVO_NUM) {
+  if(servo_num < 4) { // leave space for i2c
     SERVO_PORT = (1<<servo_num);          // end pulse for servo (n), start pulse for servo (n+1)  
-    //}          
+  }          
   OCR1A = servo_pulse[servo_num];        // set width of pulse
   servo_num++;                     // prepare next servo 
   if(servo_num > 8) servo_num = 0; // again from servo 0;
@@ -80,16 +80,22 @@ void servo_update(servo_state *state) {
 	   FIXED_TO_FLOAT(state->smooth));
 }
 
-void servo_motion_seq_init(unsigned char id, servo_motion_seq* seq, unsigned int length) {
+///////////////////////////////////////////
+
+void servo_motion_seq_init(servo_motion_seq* seq, unsigned int length) {
   unsigned int i;
   for (i=0; i<length; i++) {
     seq->pattern[i]='0';
   }
   seq->length = length;
+  seq->mode = MOTION_SEQ_STEP; 
+  seq->running = 0;
   seq->position = 0;
   seq->timer = 0;
   seq->speed = MAKE_FIXED(1.0);
-  servo_state_init(&seq->servo, id);
+  for (unsigned int s=0; s<NUM_SERVOS; s++) {
+    servo_state_init(&seq->servo[s], s);
+  }
 }
 
 void servo_motion_seq_pattern(servo_motion_seq* seq, char *pattern) {
@@ -100,26 +106,36 @@ void servo_motion_seq_pattern(servo_motion_seq* seq, char *pattern) {
 }
 
 void servo_motion_seq_update(servo_motion_seq* seq) {
-  seq->timer += seq->speed;
-  if (seq->timer>=MAKE_FIXED(1.0)) {
-    seq->timer = 0;
+  if (seq->running) {
+    seq->timer += seq->speed;
+    if (seq->timer>=MAKE_FIXED(1.0)) {
+      seq->timer = 0;
 
-    switch (seq->pattern[seq->position]) {
-    case 'D': servo_modify(&seq->servo, 90, seq->speed); break;
-    case 'C': servo_modify(&seq->servo, 68, seq->speed); break;
-    case 'B': servo_modify(&seq->servo, 45, seq->speed); break;
-    case 'A': servo_modify(&seq->servo, 23, seq->speed); break;
-    case '0': servo_modify(&seq->servo, 0, seq->speed); break;
-    case 'a': servo_modify(&seq->servo, -23, seq->speed); break;
-    case 'b': servo_modify(&seq->servo, -45, seq->speed); break;
-    case 'c': servo_modify(&seq->servo, -68, seq->speed); break;
-    case 'd': servo_modify(&seq->servo, -90, seq->speed); break;
-    default: break;
+      for (unsigned int s=0; s<NUM_SERVOS; s++) {
+	switch (seq->pattern[seq->position+(s*seq->length)]) {
+	case 'D': servo_modify(&seq->servo[s], 90, seq->speed); break;
+	case 'C': servo_modify(&seq->servo[s], 68, seq->speed); break;
+	case 'B': servo_modify(&seq->servo[s], 45, seq->speed); break;
+	case 'A': servo_modify(&seq->servo[s], 23, seq->speed); break;
+	case '0': servo_modify(&seq->servo[s], 0, seq->speed); break;
+	case 'a': servo_modify(&seq->servo[s], -23, seq->speed); break;
+	case 'b': servo_modify(&seq->servo[s], -45, seq->speed); break;
+	case 'c': servo_modify(&seq->servo[s], -68, seq->speed); break;
+	case 'd': servo_modify(&seq->servo[s], -90, seq->speed); break;
+	default: break;
+	}
+      }
+
+      seq->position++;
+      if (seq->position>=seq->length) {
+	if (seq->mode == MOTION_SEQ_STEP) {
+	  seq->position=0;
+	  seq->running=0;
+	} else {
+	  seq->position=0;
+	}
+      }
     }
-
-    seq->position++;
-    if (seq->position>=seq->length) seq->position=0;
-
   }
   servo_update(&seq->servo);
 }

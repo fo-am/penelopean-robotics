@@ -17,7 +17,7 @@ zsafe=2.0000
 
 # Mill options
 #extra-passes=1
-mill-feed=20
+mill-feed=40
 mill-speed=15000
 offset=0.2500
 voronoi=true

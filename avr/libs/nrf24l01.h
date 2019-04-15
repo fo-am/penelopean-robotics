@@ -532,6 +532,12 @@ byte nRF24L01p_get_payload_width(byte reg);
 // TODO: EN_ACK_PAY
 // TODO: EN_DYN_ACK
 
+void nRF24L01p_enable_ack_payload();
+
+// max payload is 32 bytes
+void nRF24L01p_ack_payload(byte pipe, const byte *payload, byte size);
+
+
 // STATUS
 /////////
 

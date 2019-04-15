@@ -5,15 +5,15 @@
 #include "gy91.h"
 
 int main (void) {
-  DDRD |= 0xff;
-  PORTD &= ~0xff;
-  DDRC = 0xff;
+  DDRB |= 0x01;
+  PORTB &= ~0x01;
+  DDRB = 0x01;
   i2c_init();
   if (gy91_init()) while(1) {}
 
-  PORTD |= 0xff;
+  PORTB |= 0x01;
   _delay_ms(1000); 
-  PORTD &= ~0xff; 
+  PORTB &= ~0x01; 
 
   float x,y,z;
 
@@ -23,10 +23,10 @@ int main (void) {
     gy91_read_accel(&x,&y,&z);
 
     if (y>0.1) {
-      PORTD |= 0xff;
+      PORTB |= 0x01;
       _delay_ms(50);
     } else {
-      PORTD &= ~0xff;
+      PORTB &= ~0x01;
     }
   }
 }
