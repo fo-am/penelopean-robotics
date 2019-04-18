@@ -14,6 +14,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <stdlib.h>
+#include <math.h>
 #include "yarn.h"
 
 //////////////////////////////////////////////////////////
@@ -73,6 +74,10 @@ void yarn_run(yarn_machine* m) {
   case NOT: if (yarn_stack_count(m,1)) yarn_push(m,~yarn_pop(m)); break;
   case RR: if (yarn_stack_count(m,2)) yarn_push(m,yarn_pop(m)>>(yarn_peek(m,m->m_pc++)%8)); break;
   case RL: if (yarn_stack_count(m,2)) yarn_push(m,yarn_pop(m)<<(yarn_peek(m,m->m_pc++)%8)); break;
+  case SIN: if (yarn_stack_count(m,1)) yarn_push(m,sin(yarn_pop(m)*57.2958)); break;
+  case COS: if (yarn_stack_count(m,1)) yarn_push(m,cos(yarn_pop(m)*57.2958)); break;
+  case TAN: if (yarn_stack_count(m,1)) yarn_push(m,tan(yarn_pop(m)*57.2958)); break;
+  case RND: yarn_push(m,rand()); break;
   case INCI: {
     cell_t d=yarn_peek(m,m->m_pc++); 
     yarn_poke(m,d,yarn_peek(m,d)+1); 

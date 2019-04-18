@@ -137,7 +137,7 @@ void servo_motion_seq_update(servo_motion_seq* seq) {
       }
     }
   }
-  servo_update(&seq->servo);
+  servo_update(&seq->servo[0]);
 }
 
 #ifdef UNIT_TEST

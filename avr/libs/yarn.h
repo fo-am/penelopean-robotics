@@ -60,12 +60,16 @@ typedef short signed_cell_t;
 #define NOT  27
 #define RR   28 // rotate right
 #define RL   29 // rotate left
+#define SIN  30 // uses degrees
+#define COS  31 // "
+#define TAN  32 // "
+#define RND  33
 
 // misc helper for looping
-#define INCI 30 // increment value in address in place
-#define DECI 31 // decrement value in address in place
-#define INCP 32 // increment value in address in place and push
-#define DECP 33 // decrement value in address in place and push
+#define INCI 34 // increment value in address in place
+#define DECI 35 // decrement value in address in place
+#define INCP 36 // increment value in address in place and push
+#define DECP 37 // decrement value in address in place and push
 
 typedef struct {
   cell_t m_pc;

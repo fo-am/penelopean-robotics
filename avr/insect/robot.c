@@ -50,6 +50,13 @@ void robot_tick(robot_t *r) {
   robot_update_servos(r);
   yarn_run(&r->machine);
   servo_motion_seq_update(&r->seq);
+  // our ONE led - getting a bit tiresome
+  if (yarn_peek(&r->machine,REG_LED)!=0) {
+    PORTB |= 0x01;
+  } else {
+    PORTB &= ~0x01;
+  }
+
 }
 
 
@@ -67,11 +74,11 @@ void robot_update_sensors(robot_t *r) {
   yarn_poke(m,REG_GYRO_Y,MAKE_FIXED(y));
   yarn_poke(m,REG_GYRO_Z,MAKE_FIXED(z));
   gy91_read_mag(&x,&y,&z);
-  yarn_poke(m,REG_COMP_X,MAKE_FIXED(x));
-  yarn_poke(m,REG_COMP_Y,MAKE_FIXED(y));
-  yarn_poke(m,REG_COMP_Z,MAKE_FIXED(z));
+  yarn_poke(m,REG_COMP_X,MAKE_FIXED(x/100.0f));
+  yarn_poke(m,REG_COMP_Y,MAKE_FIXED(y/100.0f));
+  yarn_poke(m,REG_COMP_Z,MAKE_FIXED(z/100.0f));
   float angle=atan2(y,x)*57.2958;
-  yarn_poke(m,REG_COMP_ANGLE,MAKE_FIXED(angle));
+  yarn_poke(m,REG_COMP_ANGLE,(short)angle);
   // check and clear flag
   static float comp_angle=0;
   if (yarn_peek(m,REG_COMP_DELTA_RESET)==1) {
@@ -100,6 +107,15 @@ void robot_update_servos(robot_t *r) {
   seq->servo[2].bias_degrees = yarn_peek(m,REG_SERVO_3_BIAS);
   seq->servo[2].speed = yarn_peek(m,REG_SERVO_SPEED);
   seq->servo[2].smooth = yarn_peek(m,REG_SERVO_3_SMOOTH);
+  
+  // forward/backward
+  // seriously, do this every tick??
+  /*if (yarn_peek(m,REG_SERVO_DIR)==0) {
+    servo_motion_seq_pattern(&r->seq, "AAaabBBbAAaa00000000000000");
+  } else {
+    servo_motion_seq_pattern(&r->seq, "AAaaBbbBAAaa00000000000000");
+  }*/
+
 }
 
 
