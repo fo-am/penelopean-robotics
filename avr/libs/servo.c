@@ -41,7 +41,7 @@ void servo_state_init(servo_state *state, unsigned char id) {
   state->end_degrees = 0;
   state->time = 0;
   state->speed = 0;
-  state->amplitude = MAKE_FIXED(0.0);
+  state->amplitude = MAKE_FIXED(1.0);
   state->bias_degrees = 0;
   state->smooth = MAKE_FIXED(0.2);
 }
@@ -88,7 +88,6 @@ void servo_motion_seq_init(servo_motion_seq* seq, unsigned int length) {
     seq->pattern[i]='0';
   }
   seq->length = length;
-  seq->mode = MOTION_SEQ_STEP; 
   seq->running = 0;
   seq->position = 0;
   seq->timer = 0;
@@ -96,12 +95,35 @@ void servo_motion_seq_init(servo_motion_seq* seq, unsigned int length) {
   for (unsigned int s=0; s<NUM_SERVOS; s++) {
     servo_state_init(&seq->servo[s], s);
   }
+  // default to not change the pattern
+  seq->next_pattern_id = MOTION_SEQ_PATTERN_ID_NULL;
 }
 
 void servo_motion_seq_pattern(servo_motion_seq* seq, char *pattern) {
   unsigned int i;
   for (i=0; i<seq->length; i++) {
     seq->pattern[i]=pattern[i];
+  }
+}
+
+// higher level pattern control... preset patterns for walking
+void servo_motion_seq_load_next_pattern(servo_motion_seq *seq) {
+  switch (seq->next_pattern_id) {
+  case MOTION_SEQ_PATTERN_ID_NULL: {
+    // skip
+  } break;
+  case MOTION_SEQ_PATTERN_ID_STOPPED: {
+    servo_motion_seq_pattern(seq, "00000000000000000000000000");
+  } break;
+  case MOTION_SEQ_PATTERN_ID_FORWARD: {
+    servo_motion_seq_pattern(seq, "AAaaBbbBAAaa00000000000000");
+  } break;
+  case MOTION_SEQ_PATTERN_ID_BACKWARD: {
+    servo_motion_seq_pattern(seq, "AAaabBBbAAaa00000000000000");
+  } break;
+  default: {
+
+  } break;
   }
 }
 
@@ -128,12 +150,10 @@ void servo_motion_seq_update(servo_motion_seq* seq) {
 
       seq->position++;
       if (seq->position>=seq->length) {
-	if (seq->mode == MOTION_SEQ_STEP) {
-	  seq->position=0;
-	  seq->running=0;
-	} else {
-	  seq->position=0;
-	}
+	seq->position=0;	
+	seq->pattern_loop_count++;
+	// time to load in next pattern (if it's not null)
+	servo_motion_seq_load_next_pattern(seq);
       }
     }
   }

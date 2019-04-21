@@ -20,8 +20,6 @@
 //////////////////////////////////////////////////////////
 
 void yarn_init(yarn_machine *m) {
-  m->m_pc=0;
-  m->m_stack_pos=-1;
   m->m_stack=(cell_t*)malloc(sizeof(cell_t)*STACK_SIZE);
   for (int n=0; n<STACK_SIZE; n++) {
     m->m_stack[n]=0;
@@ -30,6 +28,12 @@ void yarn_init(yarn_machine *m) {
   for (int n=0; n<HEAP_SIZE; n++) {
     m->m_heap[n]=0;
   }
+  yarn_reset(m);
+}
+
+void yarn_reset(yarn_machine *m) {
+  m->m_pc=0;
+  m->m_stack_pos=-1;
 }
 
 cell_t yarn_peek(const yarn_machine* m, cell_t addr) {

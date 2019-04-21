@@ -38,19 +38,23 @@ void servo_update(servo_state *state);
 
 // to fit 32 byte radio packet
 #define MAX_PATTERN_LENGTH 26 
-#define MOTION_SEQ_CONTINUOUS 0
-#define MOTION_SEQ_STEP 1
 #define NUM_SERVOS 3
+
+#define MOTION_SEQ_PATTERN_ID_NULL 0
+#define MOTION_SEQ_PATTERN_ID_STOPPED 1
+#define MOTION_SEQ_PATTERN_ID_FORWARD 2
+#define MOTION_SEQ_PATTERN_ID_BACKWARD 3
 
 typedef struct {
   unsigned char pattern[MAX_PATTERN_LENGTH];
-  unsigned char mode;
   unsigned char running;
   unsigned int length;
   unsigned int position;
   unsigned int speed; // fixed
   unsigned int timer; // fixed
   servo_state servo[NUM_SERVOS];
+  unsigned int next_pattern_id;
+  unsigned int pattern_loop_count;
 } servo_motion_seq;
 
 void servo_motion_seq_init(servo_motion_seq* seq, unsigned int length);

@@ -13,7 +13,9 @@
 // S: Sync servo sequence
 // M: Update servo sequence
 // T: Request telemetry
-// W: Bulk write to yarn machine memory
+// H: Halt machine
+// R: Reset and start machine
+// W: Write to yarn machine memory
 
 // incoming data packets over the radio
 // this is the original packet used for the motion sequencer
@@ -70,7 +72,7 @@ int main (void) {
 
   nRF24L01p_enable_ack_payload();
   char ack_payload[] = "Ack Payload\n";
-  nRF24L01p_ack_payload(0,ack_payload,12);
+  nRF24L01p_ack_payload(0,(const byte *)ack_payload,12);
 
   i2c_init();
   gy91_init();
@@ -128,7 +130,7 @@ int main (void) {
 	float *calibration_data = gy91_mag_calibration_data();	
 	// return calibration results for testing (sent on next ping)
  	nRF24L01p_enable_ack_payload();
-	nRF24L01p_ack_payload(0,calibration_data,sizeof(float)*6);
+	nRF24L01p_ack_payload(0,(const byte *)calibration_data,sizeof(float)*6);
 	free(calibration_data);
       }
       
@@ -150,20 +152,22 @@ int main (void) {
 	}
       }
 
-      // should we bounds check this stuff, do we care???
-
       // request telemetry information (1 message latency)
       if (msg_type=='T') {
 	request_telemetry_packet *p=(request_telemetry_packet *)&msg[1];
  	nRF24L01p_enable_ack_payload();
-	nRF24L01p_ack_payload(0,(byte*)&robot.machine.m_heap[p->start_address],32);
+	nRF24L01p_ack_payload(0,(const byte*)&robot.machine.m_heap[p->start_address],32);
       }
-      
-      // update a register/carry out a command
+
+      if (msg_type=='R') { robot_reset(&robot); }
+      if (msg_type=='H') { robot_halt(&robot); }
+
+      // write into robot memory
       if (msg_type=='W') {
+	// should we bounds check this stuff, do we care???
 	bulk_write_packet *p = (bulk_write_packet*)&msg[1];	
-	memcpy(&robot.machine.m_heap[p->start_address],
-	       p->data,p->size);
+	// copy over the data
+	memcpy(&robot.machine.m_heap[p->start_address],p->data,p->size);
       }
     }
 

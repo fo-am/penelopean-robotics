@@ -79,6 +79,7 @@ typedef struct {
 } yarn_machine;
     
 void yarn_init(yarn_machine *t);
+void yarn_reset(yarn_machine *t);
 void yarn_run(yarn_machine *t);
 cell_t yarn_peek(const yarn_machine *m, cell_t addr);
 void yarn_poke(yarn_machine *m, cell_t addr, cell_t data);
