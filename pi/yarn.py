@@ -51,9 +51,9 @@ class compiler:
             "COMP_ANGLE": 3,
             "COMP_DELTA_RESET": 4,
             "COMP_DELTA": 5,
-            "SERVO_STEP_COUNT": 6,
-            "SERVO_STEP_COUNT_RESET": 7,
-            "SERVO_NEXT_PATTERN_ID": 8,
+            "STEP_COUNT": 6,
+            "STEP_COUNT_RESET": 7,
+            "NEXT_PATTERN": 8,
             "SERVO_SPEED": 9,
             "SERVO_1_AMP": 10,
             "SERVO_2_AMP": 11,
@@ -65,10 +65,10 @@ class compiler:
             "SERVO_2_SMOOTH": 17,
             "SERVO_3_SMOOTH": 18,
 
-            "PATTERN_ID_NULL": 0,
-            "PATTERN_ID_STOPPED": 1,
-            "PATTERN_ID_FORWARD": 2,
-            "PATTERN_ID_BACKWARD": 3,
+            "NULL": 0,
+            "ALL_STOP": 1,
+            "WALK_FORWARD": 2,
+            "WALK_BACKWARD": 3,
 
             "A": 19,
             "B": 20,
@@ -154,16 +154,16 @@ def unit_test():
     assert(c.assemble("ld 0 \n\
                        st 100")==[6,0,8,100])
 
-    assert(c.assemble("ld REG_LED \n\
-                       st 100")==[6,1,8,100])
+    assert(c.assemble("ld LED \n\
+                       st 100")==[6,2,8,100])
 
-    assert(c.assemble("label: ld REG_LED \n\
-                       jmp label")==[6,1,1,32])
+    assert(c.assemble("label: ld LED \n\
+                       jmp label")==[6,2,1,32])
     
-    c.assemble_file("../yarnasm/led_flash.asm")
-    c.assemble_file("../yarnasm/back_forward.asm")
-    c.assemble_file("../yarnasm/warp.asm")
-    c.assemble_file("../yarnasm/slow_led.asm")
+    c.assemble_file("../asm/led_flash.asm")
+    c.assemble_file("../asm/back_forward.asm")
+    c.assemble_file("../asm/warp.asm")
+    c.assemble_file("../asm/slow_led.asm")
 
 unit_test()
 

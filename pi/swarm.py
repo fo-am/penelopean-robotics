@@ -1,107 +1,73 @@
-import curses
+import radio
+import robot
+import yarn
+from OSC import OSCServer
 import time
+import threading
 
-from curses import wrapper
-from curses.textpad import Textbox, rectangle
+global _swarm 
 
-class win:
-    def __init__(self,stdscr):
-        self.stdscr = stdscr
-        self.stdscr.clear()
-        curses.noecho()
-        curses.cbreak() 
-        curses.curs_set(0)
-        self.stdscr.keypad(True)
-        self.stdscr.nodelay(True)
-        curses.init_pair(1, curses.COLOR_YELLOW, curses.COLOR_BLACK)
-        curses.init_pair(2, curses.COLOR_WHITE, curses.COLOR_BLACK)
-        curses.init_pair(3, curses.COLOR_BLACK, curses.COLOR_WHITE)
- 
-        self.codelines=[]
-        self.load_file("../asm/weft.asm")
-        self.line_offset=0
-        self.regs_x = 60
-        self.regs_y = 0
-        self.regs = {"robot": 0,
-                     "pc": 2,
-                     "stack": 0,
-                     "led": 0,
-                     "comp_angle": 360,
-                     "comp_dr": 0,
-                     "comp_d": 0,
-                     "step_count": 0,
-                     "step_reset": 0}
+def sync_callback(path, tags, args, source):
+    _swarm.sync()
+    print(path)
 
-        self.reg_order = ["robot",
-                          "pc",
-                          "stack",
-                          "led",
-                          "comp_angle",
-                          "comp_dr",
-                          "comp_d",
-                          "step_count",
-                          "step_reset"]
-
-        self.reg_win = curses.newwin(len(self.regs)-1,19,1,61)
-        self.render()
-
-    def render(self):
-        self.stdscr.clear()
-
-        for l in range(0,20):
-            pc = self.line_offset+l
-            col = 2
-            if self.regs["pc"]==pc: col=3
-            if pc>0 and pc<len(self.codelines):
-                self.stdscr.addstr(l+1,1, self.codelines[pc], curses.color_pair(col))
-
-        for i,r in enumerate(self.reg_order):
-            sp = " "
-            for j in range(0,11-len(r)): sp+=" "
-            self.stdscr.addstr(i+1,61, 
-                               r+sp+str(self.regs[r]),
-                               curses.color_pair(1))
-        rectangle(self.stdscr,0,60,len(self.regs)+1,79)
-        rectangle(self.stdscr,0,0,20,79)
-
-        self.reg_win.clear()
-        self.reg_win.refresh()
-        self.stdscr.addstr(0,0, "Penelopian Swarm Robot Lab 1.0", curses.color_pair(col))
-
-        self.stdscr.refresh()
-
-    def load_file(self,fn):
-        with open(fn, 'r') as f:
-            self.codelines=f.readlines();
-            print(self.codelines)
-
-    def loop(self):
-        self.stdscr.refresh()
-        cmd=self.stdscr.getch()
-        if  cmd == curses.KEY_DOWN:
-            self.line_offset+=1
-        if  cmd == curses.KEY_UP:
-            if self.line_offset>0: self.line_offset-=1
-        if  cmd == curses.KEY_RIGHT:
-            self.regs["robot"]+=1
-            if self.regs["robot"]>7: self.regs["robot"]=0
-        if  cmd == curses.KEY_LEFT:
-            self.regs["robot"]-=1
-            if self.regs["robot"]<0: self.regs["robot"]=7
-        self.render()
-        time.sleep(0.1)
-
-
-    def exit(self):
-        curses.nocbreak()
-        self.stdscr.keypad(False)
-        curses.echo()
-        curses.endwin()
-
-
-def main(stdscr):
-    w = win(stdscr)
+def osc_loop(swarm):
+    print(swarm)
+    global _swarm
+    _swarm = swarm
     while True:
-        w.loop()
+        #while not swarm.osc_server.timed_out:
+        swarm.osc_server.handle_request()
 
-wrapper(main)
+class swarm:
+    def __init__(self):
+        self.radio = radio.radio([0xa7, 0xa7, 0xa7, 0xa7, 0xaa])
+        self.swarm = [robot.robot([0xa7, 0xa7, 0xa7, 0xa7, 0x01]),
+                      robot.robot([0xa7, 0xa7, 0xa7, 0xa7, 0x02]),
+                      robot.robot([0xa7, 0xa7, 0xa7, 0xa7, 0x03]),
+                      robot.robot([0xa7, 0xa7, 0xa7, 0xa7, 0x04]),
+                      robot.robot([0xa7, 0xa7, 0xa7, 0xa7, 0x05]),
+                      robot.robot([0xa7, 0xa7, 0xa7, 0xa7, 0x06]),
+                      robot.robot([0xa7, 0xa7, 0xa7, 0xa7, 0x07]),
+                      robot.robot([0xa7, 0xa7, 0xa7, 0xa7, 0x08]),
+                      robot.robot([0xa7, 0xa7, 0xa7, 0xa7, 0x09])]
+ 
+        self.compiler = yarn.compiler()
+        self.osc_server = OSCServer(("localhost", 8000))
+        self.osc_server.timeout = 0
+        self.osc_server.addMsgHandler("/sync", sync_callback)
+        self.sync_pos=0
+
+        t = threading.Thread(target=osc_loop, args=(self,))
+        t.start()
+
+    def sync(self):
+        self.swarm[self.sync_pos].sync(self.radio)
+        self.sync_pos=(self.sync_pos+1)%len(self.swarm)
+
+    def upload_code(self,robot_id,fn):
+        self.swarm[robot_id].upload_asm(fn,self.compiler,self.radio)
+
+    def update_regs(self,robot_id,regs):
+        regs["state"]=self.swarm[robot_id].state
+        regs["ping"]=time.time()-self.swarm[robot_id].ping_time
+        regs["pc"]=self.swarm[robot_id].telemetry[self.compiler.regs["PC_MIRROR"]]
+        regs["stack"]=self.swarm[robot_id].telemetry[self.compiler.regs["STACK_MIRROR"]]
+        regs["led"]=self.swarm[robot_id].telemetry[self.compiler.regs["LED"]]
+        regs["comp_angle"]=self.swarm[robot_id].telemetry[self.compiler.regs["COMP_ANGLE"]]
+        regs["comp_dr"]=self.swarm[robot_id].telemetry[self.compiler.regs["COMP_DELTA_RESET"]]
+        regs["comp_d"]=self.swarm[robot_id].telemetry[self.compiler.regs["COMP_DELTA"]]
+        regs["step_count"]=self.swarm[robot_id].telemetry[self.compiler.regs["STEP_COUNT"]]
+        regs["step_reset"]=self.swarm[robot_id].telemetry[self.compiler.regs["STEP_COUNT_RESET"]]
+
+
+    def update(self):
+        for robot in self.swarm:
+            robot.update(self.radio)
+        self.radio.update()
+
+if __name__ == "__main__":
+    s = swarm()
+    while True:
+        s.update()
+        time.sleep(0.1)
