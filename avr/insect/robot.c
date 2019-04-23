@@ -40,7 +40,7 @@ void robot_reset(robot_t *r) {
   r->machine.m_pc=REG_CODE_START;
   // init walk pattern (running starts as 'off')
   servo_motion_seq_init(&r->seq, 4);
-  r->seq.speed=MAKE_FIXED(20);
+  r->seq.speed=20;
   // temp, start walking (default next pattern is null so should stick)
   servo_motion_seq_pattern(&r->seq, "AAaabBBbAAaa00000000000000");
 
@@ -67,7 +67,6 @@ void robot_tick(robot_t *r) {
     robot_update_sensors(r);
     robot_update_servos(r);
     yarn_run(&r->machine);
-    servo_motion_seq_update(&r->seq);
     // our ONE led - getting a bit tiresome
     if (yarn_peek(&r->machine,REG_LED)!=0) {
       PORTB |= 0x01;
@@ -75,6 +74,8 @@ void robot_tick(robot_t *r) {
       PORTB &= ~0x01;
     }
   }
+  servo_motion_seq_update(&r->seq);
+  
 }
 
 
