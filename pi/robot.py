@@ -19,8 +19,8 @@ class robot:
         self.telemetry=data
         self.ping_time=time.time()
 
-    def sync(self,radio):
-        radio.send_sync(self.address)
+    def sync(self,radio,beat,bpm):
+        radio.send_sync(self.address,beat,bpm)
 
     def upload_asm(self,fn,compiler,radio):
         if self.state!="disconnected":

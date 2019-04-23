@@ -8,8 +8,8 @@ import threading
 global _swarm 
 
 def sync_callback(path, tags, args, source):
-    _swarm.sync()
-    print(path)
+    _swarm.sync(args[0],args[1])
+    print(args)
 
 def osc_loop(swarm):
     print(swarm)
@@ -41,8 +41,8 @@ class swarm:
         t = threading.Thread(target=osc_loop, args=(self,))
         t.start()
 
-    def sync(self):
-        self.swarm[self.sync_pos].sync(self.radio)
+    def sync(self,beat,bpm):
+        self.swarm[self.sync_pos].sync(self.radio,beat,bpm)
         self.sync_pos=(self.sync_pos+1)%len(self.swarm)
 
     def upload_code(self,robot_id,fn):

@@ -44,16 +44,14 @@ typedef struct {
   unsigned short samples; // 2
 } request_calibration_packet;
 
+typedef struct {
+  char pad;
+  unsigned short beat; // 2
+  float bpm
+} sync_packet;
+
 ISR(TIMER1_COMPA_vect) {
   servo_pulse_update();
-}
-
-// for switching between tx and rx via standby I
-void nRF24L01p_reboot() {
-  nRF24L01p_disable();
-  _delay_ms(10);
-  nRF24L01p_enable();
-  _delay_ms(10);
 }
 
 #define RATE 20
@@ -136,6 +134,7 @@ int main (void) {
       
       if (msg_type=='S') {
 	// sync
+	sync_packet *p=(sync_packet *)&msg[1];
 	robot.seq.timer = MAKE_FIXED(1.0); // cause next update to trigger 0
 	robot.seq.position = 0;
       }

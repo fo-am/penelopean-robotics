@@ -72,11 +72,11 @@ class radio:
         else:
             self.send(self.build_write(yarn.code_start,code))
 
-    def send_sync(self,addr):
+    def send_sync(self,addr,beat,bpm):
         if self.destination_address!=addr:
             self.destination_address=addr
             #self.device.openWritingPipe(addr)
-        self.send(self.build_sync())
+        self.send(self.build_sync(beat,bpm))
 
     def update(self):
         pass
@@ -89,9 +89,9 @@ class radio:
         #         self.update_context=False
                 
     def send(self,b):
-        print("sending "+str(self.destination_address)+" "+str(b))
+        #print("sending "+str(self.destination_address)+" "+str(b))
         if len(b)!=32:
-            print("wrong number of bytes in message: "+b)
+            print("wrong number of bytes in message: "+str(len(b)))
         else:
             #self.device.write(b)
             pass
@@ -105,8 +105,8 @@ class radio:
     def build_reset(self):
         return struct.pack("cxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx","R")
 
-    def build_sync(self):
-        return struct.pack("cxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx","S")
+    def build_sync(self,beat,bpm):
+        return struct.pack("cxHfxxxxxxxxxxxxxxxxxxxxxxxx","S",beat,bpm)
 
     def build_calibrate(self,samples):
         return struct.pack("cxHxxxxxxxxxxxxxxxxxxxxxxxxxxx","C",samples)
