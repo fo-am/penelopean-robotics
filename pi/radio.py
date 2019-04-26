@@ -1,8 +1,8 @@
-#import RPi.GPIO as GPIO
-#GPIO.setmode(GPIO.BCM)
+import RPi.GPIO as GPIO
+GPIO.setmode(GPIO.BCM)
 from lib_nrf24 import NRF24
 import time
-#import spidev
+import spidev
 import struct
 import math
 import yarn
@@ -12,90 +12,98 @@ class radio:
         self.address = address
         self.destination_address = [0xa7, 0xa7, 0xa7, 0xa7, 0x01]
         self.startup()
-
+        self.debug()
+        
     def debug(self):
-        #self.device.printDetails()
-        pass
+        self.device.printDetails()
 
     def startup(self):
-        # self.device = NRF24(GPIO, spidev.SpiDev())
-        # self.device.begin(0, 17)
-        # time.sleep(1)
-        # self.device.setRetries(15,15)
-        # self.device.setPayloadSize(32)
-        # self.device.setChannel(100)
-        # self.device.write_register(NRF24.FEATURE, 0)
-        # self.device.setPALevel(NRF24.PA_MIN)
-        # self.device.setAutoAck(True)
-        # self.device.enableDynamicPayloads()
-        # self.device.enableAckPayload()
-        # self.device.openReadingPipe(1, self.address)
-        # self.device.openWritingPipe(self.destination_address)
-        self.time_between_sends=0.1
+        self.device = NRF24(GPIO, spidev.SpiDev())
+        self.device.begin(0, 17)
+        time.sleep(1)
+        self.device.setRetries(15,15)
+        self.device.setPayloadSize(32)
+        self.device.setChannel(100)
+        self.device.write_register(NRF24.FEATURE, 0)
+        self.device.setPALevel(NRF24.PA_MIN)
+        self.device.setAutoAck(True)
+        self.device.enableDynamicPayloads()
+        self.device.enableAckPayload()
+        self.device.openReadingPipe(1, self.address)
+        self.device.openWritingPipe(self.destination_address)
+        self.time_between_sends=0.5
         self.telemetry=[]
         self.update_callback = False
         self.update_context = False
 
     def set_destination(self,addr):
-        self.destination_address=addr
-        #self.device.openWritingPipe(addr)
-
-    def request_telemetry(self,addr,callback,context):
         if self.destination_address!=addr:
             self.destination_address=addr
-            #self.device.openWritingPipe(addr)
+            self.device.openWritingPipe(addr)
+
+    def request_telemetry(self,addr,callback,context):
+        self.set_destination(addr)
         self.update_callback=callback
         self.update_context=context
         self.send(self.build_telemetry(0))
         
     def send_code(self,addr,code):
-        if self.destination_address!=addr:
-            self.destination_address=addr
-            #self.device.openWritingPipe(addr)
+        self.set_destination(addr)
         l = len(code)
-        self.send(self.build_stop())                
+        self.send(self.build_halt())
+        time.sleep(self.time_between_sends)
         max_code_size = 32-6
+
         if l>max_code_size:
             # chop into packets
             pos=0
+            pos16=0
             while pos<l:
-                buf=[]
+                buf=""
                 for i in range(0,max_code_size):
                     if pos<l:
-                        buf.append(code[pos])
+                        buf+=code[pos]
                     else:
-                        buf.append(0)
+                        buf+='\0'
                     pos+=1
-            #self.device.send(self.build_write(yarn.code_start+pos,buf))                
-            # make time for receipt?
-            time.sleep(self.time_between_sends)
+                self.send(self.build_write(yarn.compiler.code_start+pos16,buf)) 
+                pos16+=max_code_size/2
+                # make time for receipt?
+                time.sleep(self.time_between_sends)
         else:
-            self.send(self.build_write(yarn.code_start,code))
+            self.send(self.build_write(yarn.compiler.code_start,code))
+        time.sleep(self.time_between_sends)
+        self.send(self.build_reset())                
 
     def send_sync(self,addr,beat,bpm):
-        if self.destination_address!=addr:
-            self.destination_address=addr
-            #self.device.openWritingPipe(addr)
+        self.set_destination(addr)
         self.send(self.build_sync(beat,bpm))
 
     def update(self):
-        pass
-        # if self.device.isAckPayloadAvailable():
-        #     data=[]
-        #     self.device.read(data, radio.getDynamicPayloadSize())
-        #     if self.update_context and self.update_callback:
-        #         self.update_callback(self.update_context,data)
-        #         self.update_callback=False
-        #         self.update_context=False
+        if self.device.isAckPayloadAvailable():
+            data=[]
+            size = self.device.getDynamicPayloadSize()
+            self.device.read(data, size)
+            if size==32:
+                i = struct.unpack_from("hhhhhhhhhhhhhhhh","".join(map(chr,data)))
+                if self.update_context and self.update_callback:
+                    self.update_callback(self.update_context,i)
+                    self.update_callback=False
+                    self.update_context=False
+            else:
+                print("ack payload size other than 32 bytes need supporting")
                 
     def send(self,b):
-        #print("sending "+str(self.destination_address)+" "+str(b))
+        print("sending "+b[0]+" to "+str(self.destination_address))
         if len(b)!=32:
             print("wrong number of bytes in message: "+str(len(b)))
         else:
-            #self.device.write(b)
-            pass
-
+            status = self.device.write(b)
+            print status
+            if status!=32: # tx_ok bit set??
+                print("send failed...")
+            return status
+            
     def build_ping(self):
         return struct.pack("cxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx","P")
 
@@ -119,7 +127,9 @@ class radio:
         if len(data)>32-6:
             print("build_write: data is too large ("+str(len(data))+" bytes)")
         else:
-            padding = 32-len(data)
-            pad = []
-            return struct.pack("cxHH","w",addr,len(data))+data    
+            padding = 32-6-len(data)
+            pad=""
+            for i in range(0,padding):
+                pad+="\0"
+            return struct.pack("cxHH","W",addr,len(data))+data+pad    
 

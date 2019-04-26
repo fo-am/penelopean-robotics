@@ -1,9 +1,9 @@
 strt: ldl  10
       st   A
 loop: decp A
-      jprz 2 
-      jmp loop
-      ld REG_LED
+      jpz  fls 
+      jmp  loop
+fls:  ld   LED
       not
-      st REG_LED
-      jmp strt
+      st   LED
+      jmp  strt

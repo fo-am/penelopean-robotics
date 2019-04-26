@@ -23,23 +23,28 @@ class swarm:
     def __init__(self):
         self.radio = radio.radio([0xa7, 0xa7, 0xa7, 0xa7, 0xaa])
         self.swarm = [robot.robot([0xa7, 0xa7, 0xa7, 0xa7, 0x01]),
-                      robot.robot([0xa7, 0xa7, 0xa7, 0xa7, 0x02]),
-                      robot.robot([0xa7, 0xa7, 0xa7, 0xa7, 0x03]),
-                      robot.robot([0xa7, 0xa7, 0xa7, 0xa7, 0x04]),
-                      robot.robot([0xa7, 0xa7, 0xa7, 0xa7, 0x05]),
-                      robot.robot([0xa7, 0xa7, 0xa7, 0xa7, 0x06]),
-                      robot.robot([0xa7, 0xa7, 0xa7, 0xa7, 0x07]),
-                      robot.robot([0xa7, 0xa7, 0xa7, 0xa7, 0x08]),
-                      robot.robot([0xa7, 0xa7, 0xa7, 0xa7, 0x09])]
- 
+                     # robot.robot([0xa7, 0xa7, 0xa7, 0xa7, 0x02]),
+                     # robot.robot([0xa7, 0xa7, 0xa7, 0xa7, 0x03]),
+                     # robot.robot([0xa7, 0xa7, 0xa7, 0xa7, 0x04]),
+                     # robot.robot([0xa7, 0xa7, 0xa7, 0xa7, 0x05]),
+                     # robot.robot([0xa7, 0xa7, 0xa7, 0xa7, 0x06]),
+                     # robot.robot([0xa7, 0xa7, 0xa7, 0xa7, 0x07]),
+                     # robot.robot([0xa7, 0xa7, 0xa7, 0xa7, 0x08]),
+                     # robot.robot([0xa7, 0xa7, 0xa7, 0xa7, 0x09])
+        ]
+        
         self.compiler = yarn.compiler()
-        self.osc_server = OSCServer(("localhost", 8000))
-        self.osc_server.timeout = 0
-        self.osc_server.addMsgHandler("/sync", sync_callback)
+        #self.osc_server = OSCServer(("localhost", 8000))
+        #self.osc_server.timeout = 0
+        #self.osc_server.addMsgHandler("/sync", sync_callback)
         self.sync_pos=0
 
-        t = threading.Thread(target=osc_loop, args=(self,))
-        t.start()
+        
+        self.swarm[0].load_asm("../asm/back_forward2.asm",self.compiler,self.radio)
+        #self.swarm[0].load_asm("../asm/slow_led.asm",self.compiler,self.radio)
+
+        #t = threading.Thread(target=osc_loop, args=(self,))
+        #t.start()
 
     def sync(self,beat,bpm):
         self.swarm[self.sync_pos].sync(self.radio,beat,bpm)
@@ -70,4 +75,4 @@ if __name__ == "__main__":
     s = swarm()
     while True:
         s.update()
-        time.sleep(0.1)
+        time.sleep(0.5)
