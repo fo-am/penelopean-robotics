@@ -47,7 +47,7 @@ typedef struct {
 typedef struct {
   char pad;
   unsigned short beat; // 2
-  float bpm
+  float bpm;
 } sync_packet;
 
 ISR(TIMER1_COMPA_vect) {
@@ -168,9 +168,9 @@ int main (void) {
 	// copy over the data
 	memcpy(&robot.machine.m_heap[p->start_address],p->data,p->size);
       }
+      PORTB &= ~0x01;
     }
 
     _delay_ms(RATE);
-    PORTB &= ~0x01;
   }
 }

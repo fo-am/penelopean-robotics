@@ -54,6 +54,12 @@ int gy91_init() {
   // set bypass mode to activate magnetometer on i2c bus
   t=0x02;
   i2c_write_reg(i2c_gy91_accel, 0x37, &t, 1);
+  _delay_ms(50);
+
+  // set up magnetometer mode
+  t=0x12;
+  i2c_write_reg(i2c_gy91_compass, 0x0A, &t, 1);
+  _delay_ms(50);
 
   return 0;
 }
@@ -106,10 +112,6 @@ void gy91_read_mag_uncalibrated(float *x, float *y, float *z) {
   static const unsigned char MAGNET_YOUT_H = 0x06;
   static const unsigned char MAGNET_ZOUT_L = 0x07;
   static const unsigned char MAGNET_ZOUT_H = 0x08;
-
-  unsigned char t=0x12;
-  i2c_write_reg(i2c_gy91_compass, 0x0A, &t, 1);
-  _delay_ms(50);
 
   short xout = i2c_read_16(i2c_gy91_compass, MAGNET_XOUT_H, MAGNET_XOUT_L);
   short yout = i2c_read_16(i2c_gy91_compass, MAGNET_YOUT_H, MAGNET_YOUT_L);

@@ -84,11 +84,10 @@ void servo_update(servo_state *state) {
 
 void servo_motion_seq_init(servo_motion_seq* seq, unsigned int length) {
   unsigned int i;
-  for (i=0; i<length; i++) {
+  for (i=0; i<length*NUM_SERVOS; i++) {
     seq->pattern[i]='0';
   }
   seq->length = length;
-  seq->running = 0;
   seq->position = 0;
   seq->timer = 0;
   seq->speed = MAKE_FIXED(1.0);
@@ -101,7 +100,7 @@ void servo_motion_seq_init(servo_motion_seq* seq, unsigned int length) {
 
 void servo_motion_seq_pattern(servo_motion_seq* seq, char *pattern) {
   unsigned int i;
-  for (i=0; i<seq->length; i++) {
+  for (i=0; i<seq->length*NUM_SERVOS; i++) {
     seq->pattern[i]=pattern[i];
   }
 }
@@ -128,36 +127,36 @@ void servo_motion_seq_load_next_pattern(servo_motion_seq *seq) {
 }
 
 void servo_motion_seq_update(servo_motion_seq* seq) {
-  if (seq->running) {
-    seq->timer += seq->speed;
-    if (seq->timer>=MAKE_FIXED(1.0)) {
-      seq->timer = 0;
-
-      for (unsigned int s=0; s<NUM_SERVOS; s++) {
-	switch (seq->pattern[seq->position+(s*seq->length)]) {
-	case 'D': servo_modify(&seq->servo[s], 90, seq->speed); break;
-	case 'C': servo_modify(&seq->servo[s], 68, seq->speed); break;
-	case 'B': servo_modify(&seq->servo[s], 45, seq->speed); break;
-	case 'A': servo_modify(&seq->servo[s], 23, seq->speed); break;
-	case '0': servo_modify(&seq->servo[s], 0, seq->speed); break;
-	case 'a': servo_modify(&seq->servo[s], -23, seq->speed); break;
-	case 'b': servo_modify(&seq->servo[s], -45, seq->speed); break;
-	case 'c': servo_modify(&seq->servo[s], -68, seq->speed); break;
-	case 'd': servo_modify(&seq->servo[s], -90, seq->speed); break;
-	default: break;
-	}
+  seq->timer += seq->speed;
+  if (seq->timer>=MAKE_FIXED(1.0)) {
+    seq->timer = 0;
+    
+    for (unsigned int s=0; s<NUM_SERVOS; s++) {
+      switch (seq->pattern[seq->position+(s*seq->length)]) {
+      case 'D': servo_modify(&seq->servo[s], 90, seq->speed); break;
+      case 'C': servo_modify(&seq->servo[s], 68, seq->speed); break;
+      case 'B': servo_modify(&seq->servo[s], 45, seq->speed); break;
+      case 'A': servo_modify(&seq->servo[s], 23, seq->speed); break;
+      case '0': servo_modify(&seq->servo[s], 0, seq->speed); break;
+      case 'a': servo_modify(&seq->servo[s], -23, seq->speed); break;
+      case 'b': servo_modify(&seq->servo[s], -45, seq->speed); break;
+      case 'c': servo_modify(&seq->servo[s], -68, seq->speed); break;
+      case 'd': servo_modify(&seq->servo[s], -90, seq->speed); break;
+      default: break;
       }
+    }
 
-      seq->position++;
-      if (seq->position>=seq->length) {
-	seq->position=0;	
-	seq->pattern_loop_count++;
-	// time to load in next pattern (if it's not null)
-	servo_motion_seq_load_next_pattern(seq);
-      }
+    seq->position++;
+    if (seq->position>=seq->length) {
+      seq->position=0;	
+      seq->pattern_loop_count++;
+      // time to load in next pattern (if it's not null)
+      servo_motion_seq_load_next_pattern(seq);
     }
   }
   servo_update(&seq->servo[0]);
+  servo_update(&seq->servo[1]);
+  servo_update(&seq->servo[2]);
 }
 
 #ifdef UNIT_TEST

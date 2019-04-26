@@ -47,7 +47,6 @@ void servo_update(servo_state *state);
 
 typedef struct {
   unsigned char pattern[MAX_PATTERN_LENGTH];
-  unsigned char running;
   unsigned int length;
   unsigned int position;
   unsigned int speed; // fixed
