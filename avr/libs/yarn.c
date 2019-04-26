@@ -130,6 +130,7 @@ cell_t yarn_top(yarn_machine* m) {
   return 0;
 }
 
+//#define UNIT_TEST
 #ifdef UNIT_TEST
 
 #include<stdio.h>
@@ -149,7 +150,7 @@ void main() {
 		ST, 50};
 
   for (unsigned int n=0; n<sizeof(c); n++) {
-    y.m_heap[n]=c[n];
+    y.m_heap[n+32]=c[n];
   }
 
   for (unsigned int n=0; n<100; n++) {

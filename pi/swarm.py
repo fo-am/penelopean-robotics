@@ -38,8 +38,8 @@ class swarm:
         self.osc_server.addMsgHandler("/sync", sync_callback)
         self.sync_pos=0
 
-        t = threading.Thread(target=osc_loop, args=(self,))
-        t.start()
+        #t = threading.Thread(target=osc_loop, args=(self,))
+        #t.start()
 
     def sync(self,beat,bpm):
         self.swarm[self.sync_pos].sync(self.radio,beat,bpm)
@@ -48,18 +48,9 @@ class swarm:
     def upload_code(self,robot_id,fn):
         self.swarm[robot_id].upload_asm(fn,self.compiler,self.radio)
 
-    def update_regs(self,robot_id,regs):
-        regs["state"]=self.swarm[robot_id].state
-        regs["ping"]=time.time()-self.swarm[robot_id].ping_time
-        regs["pc"]=self.swarm[robot_id].telemetry[self.compiler.regs["PC_MIRROR"]]
-        regs["stack"]=self.swarm[robot_id].telemetry[self.compiler.regs["STACK_MIRROR"]]
-        regs["led"]=self.swarm[robot_id].telemetry[self.compiler.regs["LED"]]
-        regs["comp_angle"]=self.swarm[robot_id].telemetry[self.compiler.regs["COMP_ANGLE"]]
-        regs["comp_dr"]=self.swarm[robot_id].telemetry[self.compiler.regs["COMP_DELTA_RESET"]]
-        regs["comp_d"]=self.swarm[robot_id].telemetry[self.compiler.regs["COMP_DELTA"]]
-        regs["step_count"]=self.swarm[robot_id].telemetry[self.compiler.regs["STEP_COUNT"]]
-        regs["step_reset"]=self.swarm[robot_id].telemetry[self.compiler.regs["STEP_COUNT_RESET"]]
-
+    def update_regs(self,regs):
+        for i,robot in enumerate(self.swarm):
+            robot.update_regs(regs[i],self.compiler)
 
     def update(self):
         for robot in self.swarm:

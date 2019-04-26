@@ -89,13 +89,14 @@ void servo_motion_seq_init(servo_motion_seq* seq, unsigned int length) {
   }
   seq->length = length;
   seq->position = 0;
-  seq->timer = 0;
   seq->speed = MAKE_FIXED(1.0);
+  seq->timer = 0;
   for (unsigned int s=0; s<NUM_SERVOS; s++) {
     servo_state_init(&seq->servo[s], s);
   }
   // default to not change the pattern
-  seq->next_pattern_id = MOTION_SEQ_PATTERN_ID_NULL;
+  seq->next_pattern_id = MOTION_SEQ_PATTERN_ID_STOPPED;
+  seq->pattern_loop_count = 0;
 }
 
 void servo_motion_seq_pattern(servo_motion_seq* seq, char *pattern) {

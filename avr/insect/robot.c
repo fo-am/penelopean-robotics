@@ -5,6 +5,7 @@
 #include <robot.h>
 
 // memory map (exposed via telemetry)
+// change yarn.py compiler registers too
 
 #define REG_PC_MIRROR 0 
 #define REG_STACK_MIRROR 1 
@@ -15,16 +16,21 @@
 #define REG_SERVO_STEP_COUNT 6
 #define REG_SERVO_STEP_COUNT_RESET 7
 #define REG_SERVO_NEXT_PATTERN_ID 8
-#define REG_SERVO_SPEED 9
-#define REG_SERVO_1_AMP 10
-#define REG_SERVO_2_AMP 11
-#define REG_SERVO_3_AMP 12
-#define REG_SERVO_1_BIAS 13
-#define REG_SERVO_2_BIAS 14
-#define REG_SERVO_3_BIAS 15
-#define REG_SERVO_1_SMOOTH 16
-#define REG_SERVO_2_SMOOTH 17
-#define REG_SERVO_3_SMOOTH 18
+#define REG_USR_A 9
+#define REG_USR_B 10
+#define REG_USR_C 11
+#define REG_USR_D 12
+
+#define REG_SERVO_SPEED 13
+#define REG_SERVO_1_AMP 14
+#define REG_SERVO_2_AMP 15
+#define REG_SERVO_3_AMP 16
+#define REG_SERVO_1_BIAS 17
+#define REG_SERVO_2_BIAS 18
+#define REG_SERVO_3_BIAS 19
+#define REG_SERVO_1_SMOOTH 20
+#define REG_SERVO_2_SMOOTH 21
+#define REG_SERVO_3_SMOOTH 22
 
 // 19->32 user area (enough RAM for anybody!!)
 
@@ -42,7 +48,7 @@ void robot_reset(robot_t *r) {
   servo_motion_seq_init(&r->seq, 4);
   r->seq.speed=20;
   // temp, start walking (default next pattern is null so should stick)
-  servo_motion_seq_pattern(&r->seq, "AAaabBBbAAaa00000000000000");
+  //  servo_motion_seq_pattern(&r->seq, "AAaabBBbAAaa00000000000000");
 
   // non-zero defaults
   yarn_poke(&r->machine,REG_SERVO_SPEED,MAKE_FIXED(0.02)); // 20?
@@ -73,11 +79,13 @@ void robot_tick(robot_t *r) {
     } else {
       PORTB &= ~0x01;
     }
+    servo_motion_seq_update(&r->seq);
   }
-  servo_motion_seq_update(&r->seq);
-  
 }
 
+float angle_compare(float a1, float a2) {
+  return 180 - abs(abs(a1 - a2) - 180);
+}
 
 void robot_update_sensors(robot_t *r) {
   yarn_machine *m = &r->machine;
@@ -95,14 +103,16 @@ void robot_update_sensors(robot_t *r) {
   yarn_poke(m,REG_COMP_Y,MAKE_FIXED(y/100.0f));
   yarn_poke(m,REG_COMP_Z,MAKE_FIXED(z/100.0f));*/
   float angle=atan2(y,x)*57.2958;
+  angle+=180; // set range to 0-360
   yarn_poke(m,REG_COMP_ANGLE,(short)angle);
   // check and clear flag
-  static float comp_angle=0;
+  static float compare_angle=0;
   if (yarn_peek(m,REG_COMP_DELTA_RESET)==1) {
     yarn_poke(m,REG_COMP_DELTA_RESET,0);
-    comp_angle=angle;
+    compare_angle=angle;
   }
-  yarn_poke(m,REG_COMP_DELTA,MAKE_FIXED(comp_angle-angle));
+  yarn_poke(m,REG_COMP_DELTA,
+	    MAKE_FIXED(angle_compare(compare_angle,angle)));
 }
 
 void robot_update_servos(robot_t *r) {

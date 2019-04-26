@@ -20,60 +20,63 @@ class win:
         curses.init_pair(3, curses.COLOR_BLACK, curses.COLOR_WHITE)
  
         self.codelines=[]
-        self.load_file("../asm/weft.asm")
+        #self.load_file("../asm/weft.asm")
 
         self.line_offset=0
-        self.regs_x = 60
-        self.regs_y = 0
-        self.regs = {"robot": 0,
-                     "state": "disconnected",
-                     "ping": 0,
-                     "pc": 2,
-                     "stack": 0,
-                     "led": 0,
-                     "comp_angle": 360,
-                     "comp_dr": 0,
-                     "comp_d": 0,
-                     "step_count": 0,
-                     "step_reset": 0}
+        
+        self.regs = [{"robot": i,
+                      "state": "disconnected",
+                      "ping": 0,
+                      "pc": 2,
+                      "usr a": 0,
+                      "usr b": 0,
+                      "comp_angle": 0,
+                      "comp_dr": 0,
+                      "comp_d": 0,
+                      "step_count": 0,
+                      "step_reset": 0} for i in range(0,len(self.swarm.swarm))]
 
         self.reg_order = ["robot",
                           "state",
                           "ping",
                           "pc",
-                          "stack",
-                          "led",
+                          "usr a",
+                          "usr b",
                           "comp_angle",
                           "comp_dr",
                           "comp_d",
                           "step_count",
                           "step_reset"]
 
-        self.reg_win = curses.newwin(len(self.regs)-1,19,1,61)
         self.render()
 
-    def render(self):
-        self.stdscr.clear()
-
-        for l in range(0,20):
-            pc = self.line_offset+l
-            col = 2
-            if self.regs["pc"]==pc: col=3
-            if pc>0 and pc<len(self.codelines):
-                self.stdscr.addstr(l+1,1, self.codelines[pc], curses.color_pair(col))
-
+    def render_regs(self,regs,n):
+        x = (n%4)*18
+        y = 0
+        if n>3: y=11
         for i,r in enumerate(self.reg_order):
             sp = " "
             for j in range(0,11-len(r)): sp+=" "
-            self.stdscr.addstr(i+1,61, 
-                               (r+sp+str(self.regs[r]))[0:18],
+            self.stdscr.addstr(i+1+y,x+1, 
+                               (r+sp+str(self.regs[n][r]))[0:18],
                                curses.color_pair(1))
-        rectangle(self.stdscr,0,60,len(self.regs)+1,79)
-        rectangle(self.stdscr,0,0,20,79)
+        rectangle(self.stdscr,y,x,len(self.regs[n])+y,x+18)
 
-        self.reg_win.clear()
-        self.reg_win.refresh()
-        self.stdscr.addstr(0,0, "Penelopian Swarm Robot Lab 1.0", curses.color_pair(col))
+        
+    def render(self):
+        self.stdscr.clear()
+
+        #for l in range(0,20):
+        #    pc = self.line_offset+l
+        #    col = 2
+        #    if self.regs["pc"]==pc: col=3
+        #    if pc>0 and pc<len(self.codelines):
+        #        self.stdscr.addstr(l+1,1, self.codelines[pc], curses.color_pair(col))
+
+        for i in range(0,len(self.swarm.swarm)):
+            self.render_regs(self.regs,i)
+
+        self.stdscr.addstr(0,0, "Penelopian Swarm Robot Lab 1.0", curses.color_pair(2))
 
         self.stdscr.refresh()
 
@@ -84,21 +87,20 @@ class win:
 
     def update(self):
         self.swarm.update()        
-
-        self.swarm.update_regs(self.regs["robot"],self.regs)
+        self.swarm.update_regs(self.regs)
 
         self.stdscr.refresh()
-        cmd=self.stdscr.getch()
-        if  cmd == curses.KEY_DOWN:
-            self.line_offset+=1
-        if  cmd == curses.KEY_UP:
-            if self.line_offset>0: self.line_offset-=1
-        if  cmd == curses.KEY_RIGHT:
-            self.regs["robot"]+=1
-            if self.regs["robot"]>7: self.regs["robot"]=0
-        if  cmd == curses.KEY_LEFT:
-            self.regs["robot"]-=1
-            if self.regs["robot"]<0: self.regs["robot"]=7
+        # cmd=self.stdscr.getch()
+        # if  cmd == curses.KEY_DOWN:
+        #     self.line_offset+=1
+        # if  cmd == curses.KEY_UP:
+        #     if self.line_offset>0: self.line_offset-=1
+        # if  cmd == curses.KEY_RIGHT:
+        #     self.regs["robot"]+=1
+        #     if self.regs["robot"]>7: self.regs["robot"]=0
+        # if  cmd == curses.KEY_LEFT:
+        #     self.regs["robot"]-=1
+        #     if self.regs["robot"]<0: self.regs["robot"]=7
         self.render()
         time.sleep(0.1)
 

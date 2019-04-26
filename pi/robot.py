@@ -42,3 +42,14 @@ class robot:
                 self.ping_time=time.time()
                 radio.request_telemetry(self.address,self.telemetry_callback,self)
 
+    def update_regs(self,regs,c):
+        regs["state"]=self.state
+        regs["ping"]=time.time()-self.ping_time
+        regs["pc"]=self.telemetry[c.regs["PC_MIRROR"]]
+        regs["a"]=self.telemetry[c.regs["A"]]
+        regs["b"]=self.telemetry[c.regs["B"]]
+        regs["comp_angle"]=self.telemetry[c.regs["COMP_ANGLE"]]
+        regs["comp_dr"]=self.telemetry[c.regs["COMP_DELTA_RESET"]]
+        regs["comp_d"]=self.telemetry[c.regs["COMP_DELTA"]]
+        regs["step_count"]=self.telemetry[c.regs["STEP_COUNT"]]
+        regs["step_reset"]=self.telemetry[c.regs["STEP_COUNT_RESET"]]

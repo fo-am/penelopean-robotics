@@ -44,6 +44,8 @@ class compiler:
             "decp": 37,
         }
 
+        # change robot.c registers to match here
+
         self.regs = {
             "PC_MIRROR": 0,
             "STACK_MIRROR": 1,
@@ -54,16 +56,20 @@ class compiler:
             "STEP_COUNT": 6,
             "STEP_COUNT_RESET": 7,
             "NEXT_PATTERN": 8,
-            "SERVO_SPEED": 9,
-            "SERVO_1_AMP": 10,
-            "SERVO_2_AMP": 11,
-            "SERVO_3_AMP": 12,
-            "SERVO_1_BIAS": 13,
-            "SERVO_2_BIAS": 14,
-            "SERVO_3_BIAS": 15,
-            "SERVO_1_SMOOTH": 16,
-            "SERVO_2_SMOOTH": 17,
-            "SERVO_3_SMOOTH": 18,
+            "A": 9,
+            "B": 10,
+            "C": 11,
+            "D": 12,
+            "SERVO_SPEED": 13,
+            "SERVO_1_AMP": 14,
+            "SERVO_2_AMP": 15,
+            "SERVO_3_AMP": 16,
+            "SERVO_1_BIAS": 17,
+            "SERVO_2_BIAS": 18,
+            "SERVO_3_BIAS": 19,
+            "SERVO_1_SMOOTH": 20,
+            "SERVO_2_SMOOTH": 21,
+            "SERVO_3_SMOOTH": 22,
 
             "NULL": 0,
             "ALL_STOP": 1,
@@ -121,6 +127,18 @@ class compiler:
 
 
 
+    def line_size(self,l):
+        ls=l.split()
+        if len(ls)==0: return 0
+        # strip out label
+        if ls[0].endswith(":"):
+            ls=ls[1:]
+        pos=0
+        word=""
+        while word!=";;" and pos<len(ls):
+            word=ls[pos]
+            if word!=";;": pos+=1
+        return pos
 
     def assemble(self,s):
         s=s.split("\n")
@@ -128,8 +146,8 @@ class compiler:
         for i,line in enumerate(s):
             sl = line.strip()
             self.collect_label(addr,sl)
-            if len(sl)>0 and sl[0]!=";":
-                addr+=1
+            if len(sl)>0:
+                addr+=self.line_size(sl)
         code = []
         for i,line in enumerate(s):
             sl=line.strip()
@@ -145,12 +163,15 @@ class compiler:
     def assemble_to_bin(self,fn):
         d = self.assemble_file(fn)
 
-
-
-
 def unit_test():
     c = compiler()
 
+    assert(c.line_size("xor \n")==1)
+    assert(c.line_size("ld 0 \n")==2)
+    assert(c.line_size("ld 0 ;; one two\n")==2)
+    assert(c.line_size("start: ld 0 ;; one two three\n")==2)
+    assert(c.line_size("start: xor ;; one two\n")==1)
+    
     assert(c.assemble("ld 0 \n\
                        st 100")==[6,0,8,100])
 
@@ -159,6 +180,10 @@ def unit_test():
 
     assert(c.assemble("label: ld LED \n\
                        jmp label")==[6,2,1,32])
+
+    assert(c.assemble("ld 1 \n\
+                       label: ld LED \n\
+                       jmp label")==[6,1,6,2,1,34])
     
     c.assemble_file("../asm/led_flash.asm")
     c.assemble_file("../asm/back_forward.asm")

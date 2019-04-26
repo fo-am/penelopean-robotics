@@ -116,6 +116,9 @@ void gy91_read_mag_uncalibrated(float *x, float *y, float *z) {
   short xout = i2c_read_16(i2c_gy91_compass, MAGNET_XOUT_H, MAGNET_XOUT_L);
   short yout = i2c_read_16(i2c_gy91_compass, MAGNET_YOUT_H, MAGNET_YOUT_L);
   short zout = i2c_read_16(i2c_gy91_compass, MAGNET_ZOUT_H, MAGNET_ZOUT_L);
+  // set up magnetometer mode for next time
+  unsigned char t=0x12;
+  i2c_write_reg(i2c_gy91_compass, 0x0A, &t, 1);
 
   *x = 1200.0 * xout / 4096.0;
   *y = 1200.0 * yout / 4096.0;
