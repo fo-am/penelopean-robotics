@@ -1,8 +1,9 @@
+import array
 
 class compiler:
+    code_start=32
     def __init__(self):
         self.labels={}
-        self.code_start=32
         self.instr = {
             "nop": 0,
             "jmp": 1,
@@ -127,6 +128,7 @@ class compiler:
 
 
 
+
     def line_size(self,l):
         ls=l.split()
         if len(ls)==0: return 0
@@ -155,6 +157,15 @@ class compiler:
                 code+=self.assemble_line(i,sl)
         print code
         return code
+
+    # returns array of bytes (from 16bit values)
+    def assemble_bytes(self,s):
+        code = self.assemble(s)
+        split = []
+        for i in code:
+            split.append(i & 0xff)
+            split.append((i>>8) & 0xff)
+        return array.array("B",split).tostring()
 
     def assemble_file(self,fn):
         with open(fn, 'r') as f:
@@ -185,10 +196,10 @@ def unit_test():
                        label: ld LED \n\
                        jmp label")==[6,1,6,2,1,34])
     
-    c.assemble_file("../asm/led_flash.asm")
-    c.assemble_file("../asm/back_forward.asm")
-    c.assemble_file("../asm/warp.asm")
-    c.assemble_file("../asm/slow_led.asm")
+    #c.assemble_file("../asm/led_flash.asm")
+    #c.assemble_file("../asm/back_forward.asm")
+    #c.assemble_file("../asm/warp.asm")
+    #c.assemble_file("../asm/slow_led.asm")
 
 unit_test()
 

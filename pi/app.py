@@ -20,7 +20,7 @@ class win:
         curses.init_pair(3, curses.COLOR_BLACK, curses.COLOR_WHITE)
  
         self.codelines=[]
-        #self.load_file("../asm/weft.asm")
+        self.load_file("../asm/back_forward2.asm")
 
         self.line_offset=0
         
@@ -50,6 +50,7 @@ class win:
 
         self.render()
 
+
     def render_regs(self,regs,n):
         x = (n%4)*18
         y = 0
@@ -62,22 +63,17 @@ class win:
                                curses.color_pair(1))
         rectangle(self.stdscr,y,x,len(self.regs[n])+y,x+18)
 
-        
     def render(self):
-        self.stdscr.clear()
-
+        #self.stdscr.clear()
         #for l in range(0,20):
         #    pc = self.line_offset+l
         #    col = 2
         #    if self.regs["pc"]==pc: col=3
         #    if pc>0 and pc<len(self.codelines):
         #        self.stdscr.addstr(l+1,1, self.codelines[pc], curses.color_pair(col))
-
         for i in range(0,len(self.swarm.swarm)):
             self.render_regs(self.regs,i)
-
         self.stdscr.addstr(0,0, "Penelopian Swarm Robot Lab 1.0", curses.color_pair(2))
-
         self.stdscr.refresh()
 
     def load_file(self,fn):
@@ -102,7 +98,7 @@ class win:
         #     self.regs["robot"]-=1
         #     if self.regs["robot"]<0: self.regs["robot"]=7
         self.render()
-        time.sleep(0.1)
+        time.sleep(0.05)
 
 
     def exit(self):
