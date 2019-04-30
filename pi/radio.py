@@ -47,6 +47,12 @@ class radio:
         self.update_context=context
         self.send(self.build_telemetry(0))
         
+    def send_clear(self,addr,reg_addr):
+        self.set_destination(addr)
+        l = len(code)
+        self.send(self.build_clear(reg_addr))
+        time.sleep(self.time_between_sends)
+
     def send_code(self,addr,code):
         self.set_destination(addr)
         l = len(code)
@@ -133,3 +139,10 @@ class radio:
                 pad+="\0"
             return struct.pack("cxHH","W",addr,len(data))+data+pad    
 
+    def build_clear(self,addr):
+        data="\0"
+        padding = 32-6-len(data)
+        pad=""
+        for i in range(0,padding):
+            pad+="\0"
+        return struct.pack("cxHH","W",addr,len(data))+data+pad    

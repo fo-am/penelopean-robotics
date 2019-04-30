@@ -77,11 +77,6 @@ class compiler:
             "WALK_FORWARD": 2,
             "WALK_BACKWARD": 3,
 
-            "A": 19,
-            "B": 20,
-            "C": 21,
-            "D": 22
-            
         }
 
     def is_int(self,s):
@@ -169,10 +164,7 @@ class compiler:
 
     def assemble_file(self,fn):
         with open(fn, 'r') as f:
-            return self.assemble(f.read())
-
-    def assemble_to_bin(self,fn):
-        d = self.assemble_file(fn)
+            return self.assemble_bytes(f.read())
 
 def unit_test():
     c = compiler()

@@ -31,6 +31,9 @@ class robot:
             self.source=f.read()
         self.code = compiler.assemble_file(fn)
 
+    def start(self,compiler,radio):
+        radio.send_clear(self.address,compiler.regs["A"])
+        
     def update(self,radio):
         if self.state=="disconnected":
             self.state="waiting"        

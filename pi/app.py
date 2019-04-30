@@ -59,7 +59,7 @@ class win:
             sp = " "
             for j in range(0,11-len(r)): sp+=" "
             self.stdscr.addstr(i+1+y,x+1, 
-                               (r+sp+str(self.regs[n][r]))[0:18],
+                               (r+sp+str(self.regs[n][r]))[0:18]+"     ",
                                curses.color_pair(1))
         rectangle(self.stdscr,y,x,len(self.regs[n])+y,x+18)
 
@@ -86,9 +86,11 @@ class win:
         self.swarm.update_regs(self.regs)
 
         self.stdscr.refresh()
-        # cmd=self.stdscr.getch()
-        # if  cmd == curses.KEY_DOWN:
-        #     self.line_offset+=1
+        cmd=self.stdscr.getch()
+        if  cmd == curses.KEY_DOWN:
+            self.swarm.start()
+            
+
         # if  cmd == curses.KEY_UP:
         #     if self.line_offset>0: self.line_offset-=1
         # if  cmd == curses.KEY_RIGHT:
