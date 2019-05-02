@@ -1,40 +1,29 @@
+// Penelopean Robotics Copyright (C) 2019 FoAM Kernow
+// 
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as
+// published by the Free Software Foundation, either version 3 of the
+// License, or (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+//
+// You should have received a copy of the GNU Affero General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 #include <gy91.h>
 #include <servo.h>
 #include <fixed.h>
 #include <math.h>
 #include <robot.h>
+#include <avr/eeprom.h>
 
-// memory map (exposed via telemetry)
-// change yarn.py compiler registers too
-
-#define REG_PC_MIRROR 0 
-#define REG_STACK_MIRROR 1 
-#define REG_LED 2
-#define REG_COMP_ANGLE 3
-#define REG_COMP_DELTA_RESET 4
-#define REG_COMP_DELTA 5
-#define REG_SERVO_STEP_COUNT 6
-#define REG_SERVO_STEP_COUNT_RESET 7
-#define REG_SERVO_NEXT_PATTERN_ID 8
-#define REG_USR_A 9
-#define REG_USR_B 10
-#define REG_USR_C 11
-#define REG_USR_D 12
-
-#define REG_SERVO_SPEED 13
-#define REG_SERVO_1_AMP 14
-#define REG_SERVO_2_AMP 15
-#define REG_SERVO_3_AMP 16
-#define REG_SERVO_1_BIAS 17
-#define REG_SERVO_2_BIAS 18
-#define REG_SERVO_3_BIAS 19
-#define REG_SERVO_1_SMOOTH 20
-#define REG_SERVO_2_SMOOTH 21
-#define REG_SERVO_3_SMOOTH 22
-
-// 19->32 user area (enough RAM for anybody!!)
-
-#define REG_CODE_START 32
+// only have 1k of eeprom to play with...
+// make sure it's init to zero with funky gcc stuff
+// probably is zero anyway, but it makes the eep file so...
+cell_t EEMEM ee_heap[HEAP_SIZE]={ [0 ... HEAP_SIZE-1] = 0 };
 
 void robot_init(robot_t *r) {
   yarn_init(&r->machine);
@@ -44,14 +33,12 @@ void robot_init(robot_t *r) {
 void robot_reset(robot_t *r) {
   r->running=1;
   r->machine.m_pc=REG_CODE_START;
-  // init walk pattern (running starts as 'off')
+  // set up motion sequencer for default walk patterns
   servo_motion_seq_init(&r->seq, 4);
-  r->seq.speed=20;
-  // temp, start walking (default next pattern is null so should stick)
-  //  servo_motion_seq_pattern(&r->seq, "AAaabBBbAAaa00000000000000");
+  r->seq.ms_per_step=1000;
 
   // non-zero defaults
-  yarn_poke(&r->machine,REG_SERVO_SPEED,MAKE_FIXED(0.02)); // 20?
+  yarn_poke(&r->machine,REG_SERVO_MS_PER_STEP,1000); // 20?
   yarn_poke(&r->machine,REG_SERVO_1_AMP,MAKE_FIXED(1.0));
   yarn_poke(&r->machine,REG_SERVO_2_AMP,MAKE_FIXED(1.0));
   yarn_poke(&r->machine,REG_SERVO_3_AMP,MAKE_FIXED(1.0));
@@ -64,7 +51,7 @@ void robot_halt(robot_t *r) {
   r->running=0;
 }
 
-void robot_tick(robot_t *r) {
+void robot_tick(unsigned int delta_ms, robot_t *r) {
   if (r->running) {
     // update registers
     // for debugging, but pc should prob be an internal register anyway
@@ -79,12 +66,24 @@ void robot_tick(robot_t *r) {
     } else {
       PORTB &= ~0x01;
     }
-    servo_motion_seq_update(&r->seq);
+    servo_motion_seq_update(delta_ms,&r->seq);
+  }
+}
+
+void robot_write_ee_heap(robot_t *r) {
+  for (int n=0; n<HEAP_SIZE; n++) {
+    ee_heap[n]=r->machine.m_heap[n];
+  }
+}
+
+void robot_read_ee_heap(robot_t *r) {
+  for (int n=0; n<HEAP_SIZE; n++) {
+    r->machine.m_heap[n]=ee_heap[n];
   }
 }
 
 float angle_compare(float a1, float a2) {
-  return 180 - abs(abs(a1 - a2) - 180);
+  return 180 - fabs(fabs(a1 - a2) - 180);
 }
 
 void robot_update_sensors(robot_t *r) {
@@ -111,28 +110,24 @@ void robot_update_sensors(robot_t *r) {
     yarn_poke(m,REG_COMP_DELTA_RESET,0);
     compare_angle=angle;
   }
-  yarn_poke(m,REG_COMP_DELTA,
-	    MAKE_FIXED(angle_compare(compare_angle,angle)));
+  yarn_poke(m,REG_COMP_DELTA,(short)angle_compare(compare_angle,angle));
 }
 
 void robot_update_servos(robot_t *r) {
   yarn_machine *m = &r->machine;
   servo_motion_seq *seq = &r->seq;
+  
+  seq->ms_per_step = yarn_peek(m,REG_SERVO_MS_PER_STEP);
 
   // update servo movements
   seq->servo[0].amplitude = yarn_peek(m,REG_SERVO_1_AMP);
   seq->servo[0].bias_degrees = yarn_peek(m,REG_SERVO_1_BIAS);
-  seq->servo[0].speed = yarn_peek(m,REG_SERVO_SPEED);
   seq->servo[0].smooth = yarn_peek(m,REG_SERVO_1_SMOOTH);
-
   seq->servo[1].amplitude = yarn_peek(m,REG_SERVO_2_AMP);
   seq->servo[1].bias_degrees = yarn_peek(m,REG_SERVO_2_BIAS);
-  seq->servo[1].speed = yarn_peek(m,REG_SERVO_SPEED);
   seq->servo[1].smooth = yarn_peek(m,REG_SERVO_2_SMOOTH);
-
   seq->servo[2].amplitude = yarn_peek(m,REG_SERVO_3_AMP);
   seq->servo[2].bias_degrees = yarn_peek(m,REG_SERVO_3_BIAS);
-  seq->servo[2].speed = yarn_peek(m,REG_SERVO_SPEED);
   seq->servo[2].smooth = yarn_peek(m,REG_SERVO_3_SMOOTH);
 
   seq->next_pattern_id = yarn_peek(m,REG_SERVO_NEXT_PATTERN_ID);

@@ -1,3 +1,18 @@
+// Penelopean Robotics Copyright (C) 2019 FoAM Kernow
+// 
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as
+// published by the Free Software Foundation, either version 3 of the
+// License, or (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+//
+// You should have received a copy of the GNU Affero General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 #include "servo.h"
 
 // initial pulse times in us for servo 0, 1, 2...7 (last value 6000 is the synchro gap)
@@ -89,7 +104,7 @@ void servo_motion_seq_init(servo_motion_seq* seq, unsigned int length) {
   }
   seq->length = length;
   seq->position = 0;
-  seq->speed = MAKE_FIXED(1.0);
+  seq->ms_per_step = 1000;
   seq->timer = 0;
   for (unsigned int s=0; s<NUM_SERVOS; s++) {
     servo_state_init(&seq->servo[s], s);
@@ -116,10 +131,10 @@ void servo_motion_seq_load_next_pattern(servo_motion_seq *seq) {
     servo_motion_seq_pattern(seq, "00000000000000000000000000");
   } break;
   case MOTION_SEQ_PATTERN_ID_FORWARD: {
-    servo_motion_seq_pattern(seq, "AAaaBbbBAAaa00000000000000");
+    servo_motion_seq_pattern(seq, "AAaaAaaAAAaa00000000000000");
   } break;
   case MOTION_SEQ_PATTERN_ID_BACKWARD: {
-    servo_motion_seq_pattern(seq, "AAaabBBbAAaa00000000000000");
+    servo_motion_seq_pattern(seq, "AAaaaAAaAAaa00000000000000");
   } break;
   default: {
 
@@ -127,22 +142,23 @@ void servo_motion_seq_load_next_pattern(servo_motion_seq *seq) {
   }
 }
 
-void servo_motion_seq_update(servo_motion_seq* seq) {
-  seq->timer += seq->speed;
-  if (seq->timer>=MAKE_FIXED(1.0)) {
-    seq->timer = 0;
+void servo_motion_seq_update(unsigned int delta_ms, servo_motion_seq* seq) {
+  seq->timer += delta_ms;
+  if (seq->timer>=seq->ms_per_step) {
+    seq->timer = 0;    
+    unsigned int servo_speed = MAKE_FIXED(delta_ms/(float)seq->ms_per_step);
     
     for (unsigned int s=0; s<NUM_SERVOS; s++) {
       switch (seq->pattern[seq->position+(s*seq->length)]) {
-      case 'D': servo_modify(&seq->servo[s], 90, seq->speed); break;
-      case 'C': servo_modify(&seq->servo[s], 68, seq->speed); break;
-      case 'B': servo_modify(&seq->servo[s], 45, seq->speed); break;
-      case 'A': servo_modify(&seq->servo[s], 23, seq->speed); break;
-      case '0': servo_modify(&seq->servo[s], 0, seq->speed); break;
-      case 'a': servo_modify(&seq->servo[s], -23, seq->speed); break;
-      case 'b': servo_modify(&seq->servo[s], -45, seq->speed); break;
-      case 'c': servo_modify(&seq->servo[s], -68, seq->speed); break;
-      case 'd': servo_modify(&seq->servo[s], -90, seq->speed); break;
+      case 'D': servo_modify(&seq->servo[s], 90, servo_speed); break;
+      case 'C': servo_modify(&seq->servo[s], 68, servo_speed); break;
+      case 'B': servo_modify(&seq->servo[s], 45, servo_speed); break;
+      case 'A': servo_modify(&seq->servo[s], 23, servo_speed); break;
+      case '0': servo_modify(&seq->servo[s], 0, servo_speed); break;
+      case 'a': servo_modify(&seq->servo[s], -23, servo_speed); break;
+      case 'b': servo_modify(&seq->servo[s], -45, servo_speed); break;
+      case 'c': servo_modify(&seq->servo[s], -68, servo_speed); break;
+      case 'd': servo_modify(&seq->servo[s], -90, servo_speed); break;
       default: break;
       }
     }
@@ -161,6 +177,7 @@ void servo_motion_seq_update(servo_motion_seq* seq) {
 }
 
 #ifdef UNIT_TEST
+#include <stdio.h>
 
 void main() {
   unsigned int i;
@@ -174,7 +191,7 @@ void main() {
   s.start_degrees=-90;
   s.end_degrees=90;
   s.time = MAKE_FIXED(0.5);
-  s.speed = MAKE_FIXED(0.1);
+  s.speed = 10;
 
   printf("x %d\n",servo_current_degrees(&s));
 
@@ -195,26 +212,28 @@ void main() {
   }
 
   servo_motion_seq seq;
-  servo_motion_seq_init(0, &seq, 4);
-  seq.speed=10;
-  servo_motion_seq_pattern(&seq, "dDdD");
+  servo_motion_seq_init(&seq, 4);
+  seq.ms_per_step=1000;
+  servo_motion_seq_pattern(&seq, "dDdDdDdDdDdD");
+  seq.next_pattern_id=MOTION_SEQ_PATTERN_ID_NULL;
 
   for (i=0; i<1000; i++) {
-    servo_motion_seq_update(&seq);
-    printf("z %d %d\n", seq.position, degrees_to_pulse(servo_current_degrees(&seq.servo)));
+    servo_motion_seq_update(20,&seq);
+    printf("z %d %c %d\n", seq.position, seq.pattern[seq.position], degrees_to_pulse(servo_current_degrees(&seq.servo[0])));
   }  
 
   printf("* %d\n",degrees_to_pulse(-90));
-  printf("-> %d\n",sizeof(int));
+  printf("-> %d\n",(int)sizeof(int));
 
-  servo_motion_seq_init(0, &seq, 8);
-  seq.speed=50;
-  servo_motion_seq_pattern(&seq, "aAaAaAaA");
+  servo_motion_seq_init(&seq, 8);
+  seq.ms_per_step=500;
+  servo_motion_seq_pattern(&seq, "aAaAaAaAaAaAaAaAaAaAaAaA");
+  seq.next_pattern_id=MOTION_SEQ_PATTERN_ID_NULL;
 
   int last=0;
   for (i=0; i<1000; i++) {
-    servo_motion_seq_update(&seq);
-    printf("%d %d\n", servo_current_degrees(&seq.servo), last-servo_pulse[0]);
+    servo_motion_seq_update(20,&seq);
+    printf("%d %d\n", servo_current_degrees(&seq.servo[0]), last-servo_pulse[0]);
     last=servo_pulse[0];
   }  
   

@@ -1,24 +1,15 @@
-wait: ld   A             ;; wait for start flag
-      jpz  wait          ;; if zero, loop
-      ldl  WALK_FORWARD  ;; start walking
-      st   NEXT_PATTERN  ;; send to servo seq
-      ld   B             ;; compare current direction
-      ldl  WALK_FORWARD  ;; to forward
-      equ                ;; are they the same?
-      jpz  xx            ;; we are going backward 
-      ldl  WALK_BACKWARD ;; we are going forward 
-      st   B             ;; store in direction
-      jmp  stch          ;; skip next part
-xx:   ldl  WALK_FORWARD  ;; set to forward again
-      st   B
-stch: ld   STEP_COUNT    ;; now check step counter     
-      ld   5             ;; numsteps
-      gte                ;; num_steps >= stepcount 
-      jpz  stch          ;; not yet, step check again
-      ldl  WALK_STOP	 ;; stop walking
-      st   NEXT_PATTERN
-      ldl  1             ;; reset the step counter
-      st   STEP_COUNT_RESET
-      ldl  0
-      st   A             ;; clear the running flag
-      jmp  wait          ;; wait for running flag 
+wait1:	ld   	A 		;; wait for A to be set to 1
+	jpz  	wait1
+	ldl  	1               
+	st   	COMP_DELTA_RESET
+	ldl  	WALK_FORWARD
+	st   	NEXT_PATTERN
+xx:  	ld 	COMP_DELTA    	;; check the compass
+	ld   	90   	        
+	gte     		;; rotated more than 90 degrees?
+	jpz  	xx
+	ldl  	WALK_STOP	;; stop!
+	st   	NEXT_PATTERN	
+	ldl  	0		;; signal we are ready
+	st   	A
+	jmp 	wait1
