@@ -8,7 +8,7 @@ xx:  	ld 	COMP_DELTA    	;; check the compass
 	ld   	90   	        
 	gte     		;; rotated more than 90 degrees?
 	jpz  	xx
-	ldl  	WALK_STOP	;; stop!
+	ldl  	ALL_STOP	;; stop!
 	st   	NEXT_PATTERN	
 	ldl  	0		;; signal we are ready
 	st   	A

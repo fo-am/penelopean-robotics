@@ -99,7 +99,7 @@ int main (void) {
   robot_t robot;
   robot_init(&robot);
   // load saved code
-  robot_read_ee_heap(&robot);
+  //robot_read_ee_heap(&robot);
 
   // switch on indicator
   DDRB |= 0x01;

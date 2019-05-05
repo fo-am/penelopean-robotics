@@ -35,10 +35,11 @@ void robot_reset(robot_t *r) {
   r->machine.m_pc=REG_CODE_START;
   // set up motion sequencer for default walk patterns
   servo_motion_seq_init(&r->seq, 4);
-  r->seq.ms_per_step=1000;
+  // 500 ms = 120 bpm
+  r->seq.ms_per_step=500;
 
   // non-zero defaults
-  yarn_poke(&r->machine,REG_SERVO_MS_PER_STEP,1000); // 20?
+  yarn_poke(&r->machine,REG_SERVO_MS_PER_STEP,500); 
   yarn_poke(&r->machine,REG_SERVO_1_AMP,MAKE_FIXED(1.0));
   yarn_poke(&r->machine,REG_SERVO_2_AMP,MAKE_FIXED(1.0));
   yarn_poke(&r->machine,REG_SERVO_3_AMP,MAKE_FIXED(1.0));

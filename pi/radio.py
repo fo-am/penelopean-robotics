@@ -1,8 +1,8 @@
-import RPi.GPIO as GPIO
-GPIO.setmode(GPIO.BCM)
+#import RPi.GPIO as GPIO
+#GPIO.setmode(GPIO.BCM)
 from lib_nrf24 import NRF24
 import time
-import spidev
+#import spidev
 import struct
 import math
 import yarn
@@ -11,35 +11,38 @@ class radio:
     def __init__(self,address):
         self.address = address
         self.destination_address = [0xa7, 0xa7, 0xa7, 0xa7, 0x01]
+        self.max_retries = 1 # can be a bit cleverer than this
+        self.time_between_sends=0
+        self.telemetry=[]
+        self.update_callback = False
+        self.update_context = False
         self.startup()
         self.debug()
         
     def debug(self):
-        self.device.printDetails()
+        #self.device.printDetails()
+        pass
 
     def startup(self):
-        self.device = NRF24(GPIO, spidev.SpiDev())
-        self.device.begin(0, 17)
-        time.sleep(1)
-        self.device.setRetries(15,15)
-        self.device.setPayloadSize(32)
-        self.device.setChannel(100)
-        self.device.write_register(NRF24.FEATURE, 0)
-        self.device.setPALevel(NRF24.PA_MIN)
-        self.device.setAutoAck(True)
-        self.device.enableDynamicPayloads()
-        self.device.enableAckPayload()
-        self.device.openReadingPipe(1, self.address)
-        self.device.openWritingPipe(self.destination_address)
-        self.time_between_sends=0.5
-        self.telemetry=[]
-        self.update_callback = False
-        self.update_context = False
+        # self.device = NRF24(GPIO, spidev.SpiDev())
+        # self.device.begin(0, 17)
+        # time.sleep(1)
+        # self.device.setRetries(15,15)
+        # self.device.setPayloadSize(32)
+        # self.device.setChannel(100)
+        # self.device.write_register(NRF24.FEATURE, 0)
+        # self.device.setPALevel(NRF24.PA_MIN)
+        # self.device.setAutoAck(True)
+        # self.device.enableDynamicPayloads()
+        # self.device.enableAckPayload()
+        # self.device.openReadingPipe(1, self.address)
+        # self.device.openWritingPipe(self.destination_address)
+        pass
 
     def set_destination(self,addr):
         if self.destination_address!=addr:
             self.destination_address=addr
-            self.device.openWritingPipe(addr)
+            #self.device.openWritingPipe(addr)
 
     def request_telemetry(self,addr,callback,context):
         self.set_destination(addr)
@@ -47,17 +50,14 @@ class radio:
         self.update_context=context
         self.send(self.build_telemetry(0))
         
-    def send_clear(self,addr,reg_addr):
+    def send_set(self,addr,reg_addr,val):
         self.set_destination(addr)
-        l = len(code)
-        self.send(self.build_clear(reg_addr))
-        time.sleep(self.time_between_sends)
+        self.send(self.build_set(reg_addr,val))
 
     def send_code(self,addr,code):
         self.set_destination(addr)
         l = len(code)
         self.send(self.build_halt())
-        time.sleep(self.time_between_sends)
         max_code_size = 32-6
 
         if l>max_code_size:
@@ -75,39 +75,45 @@ class radio:
                 self.send(self.build_write(yarn.compiler.code_start+pos16,buf)) 
                 pos16+=max_code_size/2
                 # make time for receipt?
-                time.sleep(self.time_between_sends)
         else:
             self.send(self.build_write(yarn.compiler.code_start,code))
-        time.sleep(self.time_between_sends)
         self.send(self.build_reset())                
 
-    def send_sync(self,addr,beat,bpm):
+    def send_sync(self,addr,beat,ms_per_step,a_reg_set,a_reg_val):
         self.set_destination(addr)
-        self.send(self.build_sync(beat,bpm))
+        self.send(self.build_sync(beat,ms_per_step,a_reg_set,a_reg_val))
 
     def update(self):
-        if self.device.isAckPayloadAvailable():
-            data=[]
-            size = self.device.getDynamicPayloadSize()
-            self.device.read(data, size)
-            if size==32:
-                i = struct.unpack_from("hhhhhhhhhhhhhhhh","".join(map(chr,data)))
-                if self.update_context and self.update_callback:
-                    self.update_callback(self.update_context,i)
-                    self.update_callback=False
-                    self.update_context=False
-            else:
-                print("ack payload size other than 32 bytes need supporting")
-                
+        # if self.device.isAckPayloadAvailable():
+        #     data=[]
+        #     size = self.device.getDynamicPayloadSize()
+        #     self.device.read(data, size)
+        #     if size==32:
+        #         i = struct.unpack_from("hhhhhhhhhhhhhhhh","".join(map(chr,data)))
+        #         if self.update_context and self.update_callback:
+        #             self.update_callback(self.update_context,i)
+        #             self.update_callback=False
+        #             self.update_context=False
+        #     else:
+        #         print("ack payload size other than 32 bytes need supporting")
+        pass
+    
     def send(self,b):
-        print("sending "+b[0]+" to "+str(self.destination_address))
+        #print("sending "+b[0]+" to "+str(self.destination_address))
         if len(b)!=32:
             print("wrong number of bytes in message: "+str(len(b)))
         else:
-            status = self.device.write(b)
-            print status
-            if status!=32: # tx_ok bit set??
-                print("send failed...")
+            status = 0
+            retries = 0
+            # todo: maintain a queue of messages, and continually
+            # attempt failed ones while still sending others...
+            # tx_ok bit set??
+            while status!=32 and retries<self.max_retries: 
+                status = 32
+                #status = self.device.write(b)
+                time.sleep(self.time_between_sends)
+                retries+=1
+                if status!=32: print("send failed, retries: "+str(retries))
             return status
             
     def build_ping(self):
@@ -119,8 +125,8 @@ class radio:
     def build_reset(self):
         return struct.pack("cxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx","R")
 
-    def build_sync(self,beat,bpm):
-        return struct.pack("cxHfxxxxxxxxxxxxxxxxxxxxxxxx","S",beat,bpm)
+    def build_sync(self,beat,ms_per_step,a_reg_set,a_reg_val):
+        return struct.pack("cxHHHHxxxxxxxxxxxxxxxxxxxxxx","S",beat,ms_per_step,a_reg_set,a_reg_val)
 
     def build_calibrate(self,samples):
         return struct.pack("cxHxxxxxxxxxxxxxxxxxxxxxxxxxxx","C",samples)
@@ -129,7 +135,7 @@ class radio:
         return struct.pack("cxHxxxxxxxxxxxxxxxxxxxxxxxxxxxx","T",addr)  
         
     def build_write(self,addr,data):
-        print("sending "+str(len(data))+" bytes of data to "+str(addr))
+        #print("sending "+str(len(data))+" bytes of data to "+str(addr))
         if len(data)>32-6:
             print("build_write: data is too large ("+str(len(data))+" bytes)")
         else:
@@ -139,8 +145,8 @@ class radio:
                 pad+="\0"
             return struct.pack("cxHH","W",addr,len(data))+data+pad    
 
-    def build_clear(self,addr):
-        data="\0"
+    def build_set(self,addr,val):
+        data=struct.pack("H",val)
         padding = 32-6-len(data)
         pad=""
         for i in range(0,padding):

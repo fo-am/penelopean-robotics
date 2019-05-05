@@ -14,7 +14,8 @@ class robot:
         self.state="disconnected"
         self.ping_time=time.time()
         self.watchdog_timeout=10
-        self.ping_duration=1
+        self.ping_duration=2
+        self.start_walking=False
         
     def telemetry_callback(self,data):
         if self.state=="disconnected" or self.state=="waiting":        
@@ -23,17 +24,33 @@ class robot:
         print(data[0],data[3])
         self.ping_time=time.time()
 
-    def sync(self,radio,beat,bpm):
-        radio.send_sync(self.address,beat,bpm)
-
+    def sync(self,radio,beat,ms_per_beat):
+        a_reg_val=0
+        a_reg_set=0
+        # update A register here, based on if the start flag has been set
+        if self.start_walking:
+            a_reg_val=1
+            a_reg_set=1            
+            self.start_walking=False
+        radio.send_sync(self.address,beat,ms_per_beat,a_reg_set,a_reg_val)
+        # stop update requesting telemetry for a bit
+        self.ping_time=time.time()
+            
     def load_asm(self,fn,compiler,radio):
         with open(fn, 'r') as f:
             self.source=f.read()
         self.code = compiler.assemble_file(fn)
 
-    def start(self,compiler,radio):
-        radio.send_clear(self.address,compiler.regs["A"])
-        
+    # A register is cleared when the robot reaches it's end position
+    # and set by the Pi when we are ready to start again
+    def send_start_walking(self,compiler):
+        #radio.send_set(self.address,compiler.regs["A"],1)
+        self.start_walking=True
+
+    # has been set above, and returned in a telemetry packet...
+    def is_walking(self,compiler):
+        return self.telemetry[compiler.regs["A"]]==1
+
     def update(self,radio):
         if self.state=="disconnected":
             self.state="waiting"        

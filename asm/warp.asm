@@ -8,7 +8,7 @@ xx:  	ld 	STEP_COUNT
 	ld   	5            	        
 	gte                       	
 	jpz  	xx
-	ldl  	WALK_STOP
+	ldl  	ALL_STOP
 	st   	NEXT_PATTERN	
 	ldl  	0		;; signal we are ready
 	st   	A       
@@ -22,7 +22,7 @@ yy:  	ld   	STEP_COUNT
 	ld   	5	        
 	gte                       	
 	jpz  	yy
-	ldl  	WALK_STOP
+	ldl  	ALL_STOP
 	st   	NEXT_PATTERN
 	ldl  	0
 	st   	A       	;; signal we are ready
