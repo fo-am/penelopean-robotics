@@ -1,5 +1,22 @@
+// Penelopean Robotics Copyright (C) 2019 FoAM Kernow
+// 
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as
+// published by the Free Software Foundation, either version 3 of the
+// License, or (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+//
+// You should have received a copy of the GNU Affero General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+#ifndef UNIT_TEST
 #include <avr/io.h>
-#include <fixed.h>
+#endif
+#include "fixed.h"
 
 #ifndef PENELOPE_SERVO
 #define PENELOPE_SERVO
@@ -49,7 +66,7 @@ typedef struct {
   unsigned char pattern[MAX_PATTERN_LENGTH];
   unsigned int length;
   unsigned int position;
-  unsigned int speed; // fixed
+  unsigned int ms_per_step; // fixed
   unsigned int timer; // fixed
   servo_state servo[NUM_SERVOS];
   unsigned int next_pattern_id;
@@ -58,6 +75,6 @@ typedef struct {
 
 void servo_motion_seq_init(servo_motion_seq* seq, unsigned int length);
 void servo_motion_seq_pattern(servo_motion_seq* seq, char *pattern);
-void servo_motion_seq_update(servo_motion_seq* seq);
+void servo_motion_seq_update(unsigned int delta_ms, servo_motion_seq* seq);
 
 #endif

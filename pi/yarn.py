@@ -61,7 +61,7 @@ class compiler:
             "B": 10,
             "C": 11,
             "D": 12,
-            "SERVO_SPEED": 13,
+            "SERVO_MS_PER_STEP": 13, # arg step not=step counter type of step
             "SERVO_1_AMP": 14,
             "SERVO_2_AMP": 15,
             "SERVO_3_AMP": 16,

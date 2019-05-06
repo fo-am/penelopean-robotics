@@ -73,7 +73,7 @@ class win:
         #        self.stdscr.addstr(l+1,1, self.codelines[pc], curses.color_pair(col))
         for i in range(0,len(self.swarm.swarm)):
             self.render_regs(self.regs,i)
-        self.stdscr.addstr(0,0, "Penelopian Swarm Robot Lab 1.0", curses.color_pair(2))
+        self.stdscr.addstr(0,0, "Penelopian Swarm Robot Lab 1.0 ["+self.swarm.state+"]", curses.color_pair(2))
         self.stdscr.refresh()
 
     def load_file(self,fn):
@@ -88,8 +88,9 @@ class win:
         self.stdscr.refresh()
         cmd=self.stdscr.getch()
         if  cmd == curses.KEY_DOWN:
-            self.swarm.start()
-            
+            self.swarm.trigger()
+
+
 
         # if  cmd == curses.KEY_UP:
         #     if self.line_offset>0: self.line_offset-=1
