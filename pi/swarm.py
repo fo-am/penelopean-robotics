@@ -40,8 +40,9 @@ class swarm:
         self.sync_pos=0
 
         # load code here
-        self.swarm[0].load_asm("../asm/comptest.asm",self.compiler,self.radio)
+        #self.swarm[0].load_asm("../asm/comptest.asm",self.compiler,self.radio)
         #self.swarm[0].load_asm("../asm/slow_led.asm",self.compiler,self.radio)
+        self.swarm[0].load_asm("../asm/back_forward2.asm",self.compiler,self.radio)
 
         # start sync osc server
         #t = threading.Thread(target=osc_loop, args=(self,))
