@@ -4,9 +4,11 @@ wait1:	ld   	A 		;; wait for A to be set to 1
 	st   	COMP_DELTA_RESET
 	ldl  	WALK_FORWARD
 	st   	NEXT_PATTERN
+  	ldl	1
+	st	LED
 xx:  	ld 	COMP_DELTA    	;; check the compass
-	ld   	90   	        
-	gte     		;; rotated more than 90 degrees?
+	ldl   	90   	        
+	lte     		;; rotated more than 90 degrees?
 	jpz  	xx
 	ldl  	ALL_STOP	;; stop!
 	st   	NEXT_PATTERN	

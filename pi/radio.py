@@ -1,8 +1,8 @@
-#import RPi.GPIO as GPIO
-#GPIO.setmode(GPIO.BCM)
+import RPi.GPIO as GPIO
+GPIO.setmode(GPIO.BCM)
 from lib_nrf24 import NRF24
 import time
-#import spidev
+import spidev
 import struct
 import math
 import yarn
@@ -18,32 +18,32 @@ class radio:
         self.update_context = False
         self.startup()
         self.debug()
+        self.stop_osc=False
         
     def debug(self):
-        #self.device.printDetails()
-        pass
+        self.device.printDetails()        
 
     def startup(self):
-        # self.device = NRF24(GPIO, spidev.SpiDev())
-        # self.device.begin(0, 17)
-        # time.sleep(1)
-        # self.device.setRetries(15,15)
-        # self.device.setPayloadSize(32)
-        # self.device.setChannel(100)
-        # self.device.write_register(NRF24.FEATURE, 0)
-        # self.device.setPALevel(NRF24.PA_MIN)
-        # self.device.setAutoAck(True)
-        # self.device.enableDynamicPayloads()
-        # self.device.enableAckPayload()
-        # self.device.openReadingPipe(1, self.address)
-        # self.device.openWritingPipe(self.destination_address)
-        pass
+        self.device = NRF24(GPIO, spidev.SpiDev())
+        self.device.begin(0, 17)
+        time.sleep(1)
+        self.device.setRetries(15,15)
+        self.device.setPayloadSize(32)
+        self.device.setChannel(100)
+        self.device.write_register(NRF24.FEATURE, 0)
+        self.device.setPALevel(NRF24.PA_MAX)
+        self.device.setAutoAck(True)
+        self.device.enableDynamicPayloads()
+        self.device.enableAckPayload()
+        self.device.openReadingPipe(1, self.address)
+        self.device.openWritingPipe(self.destination_address)
+
 
     def set_destination(self,addr):
         if self.destination_address!=addr:
             self.destination_address=addr
-            #self.device.openWritingPipe(addr)
-
+            self.device.openWritingPipe(addr)
+            
     def request_telemetry(self,addr,callback,context):
         self.set_destination(addr)
         self.update_callback=callback
@@ -79,24 +79,26 @@ class radio:
             self.send(self.build_write(yarn.compiler.code_start,code))
         self.send(self.build_reset())                
 
-    def send_sync(self,addr,beat,ms_per_step,a_reg_set,a_reg_val):
+    def send_sync(self,addr,beat,ms_per_step,a_reg_set,a_reg_val,led_set,led_val,callback,context):
         self.set_destination(addr)
-        self.send(self.build_sync(beat,ms_per_step,a_reg_set,a_reg_val))
+        self.update_callback=callback
+        self.update_context=context
+        if a_reg_set==1: print("starting: "+str(addr[4]))
+        self.send(self.build_sync(beat,ms_per_step,a_reg_set,a_reg_val,led_set,led_val))
 
     def update(self):
-        # if self.device.isAckPayloadAvailable():
-        #     data=[]
-        #     size = self.device.getDynamicPayloadSize()
-        #     self.device.read(data, size)
-        #     if size==32:
-        #         i = struct.unpack_from("hhhhhhhhhhhhhhhh","".join(map(chr,data)))
-        #         if self.update_context and self.update_callback:
-        #             self.update_callback(self.update_context,i)
-        #             self.update_callback=False
-        #             self.update_context=False
-        #     else:
-        #         print("ack payload size other than 32 bytes need supporting")
-        pass
+        if self.device.isAckPayloadAvailable():
+            data=[]
+            size = self.device.getDynamicPayloadSize()
+            self.device.read(data, size)
+            if size==32:
+                i = struct.unpack_from("hhhhhhhhhhhhhhhh","".join(map(chr,data)))
+                if self.update_context and self.update_callback:
+                    self.update_callback(self.update_context,i)
+                    self.update_callback=False
+                    self.update_context=False
+            else:
+                print("ack payload size other than 32 bytes need supporting")
     
     def send(self,b):
         #print("sending "+b[0]+" to "+str(self.destination_address))
@@ -109,12 +111,18 @@ class radio:
             # attempt failed ones while still sending others...
             # tx_ok bit set??
             while status!=32 and retries<self.max_retries: 
-                status = 32
-                #status = self.device.write(b)
+                status = self.device.write(b)
                 time.sleep(self.time_between_sends)
-                retries+=1
-                if status!=32: print("send failed, retries: "+str(retries))
-            return status
+                if status!=32:
+                    print("send failed to "+str(self.destination_address[4])+" retries: "+str(retries)+" "+str(status))
+                    #self.device.stopListening()
+                    self.device.powerDown()
+                    time.sleep(1)
+                    self.device.powerUp()
+                    retries+=1
+                    self.stop_osc=True
+                    exit(0)
+                return status
             
     def build_ping(self):
         return struct.pack("cxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx","P")
@@ -125,8 +133,9 @@ class radio:
     def build_reset(self):
         return struct.pack("cxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx","R")
 
-    def build_sync(self,beat,ms_per_step,a_reg_set,a_reg_val):
-        return struct.pack("cxHHHHxxxxxxxxxxxxxxxxxxxxxx","S",beat,ms_per_step,a_reg_set,a_reg_val)
+    def build_sync(self,beat,ms_per_step,a_reg_set,a_reg_val,led_set,led_val):
+        #print(a_reg_set,a_reg_val)
+        return struct.pack("cxHHHHHHxxxxxxxxxxxxxxxxxx","S",beat,ms_per_step,a_reg_set,a_reg_val,led_set,led_val)
 
     def build_calibrate(self,samples):
         return struct.pack("cxHxxxxxxxxxxxxxxxxxxxxxxxxxxx","C",samples)

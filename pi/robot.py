@@ -11,19 +11,29 @@ class robot:
         self.telemetry=[0 for i in range(256)]
         self.code=[]
         self.source=""
-        self.state="disconnected"
+        self.state="running"
         self.ping_time=time.time()
         self.watchdog_timeout=10
         self.ping_duration=2
         self.start_walking=False
+        self.set_led=False
+        self.led_state=False
         
     def telemetry_callback(self,data):
         if self.state=="disconnected" or self.state=="waiting":        
             self.state="connected"
         self.telemetry=data
-        print(data[0],data[3])
+        print("telemetry: "+str(self.address[4])+" "+str(data[0])+" "+str(data[9]))
         self.ping_time=time.time()
 
+    def pretty_print(self,c):
+        out = "robot: "+str(self.telemetry[c.regs["ROBOT_ID"]])+"\n"
+        out+= "pc: "+str(self.telemetry[c.regs["PC_MIRROR"]])+"\n"
+        out+= "a: "+str(self.telemetry[c.regs["A"]])+"\n"
+        out+= "step: "+str(self.telemetry[c.regs["STEP_COUNT"]])+"\n"
+        print(out)
+        
+        
     def sync(self,radio,beat,ms_per_beat):
         a_reg_val=0
         a_reg_set=0
@@ -32,10 +42,16 @@ class robot:
             a_reg_val=1
             a_reg_set=1            
             self.start_walking=False
-        radio.send_sync(self.address,beat,ms_per_beat,a_reg_set,a_reg_val)
+        if self.set_led:
+            print("setting led to "+str(self.led_state)+" for robot "+str(self.address[4]))
+            radio.send_sync(self.address,beat,ms_per_beat,0,0,1,self.led_state,telemetry_callback,self)
+        else:
+            radio.send_sync(self.address,beat,ms_per_beat,a_reg_set,a_reg_val,1,a_reg_val,telemetry_callback,self)
+        radio.update()
         # stop update requesting telemetry for a bit
         self.ping_time=time.time()
-            
+
+        
     def load_asm(self,fn,compiler,radio):
         with open(fn, 'r') as f:
             self.source=f.read()
@@ -43,41 +59,49 @@ class robot:
 
     # A register is cleared when the robot reaches it's end position
     # and set by the Pi when we are ready to start again
-    def send_start_walking(self,compiler):
+    def start_walking_set(self):
         #radio.send_set(self.address,compiler.regs["A"],1)
         self.start_walking=True
+
+    def led_set(self,state):
+        self.set_led=True
+        self.led_state=state
 
     # has been set above, and returned in a telemetry packet...
     def is_walking(self,compiler):
         return self.telemetry[compiler.regs["A"]]==1
 
     def update(self,radio):
-        if self.state=="disconnected":
-            self.state="waiting"        
-            self.ping_time=time.time()
-            radio.request_telemetry(self.address,telemetry_callback,self)
+        # if self.state=="disconnected":
+        #     self.state="waiting"        
+        #     self.ping_time=time.time()
+        #     radio.request_telemetry(self.address,telemetry_callback,self)
+        #     radio.update()
 
-        if self.state=="waiting":
-            if time.time()-self.ping_time>self.watchdog_timeout:
-                self.state="disconnected"
+        # if self.state=="waiting":
+        #     if time.time()-self.ping_time>self.watchdog_timeout:
+        #         self.state="disconnected"
             
-        if self.state=="connected":
-            if time.time()-self.ping_time>self.watchdog_timeout:
-                self.state="disconnected"
-            if time.time()-self.ping_time>self.ping_duration:
-                self.ping_time=time.time()
-                radio.request_telemetry(self.address,telemetry_callback,self)
-            if self.code!=[]:
-                radio.send_code(self.address,self.code)
-                self.state="running"
+        # if self.state=="connected":
+        #     if time.time()-self.ping_time>self.watchdog_timeout:
+        #         self.state="disconnected"
+        #     if time.time()-self.ping_time>self.ping_duration:
+        #         self.ping_time=time.time()
+        #         radio.request_telemetry(self.address,telemetry_callback,self)
+        #         radio.update()
+        #     if self.code!=[]:
+        #         radio.send_code(self.address,self.code)
+        #         self.state="running"
                 
-        if self.state=="running":
-            if time.time()-self.ping_time>self.watchdog_timeout:
-                self.state="disconnected"
-            if time.time()-self.ping_time>self.ping_duration:
-                self.ping_time=time.time()
-                radio.request_telemetry(self.address,telemetry_callback,self)
-
+        # if self.state=="running":
+        #     if time.time()-self.ping_time>self.watchdog_timeout:
+        #         self.state="disconnected"
+        #     if time.time()-self.ping_time>self.ping_duration:
+        #         self.ping_time=time.time()
+        #         radio.request_telemetry(self.address,telemetry_callback,self)
+        #         radio.update()
+        pass
+        
     def update_regs(self,regs,c):
         regs["state"]=self.state
         regs["ping"]=time.time()-self.ping_time
