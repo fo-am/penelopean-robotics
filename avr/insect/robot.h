@@ -23,8 +23,8 @@
 // memory map (exposed via telemetry)
 // change yarn.py compiler registers too
 
-#define REG_PC_MIRROR 0 
-#define REG_STACK_MIRROR 1 
+#define REG_ROBOT_ID 0 
+#define REG_PC_MIRROR 1 
 #define REG_LED 2
 #define REG_COMP_ANGLE 3
 #define REG_COMP_DELTA_RESET 4
@@ -53,6 +53,7 @@
 #define REG_CODE_START 32
 
 typedef struct {
+  unsigned char id;
   unsigned char running;
   yarn_machine machine;
   servo_motion_seq seq;
@@ -60,8 +61,8 @@ typedef struct {
   unsigned int last_seq_pos;
 } robot_t;
 
-void robot_init(robot_t *r);
-void robot_reset(robot_t *r);
+void robot_init(robot_t *r, unsigned char id);
+void robot_reset(robot_t *r, unsigned char id);
 void robot_halt(robot_t *r);
 void robot_tick(unsigned int delta_ms, robot_t *r);
 void robot_update_sensors(robot_t *r);
