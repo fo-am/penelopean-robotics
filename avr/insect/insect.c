@@ -20,6 +20,7 @@
 #include <i2c-master.h>
 #include <robot.h>
 
+#define ROBOT_ID 0x01
 #define RADIO_ID 0xA7A7A7A701
 #define RADIO_PI 0xA7A7A7A7AA
 
@@ -70,6 +71,8 @@ typedef struct {
   unsigned short ms_per_step;
   unsigned short a_reg_set;
   unsigned short a_reg_val;
+  unsigned short led_set;
+  unsigned short led_val;
 } sync_packet;
 
 ISR(TIMER1_COMPA_vect) {
@@ -97,7 +100,7 @@ int main (void) {
 
   // init robot 
   robot_t robot;
-  robot_init(&robot);
+  robot_init(&robot,ROBOT_ID);
   // load saved code
   //robot_read_ee_heap(&robot);
 
@@ -169,6 +172,10 @@ int main (void) {
 	  robot.machine.m_heap[REG_USR_A]=p->a_reg_val;
 	}
 
+	if (p->led_set) {
+	  robot.machine.m_heap[REG_LED]=p->led_val;
+	}
+
 	// return heap info
  	nRF24L01p_enable_ack_payload();
 	nRF24L01p_ack_payload(0,(const byte*)&robot.machine.m_heap[0],32);
@@ -193,7 +200,7 @@ int main (void) {
 	nRF24L01p_ack_payload(0,(const byte*)&robot.machine.m_heap[p->start_address],32);
       }
 
-      if (msg_type=='R') { robot_reset(&robot); }
+      if (msg_type=='R') { robot_reset(&robot, ROBOT_ID); }
       if (msg_type=='H') { robot_halt(&robot); }
 
       // write into robot memory

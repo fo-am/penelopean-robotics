@@ -16,7 +16,7 @@
 #include "servo.h"
 
 // initial pulse times in us for servo 0, 1, 2...7 (last value 6000 is the synchro gap)
-unsigned int servo_pulse[9] = {1500, 1500, 1500, 1500, 1500, 1500, 1500, 1500, 6000};
+unsigned int servo_pulse[9] = {SERVO_MID, SERVO_MID, SERVO_MID, 1500, 1500, 1500, 1500, 1500, 6000};
 
 void servo_init() {
 #ifndef UNIT_TEST
@@ -109,8 +109,7 @@ void servo_motion_seq_init(servo_motion_seq* seq, unsigned int length) {
   for (unsigned int s=0; s<NUM_SERVOS; s++) {
     servo_state_init(&seq->servo[s], s);
   }
-  seq->next_pattern_id = MOTION_SEQ_PATTERN_ID_FORWARD;
-  //seq->next_pattern_id = MOTION_SEQ_PATTERN_ID_STOPPED;
+  seq->next_pattern_id = MOTION_SEQ_PATTERN_ID_STOPPED;
   seq->pattern_loop_count = 0;
 }
 

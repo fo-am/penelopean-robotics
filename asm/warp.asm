@@ -10,9 +10,10 @@ xx:  	ld 	STEP_COUNT
 	jpz  	xx
 	ldl  	ALL_STOP
 	st   	NEXT_PATTERN	
-	ldl  	0		;; signal we are ready
+	ldl  	0
 	st   	A       
-wait2:	ld   	A		;; wait for A to be set to 1 
+	nop
+wait2:	ld   	A
 	jpz  	wait2
 	ldl  	WALK_BACKWARD
 	st   	NEXT_PATTERN
@@ -25,5 +26,5 @@ yy:  	ld   	STEP_COUNT
 	ldl  	ALL_STOP
 	st   	NEXT_PATTERN
 	ldl  	0
-	st   	A       	;; signal we are ready
+	st   	A
 	jmp  	wait1   

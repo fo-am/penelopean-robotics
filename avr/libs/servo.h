@@ -27,6 +27,7 @@
 
 #define SERVO_MIN 1000
 #define SERVO_MAX 4500
+#define SERVO_MID 2750
 #define SERVO_DEG_MIN -90
 #define SERVO_DEG_MAX 90
 

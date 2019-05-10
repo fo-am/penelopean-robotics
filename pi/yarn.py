@@ -151,6 +151,7 @@ class compiler:
             if len(sl)>0 and sl[0]!=";":
                 code+=self.assemble_line(i,sl)
         print code
+        print(len(code))
         return code
 
     # returns array of bytes (from 16bit values)
@@ -191,7 +192,13 @@ def unit_test():
     #c.assemble_file("../asm/led_flash.asm")
     #c.assemble_file("../asm/back_forward.asm")
     #c.assemble_file("../asm/warp.asm")
-    #c.assemble_file("../asm/slow_led.asm")
+
+    # wait - forward - wait - back (1st version running)
+    #c.assemble_file("../asm/warp.asm")
+
+    # wait - forward (simple weft version)
+    c.assemble_file("../asm/weft-simple.asm")
+
 
 unit_test()
 

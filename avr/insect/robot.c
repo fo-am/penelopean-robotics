@@ -25,13 +25,22 @@
 // probably is zero anyway, but it makes the eep file so...
 cell_t EEMEM ee_heap[HEAP_SIZE]={ [0 ... HEAP_SIZE-1] = 0 };
 
-void robot_init(robot_t *r) {
+// yarn.asm: wait - forward - wait - back (1st version running)
+//cell_t compiled_code[] = {6, 9, 3, 32, 5, 1, 8, 7, 5, 2, 8, 8, 6, 6, 5, 8, 14, 3, 44, 5, 1, 8, 8, 5, 0, 8, 9, 0, 6, 9, 3, 60, 5, 3, 8, 8, 5, 1, 8, 7, 6, 6, 5, 8, 14, 3, 72, 5, 1, 8, 8, 5, 0, 8, 9, 1, 32 };
+//unsigned int compiled_code_len = 57;
+
+// weft-simple.asm: wait - forward - wait - back (1st version running)
+cell_t compiled_code[] = {6, 9, 3, 32, 5, 1, 8, 7, 5, 2, 8, 8, 6, 6, 5, 8, 14, 3, 44, 5, 1, 8, 8, 5, 0, 8, 9, 1, 32};
+unsigned int compiled_code_len = 29;
+
+void robot_init(robot_t *r, unsigned char id) {
   yarn_init(&r->machine);
-  robot_reset(r);
+  robot_reset(r,id);
 }
 
-void robot_reset(robot_t *r) {
+void robot_reset(robot_t *r, unsigned char id) {
   r->running=1;
+  r->id=id;
   r->machine.m_pc=REG_CODE_START;
   // set up motion sequencer for default walk patterns
   servo_motion_seq_init(&r->seq, 4);
@@ -46,6 +55,11 @@ void robot_reset(robot_t *r) {
   yarn_poke(&r->machine,REG_SERVO_1_SMOOTH,MAKE_FIXED(0.2));
   yarn_poke(&r->machine,REG_SERVO_2_SMOOTH,MAKE_FIXED(0.2));
   yarn_poke(&r->machine,REG_SERVO_3_SMOOTH,MAKE_FIXED(0.2));
+
+  for (unsigned int i=0; i<compiled_code_len; i++) {
+    yarn_poke(&r->machine,32+i,compiled_code[i]);
+  }
+
 }
 
 void robot_halt(robot_t *r) {
@@ -56,8 +70,8 @@ void robot_tick(unsigned int delta_ms, robot_t *r) {
   if (r->running) {
     // update registers
     // for debugging, but pc should prob be an internal register anyway
+    yarn_poke(&r->machine,REG_ROBOT_ID,r->id);
     yarn_poke(&r->machine,REG_PC_MIRROR,r->machine.m_pc);
-    yarn_poke(&r->machine,REG_STACK_MIRROR,r->machine.m_stack_pos);
     robot_update_sensors(r);
     robot_update_servos(r);
     yarn_run(&r->machine);
@@ -132,7 +146,8 @@ void robot_update_servos(robot_t *r) {
   seq->servo[2].smooth = yarn_peek(m,REG_SERVO_3_SMOOTH);
 
   seq->next_pattern_id = yarn_peek(m,REG_SERVO_NEXT_PATTERN_ID);
-  
+  //seq->next_pattern_id = MOTION_SEQ_PATTERN_ID_FORWARD;
+
   if (yarn_peek(m,REG_SERVO_STEP_COUNT_RESET)==1) {
     yarn_poke(m,REG_SERVO_STEP_COUNT_RESET,0);
     seq->pattern_loop_count=0;
