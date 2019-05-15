@@ -59,6 +59,15 @@ make the legs equidistant]
 
 ![](https://raw.githubusercontent.com/fo-am/penelopean-robotics/master/img/weavecode.png)
 
+As the structure is woven into the fabric it is strong and able to
+cope with the forces involved. The final stage is to stitch the
+components into the structure to hold them in place along with some
+thick wire to give the legs something to push against.
+
+![](https://raw.githubusercontent.com/fo-am/penelopean-robotics/master/img/finish.jpg)
+
+[todo: bioresin research]
+
 ## Raspberry Pi swarm controller setup
 
 The swarm of robots is controlled by a Raspberry Pi running a python
