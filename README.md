@@ -4,6 +4,8 @@ Penelopean robots are modular, reconfigurable, dissessemblable and
 soft. Part of the [Penelope Project](https://penelope.hypotheses.org/), 
 a Study of Weaving as Technical Mode of Existence.
 
+See a video of our [first swarm robotics maypole dancing test.](https://www.youtube.com/watch?v=NbzEvIek4nM)
+
 ![](https://raw.githubusercontent.com/fo-am/penelopean-robotics/master/pic.jpg)
 
 Penelopean robots designed for weaving ancient Greek looms and maypole
