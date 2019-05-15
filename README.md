@@ -31,7 +31,7 @@ Each robot is constructed using tablet weaving, an ancient human
 technology dating back to neolithic times (and one of the few forms of
 weaving that has never been mechanised).
 
-[tablet loom]
+![](https://raw.githubusercontent.com/fo-am/penelopean-robotics/master/img/loom.jpg)
 
 Tablet looms are simple to set up, and consist of a stack of cards
 with holes punched in the corners through which the warp yarn passes.
@@ -55,27 +55,29 @@ start splitting to to hold the 3 servos and a battery, finishing with
 an final supporting weave [todo: later version included a spacer to
 make the legs equdistant]
 
-[weaving instructions]
+![](https://raw.githubusercontent.com/fo-am/penelopean-robotics/master/img/weavecode.png)
 
 ## Raspberry Pi swarm controller setup
 
 The swarm of robots is controlled by a Raspberry Pi running a python
 program which is in charge of distributing commands to the robots. 
 
+[under development]
+
 ## Movement sequencer
 
 The robot servos are controlled via a "movement pattern sequencer"
 which interprets symbols representing angles of rotation. This is
 designed to allow different kinds of movement to be experimented with
-as well as syncronisation with music.
+as well as syncronisation with music, across the swarm.
 
 By default a pattern consists of a 12 byte array, where each servo is
 controlled by 4 symbols that are looped.
 
-[diagram]
+![](https://raw.githubusercontent.com/fo-am/penelopean-robotics/master/img/servo.png)
 
-Various predefined patterns can be selected (see NEXT_PATTERN below)
-which correspond to:
+Various predefined patterns can be selected via bytecode programs (see
+NEXT_PATTERN below) which correspond to:
 
     0000 0000 0000 : All stop - all servos to their central position.
     AAaa AaaA AAaa : Walk forward
@@ -88,7 +90,8 @@ distributing code changes to them. In order to make this process more
 versatile we use a livecoding system where bytecode can be sent over
 radio and written directly to memory. This bytecode is interpreted by
 a machine running on the robot which can be halted and reset over
-radio (separetely to the atmega process, which continues as normal).
+radio (separetely to the main process, running the radio, controlling
+servos and reading sensors etc, which continues as normal).
 
 The robot bytecode (called yarn) has access to a set of registers that
 describe the current state of the robot, including the movement
