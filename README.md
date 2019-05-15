@@ -1,23 +1,24 @@
 # Penelopean Robotics
 
 Penelopean robots are modular, reconfigurable, dis-assemblable and
-soft. Part of the [Penelope Project](https://penelope.hypotheses.org/), 
-a Study of Weaving as Technical Mode of Existence.
+soft. They are part of the [Penelope Project](https://penelope.hypotheses.org/), a Study of Weaving as a
+Technical Mode of Existence.
 
 See a video of our [first swarm robotics maypole dancing test.](https://www.youtube.com/watch?v=NbzEvIek4nM)
 
 ![](https://raw.githubusercontent.com/fo-am/penelopean-robotics/master/pic.jpg)
 
-
-Penelopean robots designed for weaving ancient Greek looms and maypole
-dancing. They can be livecoded remotely by a Raspberry Pi and can be
-synced to musical beats.
+Penelopean robot swarms are designed for weaving ancient Greek looms
+and maypole dancing. They can be livecoded remotely by a Raspberry Pi
+and can be synced to musical beats for performances. Here is an
+example of two maypole dances to create weaves we are currently
+working on:
 
 ![](https://raw.githubusercontent.com/fo-am/penelopean-robotics/master/img/dances.png)
 
-All source code and hardware files are here, full instructions on building them will follow - but for now, each robot is made from:
+All source code and hardware files are here, each robot is made from:
 
-* Tablet woven flexible structure holding everything together
+* Tablet woven flexible structure holding everything together (see below)
 * 3 SG92R microservos to drive the legs
 * 1 3.7v li-ion battery
 * Nrf24L01 radio module for remote control/programming
@@ -25,8 +26,6 @@ All source code and hardware files are here, full instructions on building them 
 * Custom Atmega328 main pcb
 * Radio, sensor and servo breakout secondary pcb
 * 3 laser cut ply leg pairs
-
-# More detailed description
 
 ## Woven construction
 
