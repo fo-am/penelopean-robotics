@@ -1,6 +1,6 @@
 # Penelopean Robotics
 
-Penelopean robots are modular, reconfigurable, dissessemblable and
+Penelopean robots are modular, reconfigurable, dis-assemblable and
 soft. Part of the [Penelope Project](https://penelope.hypotheses.org/), 
 a Study of Weaving as Technical Mode of Existence.
 
@@ -8,9 +8,12 @@ See a video of our [first swarm robotics maypole dancing test.](https://www.yout
 
 ![](https://raw.githubusercontent.com/fo-am/penelopean-robotics/master/pic.jpg)
 
+
 Penelopean robots designed for weaving ancient Greek looms and maypole
 dancing. They can be livecoded remotely by a Raspberry Pi and can be
 synced to musical beats.
+
+![](https://raw.githubusercontent.com/fo-am/penelopean-robotics/master/dances.png)
 
 All source code and hardware files are here, full instructions on building them will follow - but for now, each robot is made from:
 
@@ -18,7 +21,7 @@ All source code and hardware files are here, full instructions on building them 
 * 3 SG92R microservos to drive the legs
 * 1 3.7v li-ion battery
 * Nrf24L01 radio module for remote control/programming
-* GY91 accellerometer/gyro/compass sensor module
+* GY91 accelerometer/gyro/compass sensor module
 * Custom Atmega328 main pcb
 * Radio, sensor and servo breakout secondary pcb
 * 3 laser cut ply leg pairs
@@ -47,13 +50,13 @@ robot.
 The exact spacing required will depend on the kind of yarn you are
 using (I recommend 100% cotton or other plant based yarns - as wool is
 too fluffy) but using this yarn I measured out 10 wefts to hold an
-SG92R microservo and 8 for the 18mm diameter cylidrical battery.
+SG92R microservo and 8 for the 18mm diameter cylindrical battery.
 
 Here is an attempt at notating the steps required in full. We start
 with a supporting weave using normal single weft weaving, and then
 start splitting to to hold the 3 servos and a battery, finishing with
 an final supporting weave [todo: later version included a spacer to
-make the legs equdistant]
+make the legs equidistant]
 
 ![](https://raw.githubusercontent.com/fo-am/penelopean-robotics/master/img/weavecode.png)
 
@@ -69,7 +72,7 @@ program which is in charge of distributing commands to the robots.
 The robot servos are controlled via a "movement pattern sequencer"
 which interprets symbols representing angles of rotation. This is
 designed to allow different kinds of movement to be experimented with
-as well as syncronisation with music, across the swarm.
+as well as synchronisation with music, across the swarm.
 
 By default a pattern consists of a 12 byte array, where each servo is
 controlled by 4 symbols that are looped.
@@ -90,7 +93,7 @@ distributing code changes to them. In order to make this process more
 versatile we use a livecoding system where bytecode can be sent over
 radio and written directly to memory. This bytecode is interpreted by
 a machine running on the robot which can be halted and reset over
-radio (separetely to the main process, running the radio, controlling
+radio (separately to the main process, running the radio, controlling
 servos and reading sensors etc, which continues as normal).
 
 The robot bytecode (called yarn) has access to a set of registers that
@@ -115,14 +118,14 @@ before a compiler for a decent high level language is designed.
 | STEP_COUNT    | 6       | r          | How many times the current movement sequence has run (not really a step as each sequence has two steps). |
 | STEP_COUNT_RESET | 7    | w          | Resets the step counter register to zero. |
 | NEXT_PATTERN  | 8       | r/w        | Stores a pattern ID for use when the current motion sequence has finished. Can be one of NULL (Keep the last pattern), ALL_STOP (Cease all servo movement), WALK_FORWARDS: Move forward or WALK_BACKWARDS (Move backwards) |
-| A             | 9       | r/w        | User defined register for convenience. A is currently used as the maypole dance status to syncronise multiple groups of robots. |
+| A             | 9       | r/w        | User defined register for convenience. A is currently used as the maypole dance status to synchronise multiple groups of robots. |
 | B             | 10      | r/w        | User defined register for convenience. |
 | C             | 11      | r/w        | User defined register for convenience. |
 | D             | 12      | r/w        | User defined register for convenience. |
 | SERVO_MS_PER_STEP | 13  | r/w        | This controls the overall speed of the motion sequencer - in milliseconds per step. |
 | SERVO_1_AMP   | 14      | r/w        | See below |
 | SERVO_2_AMP   | 15      | r/w        | See below |
-| SERVO_3_AMP   | 16      | r/w        | Seperate control over the amplitude of each servos movement. Set these to zero will immediately prevent any movement while the sequencer still runs. This is a fixed point value where 1000 (the default) is equal to one, so setting to 2000 will double the amplitude and range of the servo. |
+| SERVO_3_AMP   | 16      | r/w        | Separate control over the amplitude of each servos movement. Set these to zero will immediately prevent any movement while the sequencer still runs. This is a fixed point value where 1000 (the default) is equal to one, so setting to 2000 will double the amplitude and range of the servo. |
 | SERVO_1_BIAS  | 17      | r/w        | See below |
 | SERVO_2_BIAS  | 18      | r/w        | See below |
 | SERVO_3_BIAS  | 19      | r/w        | Sets the effective zero degrees position of each servo. This can be used either for fine tuning or in the case of the middle servo (2) can be used to steer the robot when walking. |
@@ -175,7 +178,7 @@ Yarn bytecode is a 16 bit stack based microcode language.
 | add                       | add                 | Pops the top two stack items and pushes the sum of them | 
 | sub                       | sub                 | Pops the top two stack items and pushes the top subtracted from the second |
 | inc                       | inc                 | Adds one to the top of the stack |
-| dec                       | dec                 | Subracts one from the top of the stack |
+| dec                       | dec                 | Subtracts one from the top of the stack |
 | and                       | and                 | Bitwise ands the top two stack items |
 | or                        | or                  | Bitwise ors the top two stack items |
 | xor                       | xor                 | Bitwise xors the top two stack items |
