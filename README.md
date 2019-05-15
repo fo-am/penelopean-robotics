@@ -64,7 +64,22 @@ program which is in charge of distributing commands to the robots.
 
 ## Movement sequencer
 
+The robot servos are controlled via a "movement pattern sequencer"
+which interprets symbols representing angles of rotation. This is
+designed to allow different kinds of movement to be experimented with
+as well as syncronisation with music.
+
+By default a pattern consists of a 12 byte array, where each servo is
+controlled by 4 symbols that are looped.
+
 [diagram]
+
+Various predefined patterns can be selected (see NEXT_PATTERN below)
+which correspond to:
+
+    0000 0000 0000 : All stop - all servos to their central position.
+    AAaa AaaA AAaa : Walk forward
+    AAaa aAAa AAaa : Walk backwards
 
 ## The Yarn bytecode language
 
@@ -73,7 +88,7 @@ distributing code changes to them. In order to make this process more
 versatile we use a livecoding system where bytecode can be sent over
 radio and written directly to memory. This bytecode is interpreted by
 a machine running on the robot which can be halted and reset over
-radio.
+radio (separetely to the atmega process, which continues as normal).
 
 The robot bytecode (called yarn) has access to a set of registers that
 describe the current state of the robot, including the movement
@@ -82,7 +97,7 @@ that change the current servo motion pattern or light the LED for
 example.
 
 Writing the bytecode directly is considered a temporary inconvenience
-before a compiler for a high level language is designed.
+before a compiler for a decent high level language is designed.
 
 ## Register description
 
