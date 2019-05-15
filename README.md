@@ -112,9 +112,11 @@ before a compiler for a high level language is designed.
 | SERVO_2_SMOOTH | 21     | r/w        | See below |
 | SERVO_3_SMOOTH | 22     | r/w        | To prevent sudden movements from breaking the robot or causing it to jump, each servo has a smoothing (low pass filter) applied in software to the desired rotation. This can be removed by setting this to zero, this is a fixed point number where 200 (0.2) is the default value. |
  
-# Yarn instruction set
+## Yarn instruction set
 
 Yarn bytecode is a 16 bit stack based microcode language. 
+
+### Program flow control instructions
 
 | Bytecode instruction name | Example             | Description                                         |
 | ------------------------- | --------------------| --------------------------------------------------- |
@@ -123,6 +125,11 @@ Yarn bytecode is a 16 bit stack based microcode language.
 | jpr                       | jpr  -2             | Unconditional jump relative (can be negative)       |
 | jpz                       | jpz  label          | Jump only if the top of stack is zero.              |
 | jprz                      | jprz 10             | Jump relative if the top of the stack is zero.      |
+
+### Stack manipulation instructions
+
+| Bytecode instruction name | Example             | Description                                         |
+| ------------------------- | --------------------| --------------------------------------------------- |
 | ldl                       | ldl  1207           | Load literal value on to stack                      |
 | ld                        | ld   STEP_COUNT     | Load the contents of address on to the sta          |
 | ldi                       | ldi  A              | Load indirect: the contents of the address pointed to by value (for arrays). | 
@@ -130,33 +137,40 @@ Yarn bytecode is a 16 bit stack based microcode language.
 | sti                       | sti  A              | Stores indirectly the stack top to the address at this location |
 | dup                       | dup                 | Pushes the value at the top of the stack to duplicate it |  
 
+### Number comparison instructions
 
+| Bytecode instruction name | Example             | Description                                         |
+| ------------------------- | --------------------| --------------------------------------------------- |
+| lt                        | lt                  | Less than: Pushes 1 if the top of the stack is less than the stack item beneath it (pops both values) otherwise pushes 0 | 
+| gt                        | gt                  | Greater than: Pushes 1 if the top of the stack is less than the stack item beneath it (pops both values) otherwise pushes 0 |
+| lte                       | lte                 | Less than or equal: Pushes 1 if the top of the stack is less than or equal to the stack item beneath it (pops both values) otherwise pushes 0 | 
+| gte                       | gte                 | Greater than or equal: Pushes 1 if the top of the stack is greater than or equal to the stack item beneath it (pops both values) otherwise pushes 0 | 
+| slt                       | slt                 | Signed version of lt |
+| sgt                       | sgt                 | Signed version of gt |
+| slte                      | slte                | Signed verion of lte |
+| sgte                      | sgte                | Signed verion of gte |
 
-lt 
-gt 
-lte 
-gte
-slt
-sgt
-slte
-sgte
-add
-sub
-inc
-dec
-and
-or
-xor
-not
-rr
-rl
-sin
-cos
-tan
-rnd
-inci
-deci
-incp
-decp
+### Maths
+
+| Bytecode instruction name | Example             | Description                                         |
+| ------------------------- | --------------------| --------------------------------------------------- |
+| add                       | add                 | Pops the top two stack items and pushes the sum of them | 
+| sub                       | sub                 | Pops the top two stack items and pushes the top subtracted from the second |
+| inc                       | inc                 | Adds one to the top of the stack |
+| dec                       | dec                 | Subracts one from the top of the stack |
+| and                       | and                 | Bitwise ands the top two stack items |
+| or                        | or                  | Bitwise ors the top two stack items |
+| xor                       | xor                 | Bitwise xors the top two stack items |
+| not                       | not                 | Bitwise nots the top stack item |
+| rr                        | rr                  | Rotates the top stack item one bit to the right |
+| rl                        | rl                  | Rotates the top stack item one bit to the left |
+| sin                       | sin                 | Pushes the sine of the top stack item in degrees |
+| cos                       | cos                 | Pushes the cosine of the top stack item in degrees |
+| tan                       | tan                 | Pushes the tangent of the top stack item in degrees |
+| rnd                       | rnd                 | Pushes and random number |
+| inci                      | inci                | Increments value in address in-place |
+| deci                      | deci                | Decrements value in address in-place |
+| incp                      | incp                | Increments value in address in-place and pushes it on the stack, convenience for looping |
+| decp                      | decp                | Decrements value in address in-place and pushes it on the stack, convenience for looping |
 
 
