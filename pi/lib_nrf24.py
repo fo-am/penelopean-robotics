@@ -550,6 +550,7 @@ class NRF24:
     def openWritingPipe(self, value):
         # Note that the NRF24L01(+)
         # expects it LSB first.
+        self.flush_tx()
 
         self.write_register(NRF24.RX_ADDR_P0, value, 5)
         self.write_register(NRF24.TX_ADDR, value, 5)
