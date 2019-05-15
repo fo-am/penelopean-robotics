@@ -86,90 +86,31 @@ before a compiler for a high level language is designed.
 
 ## Register description
 
-0  ROBOT_ID (r)    
-
-Identifier of this robot (same code as the last byte of the radio pipe
-address)
-
-1  PC_MIRROR (r)    
-
-A copy of the program counter for debugging. Writing to this has no
-effect.
-
-2  LED (r/w)
-
-State of the onboard blue LED.
-
-3  COMP_ANGLE (r)
-
-Current absolute compass angle from the magnetometer.
-
-4  COMP_DELTA_RESET (w)    
-
-Resets the relative compass angle calculation.
-
-5  COMP_DELTA (r)    
-
-Relative compass angle calculation, from last reset.
-
-6  STEP_COUNT (r)    
-
-How many times the current movement sequence has run (not really a
-step as each sequence has two steps).
-
-7  STEP_COUNT_RESET (w)
-
-Resets the step counter register to zero.
-
-8  NEXT_PATTERN (r/w)
-
-Stores a pattern ID for use when the current motion sequence has
-finished. Can be one of:
-
-NULL (0)           : Keep the last pattern
-ALL_STOP (1)       : Cease all servo movement
-WALK_FORWARDS (2)  : Move forward
-WALK_BACKWARDS (3) : Move backwards
-
-9  A (r/w)
-10 B (r/w) 
-11 C (r/w)
-12 D (r/w)
-
-User defined registers for convenience. A is currently used as the
-maypole dance status to syncronise multiple groups of robots.
-
-13 SERVO_MS_PER_STEP (r/w)
-
-This controls the overall speed of the motion sequencer - in
-milliseconds per step.
-
-14 SERVO_1_AMP (r/w)
-15 SERVO_2_AMP (r/w) 
-16 SERVO_3_AMP (r/w)
-
-Seperate control over the amplitude of each servos movement. Set these
-to zero will immediately prevent any movement while the sequencer
-still runs. This is a fixed point value where 1000 (the default) is
-equal to one, so setting to 2000 will double the amplitude and range
-of the servo.
-
-17 SERVO_1_BIAS (r/w)
-18 SERVO_2_BIAS (r/w)
-19 SERVO_3_BIAS (r/w)
-
-Sets the effective zero degrees position of each servo. This can be
-used either for fine tuning or in the case of the middle servo (2) can
-be used to steer the robot when walking.
-
-20 SERVO_1_SMOOTH 
-21 SERVO_2_SMOOTH 
-22 SERVO_3_SMOOTH 
-
-To prevent sudden movements from breaking the robot or causing it to
-jump, each servo has a smoothing (low pass filter) applied in software
-to the desired rotation. This can be removed by setting this to zero,
-this is a fixed point number where 200 (0.2) is the default value.
+| Name          | Address | Read/Write | Description                          |
+| ------------- | ------- | ---------- | ------------------------------------ |
+| ROBOT_ID      | 0       | r          | Identifier of this robot (same code as the last byte of the radio pipe address) |
+| PC_MIRROR     | 1       | r          | A copy of the program counter for debugging. Writing to this has no effect. |
+| LED           | 2       | r/w        | The state of the onboard blue LED. | 
+| COMP_ANGLE    | 3       | r          | Current absolute compass angle from the magnetometer. |
+| COMP_DELTA_RESET | 4    | w          | Resets the relative compass angle calculation. |
+| COMP_DELTA    | 5       | r          | Relative compass angle calculation, from last reset. |
+| STEP_COUNT    | 6       | r          | How many times the current movement sequence has run (not really a step as each sequence has two steps). |
+| STEP_COUNT_RESET | 7    | w          | Resets the step counter register to zero. |
+| NEXT_PATTERN  | 8       | r/w        | Stores a pattern ID for use when the current motion sequence has finished. Can be one of NULL (Keep the last pattern), ALL_STOP (Cease all servo movement), WALK_FORWARDS: Move forward or WALK_BACKWARDS (Move backwards) |
+| A             | 9       | r/w        | User defined register for convenience. A is currently used as the maypole dance status to syncronise multiple groups of robots. |
+| B             | 10      | r/w        | User defined register for convenience. |
+| C             | 11      | r/w        | User defined register for convenience. |
+| D             | 12      | r/w        | User defined register for convenience. |
+| SERVO_MS_PER_STEP | 13  | r/w        | This controls the overall speed of the motion sequencer - in milliseconds per step. |
+| SERVO_1_AMP   | 14      | r/w        | See below |
+| SERVO_2_AMP   | 15      | r/w        | See below |
+| SERVO_3_AMP   | 16      | r/w        | Seperate control over the amplitude of each servos movement. Set these to zero will immediately prevent any movement while the sequencer still runs. This is a fixed point value where 1000 (the default) is equal to one, so setting to 2000 will double the amplitude and range of the servo. |
+| SERVO_1_BIAS  | 17      | r/w        | See below |
+| SERVO_2_BIAS  | 18      | r/w        | See below |
+| SERVO_3_BIAS  | 19      | r/w        | Sets the effective zero degrees position of each servo. This can be used either for fine tuning or in the case of the middle servo (2) can be used to steer the robot when walking. |
+| SERVO_1_SMOOTH | 20     | r/w        | See below |
+| SERVO_2_SMOOTH | 21     | r/w        | See below |
+| SERVO_3_SMOOTH | 22     | r/w        | To prevent sudden movements from breaking the robot or causing it to jump, each servo has a smoothing (low pass filter) applied in software to the desired rotation. This can be removed by setting this to zero, this is a fixed point number where 200 (0.2) is the default value. |
  
 # Yarn instruction set
 
