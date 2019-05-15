@@ -37,7 +37,7 @@ weaving that has never been mechanised).
 
 Tablet looms are simple to set up, and consist of a stack of cards
 with holes punched in the corners through which the warp yarn passes.
-[See here for a description of how to set up tablet loom]().
+[See here for a description of how to set up tablet loom](http://davesblog.fo.am/2016/02/how-to-warp-a-tablet-loom-neolithic-digital-computing-device/).
 
 Usually tablet weaving produces a strong braid. For the penelopean
 robotics we use a technique known as Icelandic double weave, where we
