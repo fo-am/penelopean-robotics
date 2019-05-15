@@ -1,12 +1,14 @@
 # Penelopean Robotics
 
 Penelopean robots are modular, reconfigurable, dissessemblable and
-soft.
+soft. Part of the [Penelope Project](https://penelope.hypotheses.org/), 
+a Study of Weaving as Technical Mode of Existence.
 
 ![](https://raw.githubusercontent.com/fo-am/penelopean-robotics/master/pic.jpg)
 
 Penelopean robots designed for weaving ancient Greek looms and maypole
-dancing. They can be livecoded via Iambic pentameter and Linear A.
+dancing. They can be livecoded remotely by a Raspberry Pi and can be
+synced to musical beats.
 
 All source code and hardware files are here, full instructions on building them will follow - but for now, each robot is made from:
 
