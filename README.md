@@ -13,7 +13,7 @@ Penelopean robots designed for weaving ancient Greek looms and maypole
 dancing. They can be livecoded remotely by a Raspberry Pi and can be
 synced to musical beats.
 
-![](https://raw.githubusercontent.com/fo-am/penelopean-robotics/master/dances.png)
+![](https://raw.githubusercontent.com/fo-am/penelopean-robotics/master/img/dances.png)
 
 All source code and hardware files are here, full instructions on building them will follow - but for now, each robot is made from:
 
