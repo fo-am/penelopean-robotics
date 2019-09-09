@@ -58,10 +58,12 @@ class robot:
         self.code = compiler.assemble_file(fn)
         radio.send_code(self.address,self.code)
 
+    def write(self,addr,val,radio):
+        radio.send_set(self.address,addr,val)
+        
     # A register is cleared when the robot reaches it's end position
     # and set by the Pi when we are ready to start again
     def start_walking_set(self):
-        #radio.send_set(self.address,compiler.regs["A"],1)
         self.start_walking=True
 
     def led_set(self,state):

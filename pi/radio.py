@@ -78,7 +78,8 @@ class radio:
         else:
             self.send(self.build_write(yarn.compiler.code_start,code))
         self.send(self.build_reset())                
-
+        #self.send(self.build_eewrite())
+        
     def send_sync(self,addr,beat,ms_per_step,a_reg_set,a_reg_val,led_set,led_val,callback,context):
         self.set_destination(addr)
         self.update_callback=callback
@@ -133,9 +134,26 @@ class radio:
     def build_reset(self):
         return struct.pack("cxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx","R")
 
+    def build_eewrite(self):
+        return struct.pack("cxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx","E")
+
     def build_sync(self,beat,ms_per_step,a_reg_set,a_reg_val,led_set,led_val):
         #print(a_reg_set,a_reg_val)
-        return struct.pack("cxHHHHHHxxxxxxxxxxxxxxxxxx","S",beat,ms_per_step,a_reg_set,a_reg_val,led_set,led_val)
+        #todo: fix for new format
+        send_a_reg=0
+        send_a_val=0
+        send_led_reg=0
+        send_led_val=0
+        if a_reg_set:
+            # hack for pm test
+            #send_a_reg=9
+            # overwrite code...
+            send_a_reg=32+6
+            send_a_val=a_reg_val
+        if led_set:
+            send_led_reg=2
+            send_led_val=led_val
+        return struct.pack("cxHHHHHHxxxxxxxxxxxxxxxxxx","S",beat,ms_per_step,send_a_reg,send_a_val,send_led_reg,send_led_val)
 
     def build_calibrate(self,samples):
         return struct.pack("cxHxxxxxxxxxxxxxxxxxxxxxxxxxxx","C",samples)

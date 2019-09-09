@@ -22,14 +22,14 @@ def osc_loop(swarm):
 class swarm:
     def __init__(self):
         self.radio = radio.radio([0xa7, 0xa7, 0xa7, 0xa7, 0xaa])
-        self.swarm = [robot.robot([0xa7, 0xa7, 0xa7, 0xa7, 0x01]),
-                      robot.robot([0xa7, 0xa7, 0xa7, 0xa7, 0x02]),
-                      robot.robot([0xa7, 0xa7, 0xa7, 0xa7, 0x03]),
+        self.swarm = [#robot.robot([0xa7, 0xa7, 0xa7, 0xa7, 0x01]),
+                      #robot.robot([0xa7, 0xa7, 0xa7, 0xa7, 0x02]),
+                      #robot.robot([0xa7, 0xa7, 0xa7, 0xa7, 0x03]),
                       robot.robot([0xa7, 0xa7, 0xa7, 0xa7, 0x04]),
-                      robot.robot([0xa7, 0xa7, 0xa7, 0xa7, 0x05]),
-                      robot.robot([0xa7, 0xa7, 0xa7, 0xa7, 0x06]),
-                      robot.robot([0xa7, 0xa7, 0xa7, 0xa7, 0x07]),
-                      robot.robot([0xa7, 0xa7, 0xa7, 0xa7, 0x08])
+                      #robot.robot([0xa7, 0xa7, 0xa7, 0xa7, 0x05]),
+                      #robot.robot([0xa7, 0xa7, 0xa7, 0xa7, 0x06]),
+                      #robot.robot([0xa7, 0xa7, 0xa7, 0xa7, 0x07]),
+                      #robot.robot([0xa7, 0xa7, 0xa7, 0xa7, 0x08])
         ]
     
         self.bpm=150
@@ -56,7 +56,7 @@ class swarm:
         #for id in self.warp_swarm:
         #    self.swarm[id].load_asm("../asm/warp.asm",self.compiler,self.radio)
 
-        #self.swarm[0].load_asm("../asm/slow_led.asm",self.compiler,self.radio)
+        #self.swarm[0].load_asm("../asm/pm.asm",self.compiler,self.radio)
         #self.swarm[0].load_asm("../asm/back_forward2.asm",self.compiler,self.radio)
 
         # start sync osc server
@@ -73,9 +73,10 @@ class swarm:
         #self.some_leds_on([0,1,2,3])
 
         #self.leds_on()
-        self.leds_off()
+        #self.leds_off()
         #self.weave_pattern()
 
+        self.swarm[0].write(32+1,1,self.radio)
         
         if time.time()>self.last_sync+self.ms_per_beat/1000.0:
             #self.swarm[0].load_asm("../asm/back_forward2.asm",self.compiler,self.radio)
