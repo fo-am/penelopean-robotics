@@ -77,12 +77,6 @@ class swarm:
             self.sync(self.beat,self.bpm)
             self.beat+=1
 
-        for robot in self.swarm:
-            if robot:
-                robot.update(self.radio)
-
-        self.radio.update()
-
         
     def bpm_to_mspb(self,bpm):
         beats_per_sec = bpm/60.0
@@ -116,7 +110,7 @@ class swarm:
 
     def update_regs(self,regs):
         for i,robot in enumerate(self.swarm):
-            robot.update_regs(regs[i],self.compiler)
+            robot.update_regs(regs[i])
 
     def trigger(self):
         if self.state=="weft-wait":
@@ -126,18 +120,18 @@ class swarm:
 
     def leds_on(self):
         for r in self.swarm:
-            r.led_set(True)
+            r.led_state(True)
 
     def leds_off(self):
         for r in self.swarm:
-            r.led_set(False)
+            r.led_state(False)
 
     def weave_pattern(self):
         if self.state=="weft-walking":
             # start warp swarm
             all_ready=True
             for id in self.weft_swarm:
-                if self.swarm[id] and self.swarm[id].is_walking(self.compiler):
+                if self.swarm[id] and self.swarm[id].is_walking():
                     all_ready=False
             # try not changing state till we have all stopped
             if all_ready:
@@ -147,8 +141,8 @@ class swarm:
             all_walking=True
             for id in self.warp_swarm:
                 if self.swarm[id]:
-                    self.swarm[id].start_walking_set()
-                    if not self.swarm[id].is_walking(self.compiler):
+                    self.swarm[id].start_walking()
+                    if not self.swarm[id].is_walking():
                         all_walking=False
             # try not changing state till we are all walking
             if all_walking:
@@ -157,7 +151,7 @@ class swarm:
         if self.state=="warp-walking":
             all_ready=True
             for id in self.warp_swarm:
-                if self.swarm[id] and self.swarm[id].is_walking(self.compiler):
+                if self.swarm[id] and self.swarm[id].is_walking():
                     all_ready=False
             # try not changing state till we have all stopped
             if all_ready:
@@ -167,8 +161,8 @@ class swarm:
             all_walking=True
             for id in self.weft_swarm:
                 if self.swarm[id]:
-                    self.swarm[id].start_walking_set()
-                    if not self.swarm[id].is_walking(self.compiler):
+                    self.swarm[id].start_walking()
+                    if not self.swarm[id].is_walking():
                         all_walking=False
             # try not changing state till we are all walking
             if all_walking:

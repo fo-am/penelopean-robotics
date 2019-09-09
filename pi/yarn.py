@@ -1,83 +1,87 @@
 import array
 
+code_start = 32
+
+# change robot.c registers to match here
+registers = {
+    "ROBOT_ID": 0,
+    "PC_MIRROR": 1,
+    "LED": 2,
+    "COMP_ANGLE": 3,
+    "COMP_DELTA_RESET": 4,
+    "COMP_DELTA": 5,
+    "STEP_COUNT": 6,
+    "STEP_COUNT_RESET": 7,
+    "NEXT_PATTERN": 8,
+    "A": 9,
+    "B": 10,
+    "C": 11,
+    "D": 12,
+    "SERVO_MS_PER_STEP": 13, # arg step not=step counter type of step
+    "SERVO_1_AMP": 14,
+    "SERVO_2_AMP": 15,
+    "SERVO_3_AMP": 16,
+    "SERVO_1_BIAS": 17,
+    "SERVO_2_BIAS": 18,
+    "SERVO_3_BIAS": 19,
+    "SERVO_1_SMOOTH": 20,
+    "SERVO_2_SMOOTH": 21,
+    "SERVO_3_SMOOTH": 22,
+    
+    "NULL": 0,
+    "ALL_STOP": 1,
+    "WALK_FORWARD": 2,
+    "WALK_BACKWARD": 3,
+}
+
+instructions = {
+    "nop": 0,
+    "jmp": 1,
+    "jpr":   2,
+    "jpz":   3,
+    "jprz":  4,
+    "ldl":   5,
+    "ld":    6,
+    "ldi":   7,
+    "st":    8,
+    "sti":   9,
+    "dup":   10,
+    "equ":  11, 
+    "lt":   12, 
+    "gt":   13, 
+    "lte":  14, 
+    "gte":  15,
+    "slt":  16,
+    "sgt":  17,
+    "slte": 18,
+    "sgte": 19,
+    "add":  20,
+    "sub":  21,
+    "inc":  22,
+    "dec":  23,
+    "and":  24,
+    "or":   25,
+    "xor":  26,
+    "not":  27,
+    "rr":   28,
+    "rl":   29,
+    "sin":  30,
+    "cos":  31,
+    "tan":  32,
+    "rnd":  33,
+    "inci": 34,
+    "deci": 35,
+    "incp": 36,
+    "decp": 37,
+}
+
+
 class compiler:
-    code_start=32
     def __init__(self):
         self.labels={}
-        self.instr = {
-            "nop": 0,
-            "jmp": 1,
-            "jpr":   2,
-            "jpz":   3,
-            "jprz":  4,
-            "ldl":   5,
-            "ld":    6,
-            "ldi":   7,
-            "st":    8,
-            "sti":   9,
-            "dup":   10,
-            "equ":  11, 
-            "lt":   12, 
-            "gt":   13, 
-            "lte":  14, 
-            "gte":  15,
-            "slt":  16,
-            "sgt":  17,
-            "slte": 18,
-            "sgte": 19,
-            "add":  20,
-            "sub":  21,
-            "inc":  22,
-            "dec":  23,
-            "and":  24,
-            "or":   25,
-            "xor":  26,
-            "not":  27,
-            "rr":   28,
-            "rl":   29,
-            "sin":  30,
-            "cos":  31,
-            "tan":  32,
-            "rnd":  33,
-            "inci": 34,
-            "deci": 35,
-            "incp": 36,
-            "decp": 37,
-        }
+        self.instr = instructions
+        self.regs = registers
 
-        # change robot.c registers to match here
-
-        self.regs = {
-            "ROBOT_ID": 0,
-            "PC_MIRROR": 1,
-            "LED": 2,
-            "COMP_ANGLE": 3,
-            "COMP_DELTA_RESET": 4,
-            "COMP_DELTA": 5,
-            "STEP_COUNT": 6,
-            "STEP_COUNT_RESET": 7,
-            "NEXT_PATTERN": 8,
-            "A": 9,
-            "B": 10,
-            "C": 11,
-            "D": 12,
-            "SERVO_MS_PER_STEP": 13, # arg step not=step counter type of step
-            "SERVO_1_AMP": 14,
-            "SERVO_2_AMP": 15,
-            "SERVO_3_AMP": 16,
-            "SERVO_1_BIAS": 17,
-            "SERVO_2_BIAS": 18,
-            "SERVO_3_BIAS": 19,
-            "SERVO_1_SMOOTH": 20,
-            "SERVO_2_SMOOTH": 21,
-            "SERVO_3_SMOOTH": 22,
-
-            "NULL": 0,
-            "ALL_STOP": 1,
-            "WALK_FORWARD": 2,
-            "WALK_BACKWARD": 3,
-
-        }
 
     def is_int(self,s):
         try:
@@ -91,7 +95,7 @@ class compiler:
         if len(l)<1: return []
         if l[0].endswith(":"):
             # add new label
-            self.labels[l[0][:-1]]=addr+self.code_start
+            self.labels[l[0][:-1]]=addr+code_start
             l=l[1:] # strip out label
 
     def assemble_line(self,i,l):

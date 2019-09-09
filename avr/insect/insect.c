@@ -19,15 +19,15 @@
 #include <nrf24l01.h>
 #include <i2c-master.h>
 #include <robot.h>
+#include <insect.h>
 
-#define ROBOT_ID 0x01
-#define RADIO_ID 0xA7A7A7A701
+#define ROBOT_ID 0x03
+#define RADIO_ID 0xA7A7A7A704
 #define RADIO_PI 0xA7A7A7A7AA
 
 #define UPDATE_FREQ_HZ 50
 #define PENELOPE_NUM_SERVOS 3
 #define UPDATE_TICK_MS (1000/UPDATE_FREQ_HZ)
-int calibrated = 0;
 
 // Messages supported (all 32 bytes)
 // P: Ping (flash LEDs twice)
@@ -38,42 +38,7 @@ int calibrated = 0;
 // R: Reset and start machine
 // W: Write to yarn machine memory
 // E: Save current heap to eeprom
-
-// incoming data packets over the radio
-// this is the original packet used for the motion sequencer
-typedef struct {
-  char pad;
-  unsigned int ms_per_step;      // 2
-  unsigned int length;           // 2 
-  char pattern[MAX_PATTERN_LENGTH]; // 26
-} seq_pattern_packet;                 // = 32 bytes
-
-typedef struct {
-  char pad; // 1
-  unsigned short start_address;  // 2
-  unsigned short size;           // 2
-  char data[25];
-} bulk_write_packet;
-
-typedef struct {
-  char pad;
-  unsigned short start_address; // 2
-} request_telemetry_packet;
-
-typedef struct {
-  char pad;
-  unsigned short samples; // 2
-} request_calibration_packet;
-
-typedef struct {
-  char pad;
-  unsigned short beat; // 2
-  unsigned short ms_per_step;
-  unsigned short a_reg_set;
-  unsigned short a_reg_val;
-  unsigned short led_set;
-  unsigned short led_val;
-} sync_packet;
+// C: Calibrate and return calibration data
 
 ISR(TIMER1_COMPA_vect) {
   servo_pulse_update();
@@ -142,23 +107,30 @@ int main (void) {
       // calibrate sensors
       if (msg_type=='C') {
 	request_calibration_packet *p=(request_calibration_packet *)&msg[1];
-	if (!calibrated) {
+
+	if (p->calibrate==1) {
 	  PORTB |= 0x01;
 	  gy91_calibrate_mag(p->samples);
 	  PORTB &= ~0x01;
-	  calibrated=1;
 	}	
-	float *calibration_data = gy91_mag_calibration_data();	
-	// return calibration results for testing (sent on next ping)
- 	nRF24L01p_enable_ack_payload();
-	nRF24L01p_ack_payload(0,(const byte *)calibration_data,sizeof(float)*6);
-	free(calibration_data);
+
+	// return either sense data from rom...
+	if (!p->return_sense) {
+	  float *calibration_data = gy91_mag_calibration_data();	
+	  nRF24L01p_enable_ack_payload();
+	  nRF24L01p_ack_payload(0,(const byte *)calibration_data,sizeof(float)*9);
+	  free(calibration_data);
+	} else { // or calculated calibration data
+	  float *sense_data = gy91_mag_sense_data();	
+	  nRF24L01p_enable_ack_payload();
+	  nRF24L01p_ack_payload(0,(const byte *)sense_data,sizeof(float)*3);
+	  free(sense_data);
+	}
       }
       
       // super sync
       if (msg_type=='S') {
 	sync_packet *p=(sync_packet *)&msg[1];
-	// todo: snap timer?
 
 	// cause next update to trigger pattern step 0
 	robot.seq.timer = p->ms_per_step; 
@@ -167,14 +139,14 @@ int main (void) {
 	// set ms_per_step reg too
 	robot.machine.m_heap[REG_SERVO_MS_PER_STEP]=p->ms_per_step;
 
-	// optionally set A register
-	if (p->a_reg_set) {
-	  robot.machine.m_heap[REG_USR_A]=p->a_reg_val;
-	}
-
-	if (p->led_set) {
-	  robot.machine.m_heap[REG_LED]=p->led_val;
-	}
+	// optionally set a bunch of registers
+	if (p->reg_1!=0) robot.machine.m_heap[p->reg_1]=p->reg_1_val;
+	if (p->reg_2!=0) robot.machine.m_heap[p->reg_2]=p->reg_2_val;
+	if (p->reg_3!=0) robot.machine.m_heap[p->reg_3]=p->reg_3_val;
+	if (p->reg_4!=0) robot.machine.m_heap[p->reg_4]=p->reg_4_val;
+	if (p->reg_5!=0) robot.machine.m_heap[p->reg_5]=p->reg_5_val;
+	if (p->reg_6!=0) robot.machine.m_heap[p->reg_6]=p->reg_6_val;
+	if (p->reg_7!=0) robot.machine.m_heap[p->reg_7]=p->reg_7_val;
 
 	// return heap info
  	nRF24L01p_enable_ack_payload();

@@ -151,7 +151,7 @@ AVRDUDE_PORT = COM9   # programmer connected to serial device
 AVRDUDE_WRITE_FLASH = -U flash:w:$(TARGET).hex
 #AVRDUDE_WRITE_EEPROM = -U eeprom:w:$(TARGET).eep
 #AVRDUDE_WRITE_FUSE = -U lfuse:w:0xe2:m
-AVRDUDE_WRITE_FUSE = -U lfuse:w:0xFF:m -U hfuse:w:0xDE:m -U efuse:w:0x05:m
+AVRDUDE_WRITE_FUSE = -U lfuse:w:0xFF:m -U hfuse:w:0xDE:m -U efuse:w:0xFD:m
 
 # 4 when u brick yr atmega:
 # avrdude -p atmega328p -P usb -c usbtiny -U lfuse:w:0xFF:m -U hfuse:w:0xDE:m -U efuse:w:0x00:m -B250

@@ -36,12 +36,23 @@ static const unsigned char i2c_gy91_compass=0x0c<<1;
 static const unsigned char i2c_gy91_pressure=0x76<<1;
 
 // store calibration data in eeprom
+float EEMEM ee_gy91_mag_xbias=0.0;
+float EEMEM ee_gy91_mag_ybias=0.0;
+float EEMEM ee_gy91_mag_zbias=0.0;
+float EEMEM ee_gy91_mag_xscale=1.0f;
+float EEMEM ee_gy91_mag_yscale=1.0f;
+float EEMEM ee_gy91_mag_zscale=1.0f;
+
 float gy91_mag_xbias=0.0;
 float gy91_mag_ybias=0.0;
 float gy91_mag_zbias=0.0;
 float gy91_mag_xscale=1.0f;
 float gy91_mag_yscale=1.0f;
 float gy91_mag_zscale=1.0f;
+
+float gy91_mag_sense_adj_x = 1.0f;
+float gy91_mag_sense_adj_y = 1.0f;
+float gy91_mag_sense_adj_z = 1.0f;
 
 // helper to jam two 8bit values together
 unsigned short i2c_read_16(unsigned char address, unsigned char high, unsigned char low) {
@@ -70,22 +81,41 @@ int gy91_init() {
   i2c_write_reg(i2c_gy91_accel, 0x37, &t, 1);
   _delay_ms(50);
 
-  // set up magnetometer mode
-  t=0x12;
-  i2c_write_reg(i2c_gy91_compass, 0x0A, &t, 1);
+  // pull out sensitivity values
+  t=MAG_MODE_FUSE;
+  i2c_write_reg(i2c_gy91_compass, MAG_CNTL1, &t, 1);
   _delay_ms(50);
+
+  i2c_read_reg(i2c_gy91_compass,MAG_ASAX,&t,1);
+  gy91_mag_sense_adj_x = ((t-128)*0.5f)/128+1;
+  i2c_read_reg(i2c_gy91_compass,MAG_ASAY,&t,1);
+  gy91_mag_sense_adj_y = ((t-128)*0.5f)/128+1;
+  i2c_read_reg(i2c_gy91_compass,MAG_ASAZ,&t,1);
+  gy91_mag_sense_adj_z = ((t-128)*0.5f)/128+1;
+
+  // reset before going into continuous mode
+  t=MAG_MODE_POWER_DOWN;
+  i2c_write_reg(i2c_gy91_compass, MAG_CNTL1, &t, 1);
+  _delay_ms(50);
+  
+  // set up magnetometer mode
+  t=MAG_OUT_16BIT | MAG_MODE_CONT_1;
+  i2c_write_reg(i2c_gy91_compass, MAG_CNTL1, &t, 1);
+
+  _delay_ms(50);
+
+  // update RAM calibration data from eeprom
+  gy91_mag_xbias=ee_gy91_mag_xbias;
+  gy91_mag_ybias=ee_gy91_mag_ybias;
+  gy91_mag_zbias=ee_gy91_mag_zbias;
+  gy91_mag_xscale=ee_gy91_mag_xscale;
+  gy91_mag_yscale=ee_gy91_mag_yscale;
+  gy91_mag_zscale=ee_gy91_mag_zscale;
 
   return 0;
 }
 
 void gy91_read_accel(float *x, float *y, float *z) {
-  static const unsigned char ACCEL_XOUT_H = 0x3B;
-  static const unsigned char ACCEL_XOUT_L = 0x3C;
-  static const unsigned char ACCEL_YOUT_H = 0x3D;
-  static const unsigned char ACCEL_YOUT_L = 0x3E;
-  static const unsigned char ACCEL_ZOUT_H = 0x3F;
-  static const unsigned char ACCEL_ZOUT_L = 0x40;
-  
   short xout = i2c_read_16(i2c_gy91_accel, ACCEL_XOUT_H, ACCEL_XOUT_L);
   short yout = i2c_read_16(i2c_gy91_accel, ACCEL_YOUT_H, ACCEL_YOUT_L);
   short zout = i2c_read_16(i2c_gy91_accel, ACCEL_ZOUT_H, ACCEL_ZOUT_L);
@@ -96,13 +126,6 @@ void gy91_read_accel(float *x, float *y, float *z) {
 }
 
 void gy91_read_gyro(float *x, float *y, float *z) {
-  static const unsigned char GYRO_XOUT_H = 0x43;
-  static const unsigned char GYRO_XOUT_L = 0x44;
-  static const unsigned char GYRO_YOUT_H = 0x45;
-  static const unsigned char GYRO_YOUT_L = 0x46;
-  static const unsigned char GYRO_ZOUT_H = 0x47;
-  static const unsigned char GYRO_ZOUT_L = 0x48;
-
   short xout = i2c_read_16(i2c_gy91_accel, GYRO_XOUT_H, GYRO_XOUT_L);
   short yout = i2c_read_16(i2c_gy91_accel, GYRO_YOUT_H, GYRO_YOUT_L);
   short zout = i2c_read_16(i2c_gy91_accel, GYRO_ZOUT_H, GYRO_ZOUT_L);
@@ -113,31 +136,50 @@ void gy91_read_gyro(float *x, float *y, float *z) {
 }
 
 float gy91_read_temp() {
-  static const unsigned char TEMP_OUT_H = 0x41;
-  static const unsigned char TEMP_OUT_L = 0x42;
   unsigned short temp_out = i2c_read_16(i2c_gy91_accel, TEMP_OUT_H, TEMP_OUT_L);
   return temp_out / 340.0 + 36.53;
 }
 
 void gy91_read_mag_uncalibrated(float *x, float *y, float *z) {
-  static const unsigned char MAGNET_XOUT_L = 0x03;
-  static const unsigned char MAGNET_XOUT_H = 0x04;
-  static const unsigned char MAGNET_YOUT_L = 0x05;
-  static const unsigned char MAGNET_YOUT_H = 0x06;
-  static const unsigned char MAGNET_ZOUT_L = 0x07;
-  static const unsigned char MAGNET_ZOUT_H = 0x08;
+  static short xout=0;
+  static short yout=0;
+  static short zout=0;
 
-  short xout = i2c_read_16(i2c_gy91_compass, MAGNET_XOUT_H, MAGNET_XOUT_L);
-  short yout = i2c_read_16(i2c_gy91_compass, MAGNET_YOUT_H, MAGNET_YOUT_L);
-  short zout = i2c_read_16(i2c_gy91_compass, MAGNET_ZOUT_H, MAGNET_ZOUT_L);
+  // Check Data Ready
+  // Poll DRDY bit of ST1 register
+  unsigned char t=0x00;
+  i2c_read_reg(i2c_gy91_compass, 0x02,&t,1);
+  // check data ready flag
+  if (t&0x01) {
+    // Read measurement data
+    short t_xout = i2c_read_16(i2c_gy91_compass, MAG_HXH, MAG_HXL);
+    short t_yout = i2c_read_16(i2c_gy91_compass, MAG_HYH, MAG_HYL);
+    short t_zout = i2c_read_16(i2c_gy91_compass, MAG_HZH, MAG_HZL);
+
+    // Read ST2 register (required) HOFL: Shows if magnetic sensor is
+    // overflown or not. “0” means not overflown, “1” means overflown.
+    // When ST2 register is read, AK8963 judges that data reading is
+    // finished. Stored measurement data is protected during data
+    // reading and data is not updated. By reading ST2 register, this
+    // protection is released.  It is required to read ST2 register
+    // after data reading.
+    i2c_read_reg(i2c_gy91_compass, 0x09,&t,1);
+    
+    // if not overflown overwrite old values
+    if ((t&0x08)==0) {
+      xout = t_xout*gy91_mag_sense_adj_x;
+      yout = t_yout*gy91_mag_sense_adj_y;
+      zout = t_zout*gy91_mag_sense_adj_z;      
+    }
+  }
+
   // set up magnetometer mode for next time
-  unsigned char t=0x12;
-  i2c_write_reg(i2c_gy91_compass, 0x0A, &t, 1);
+  //unsigned char t=0x12;
+  //i2c_write_reg(i2c_gy91_compass, 0x0A, &t, 1);
 
   *x = 1200.0 * xout / 4096.0;
   *y = 1200.0 * yout / 4096.0;
   *z = 1200.0 * zout / 4096.0;
-
 }
 
 void gy91_read_mag(float *x, float *y, float *z) {
@@ -197,16 +239,32 @@ void gy91_calibrate_mag(unsigned int samples) {
   gy91_mag_xscale=xscale;
   gy91_mag_yscale=yscale;
   gy91_mag_zscale=zscale;
+
+  // update eeprom
+  ee_gy91_mag_xbias=xbias;
+  ee_gy91_mag_ybias=ybias;
+  ee_gy91_mag_zbias=zbias;
+  ee_gy91_mag_xscale=xscale;
+  ee_gy91_mag_yscale=yscale;
+  ee_gy91_mag_zscale=zscale;
 }
 
 // for testing - need to free this
 float *gy91_mag_calibration_data() {
-  float *ret=(float*)malloc(sizeof(float)*6);
+  float *ret=(float*)malloc(sizeof(float)*9);
   ret[0]=gy91_mag_xbias;
   ret[1]=gy91_mag_ybias;
   ret[2]=gy91_mag_zbias;
   ret[3]=gy91_mag_xscale;
   ret[4]=gy91_mag_yscale;
   ret[5]=gy91_mag_zscale;
+  return ret;
+}
+
+float *gy91_mag_sense_data() {
+  float *ret=(float*)malloc(sizeof(float)*3);
+  ret[0]=gy91_mag_sense_adj_x;
+  ret[1]=gy91_mag_sense_adj_y;
+  ret[2]=gy91_mag_sense_adj_z;
   return ret;
 }

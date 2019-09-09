@@ -30,12 +30,15 @@ cell_t EEMEM ee_heap[HEAP_SIZE]={ [0 ... HEAP_SIZE-1] = 0 };
 //unsigned int compiled_code_len = 57;
 
 // weft-simple.asm: wait - forward - wait - back (1st version running)
-cell_t compiled_code[] = {6, 9, 3, 32, 5, 1, 8, 7, 5, 2, 8, 8, 6, 6, 5, 8, 14, 3, 44, 5, 1, 8, 8, 5, 0, 8, 9, 1, 32};
-unsigned int compiled_code_len = 29;
+//cell_t compiled_code[] = {6, 9, 3, 32, 5, 1, 8, 7, 5, 2, 8, 8, 6, 6, 5, 8, 14, 3, 44, 5, 1, 8, 8, 5, 0, 8, 9, 1, 32};
+//unsigned int compiled_code_len = 29;
 
 void robot_init(robot_t *r, unsigned char id) {
   yarn_init(&r->machine);
   robot_reset(r,id);
+  //for (unsigned int i=0; i<compiled_code_len; i++) {
+  //  yarn_poke(&r->machine,32+i,compiled_code[i]);
+  //}
 }
 
 void robot_reset(robot_t *r, unsigned char id) {
@@ -55,11 +58,6 @@ void robot_reset(robot_t *r, unsigned char id) {
   yarn_poke(&r->machine,REG_SERVO_1_SMOOTH,MAKE_FIXED(0.2));
   yarn_poke(&r->machine,REG_SERVO_2_SMOOTH,MAKE_FIXED(0.2));
   yarn_poke(&r->machine,REG_SERVO_3_SMOOTH,MAKE_FIXED(0.2));
-
-  for (unsigned int i=0; i<compiled_code_len; i++) {
-    yarn_poke(&r->machine,32+i,compiled_code[i]);
-  }
-
 }
 
 void robot_halt(robot_t *r) {
@@ -117,7 +115,7 @@ void robot_update_sensors(robot_t *r) {
   yarn_poke(m,REG_COMP_Y,MAKE_FIXED(y/100.0f));
   yarn_poke(m,REG_COMP_Z,MAKE_FIXED(z/100.0f));*/
   float angle=atan2(y,x)*57.2958;
-  angle+=180; // set range to 0-360
+  //angle+=180; // set range to 0-360
   yarn_poke(m,REG_COMP_ANGLE,(short)angle);
   // check and clear flag
   static float compare_angle=0;
