@@ -201,7 +201,7 @@ def unit_test():
     #c.assemble_file("../asm/warp.asm")
 
     # wait - forward (simple weft version)
-    c.assemble_file("../asm/weft-simple.asm")
+    #c.assemble_file("../asm/weft-simple.asm")
 
 
 unit_test()

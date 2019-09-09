@@ -69,8 +69,9 @@ class radio:
         else:
             self.send(self.build_write(yarn.code_start,code))
         self.send(self.build_reset())                
-
-    def send_sync(self,addr,beat,ms_per_step,reg_sets,callback,context):
+        #self.send(self.build_eewrite())
+        
+    def send_sync(self,addr,beat,ms_per_step,a_reg_set,a_reg_val,led_set,led_val,callback,context):
         self.set_destination(addr)
         self.update_callback=callback
         self.update_context=context
@@ -87,20 +88,14 @@ class radio:
                 status = self.device.write(b)
                 if status!=32:
                     print("send failed to "+str(self.destination_address[4])+" retries: "+str(retries)+" "+str(status))
-
-                if self.device.isAckPayloadAvailable():
-                    data=[]
-                    size = self.device.getDynamicPayloadSize()
-                    self.device.read(data, size)
-                    if size==32:
-                        i = struct.unpack_from("hhhhhhhhhhhhhhhh","".join(map(chr,data)))
-                        return i
-                    else:
-                        print("ack payload size other than 32 bytes need supporting")
-                        return []
-
-    def build_seq(self,ms_per_step,length,pattern):
-        return struct.pack("cxIIs","M",ms_per_step,length,pattern[:26])
+                    #self.device.stopListening()
+                    #self.device.powerDown()
+                    #time.sleep(1)
+                    #self.device.powerUp()
+                    retries+=1
+                    #self.stop_osc=True
+                    #exit(0)
+                return status
             
     def build_ping(self):
         return struct.pack("cxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx","P")
@@ -111,14 +106,26 @@ class radio:
     def build_reset(self):
         return struct.pack("cxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx","R")
 
-    def build_sync(self,beat,ms_per_step,reg_sets):
-        ret = struct.pack("cxHH","S",beat,ms_per_step)
-        for i in range(0,7):
-            if i<len(reg_sets):
-                ret+=struct.pack("HH",reg[0],reg[1])
-            else:
-                ret+=struct.pack("HH",0,0)        
-        return ret
+    def build_eewrite(self):
+        return struct.pack("cxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx","E")
+
+    def build_sync(self,beat,ms_per_step,a_reg_set,a_reg_val,led_set,led_val):
+        #print(a_reg_set,a_reg_val)
+        #todo: fix for new format
+        send_a_reg=0
+        send_a_val=0
+        send_led_reg=0
+        send_led_val=0
+        if a_reg_set:
+            # hack for pm test
+            #send_a_reg=9
+            # overwrite code...
+            send_a_reg=32+6
+            send_a_val=a_reg_val
+        if led_set:
+            send_led_reg=2
+            send_led_val=led_val
+        return struct.pack("cxHHHHHHxxxxxxxxxxxxxxxxxx","S",beat,ms_per_step,send_a_reg,send_a_val,send_led_reg,send_led_val)
 
     def build_calibrate(self,samples):
         return struct.pack("cxHxxxxxxxxxxxxxxxxxxxxxxxxxxx","C",samples)

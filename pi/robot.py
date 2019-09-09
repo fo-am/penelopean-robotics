@@ -23,12 +23,19 @@ class robot:
         self.set_led=False
         self.led_state=False
         
+
     def pretty_print(self):
         out = "robot: "+str(self.telemetry[yarn.registers["ROBOT_ID"]])+"\n"
         out+= "pc: "+str(self.telemetry[yarn.registers["PC_MIRROR"]])+"\n"
         out+= "a: "+str(self.telemetry[yarn.registers["A"]])+"\n"
         out+= "step: "+str(self.telemetry[yarn.registers["STEP_COUNT"]])+"\n"
-        print(out)
+
+    def telemetry_callback(self,data):
+        if self.state=="disconnected" or self.state=="waiting":        
+            self.state="connected"
+        self.telemetry=data
+        #print("telemetry: "+str(self.address[4])+" "+str(data[0])+" "+str(data[9]))
+        self.ping_time=time.time()
                 
     def sync(self,radio,beat,ms_per_beat):
         reg_sets = []
@@ -50,14 +57,14 @@ class robot:
         with open(fn, 'r') as f:
             self.source=f.read()
         self.code = compiler.assemble_file(fn)
+        radio.send_code(self.address,self.code)
 
-    def save_eeprom(self,radio):
-        self.radio.send(self.radio.build_save_eeprom())
-
+    def write(self,addr,val,radio):
+        radio.send_set(self.address,addr,val)
+        
     # A register is cleared when the robot reaches it's end position
     # and set by the Pi when we are ready to start again
     def start_walking_set(self):
-        #radio.send_set(self.address,compiler.regs["A"],1)
         self.start_walking=True
 
     def led_set(self,state):
@@ -82,4 +89,4 @@ class robot:
         regs["comp_d"]=self.telemetry[yarn.registers["COMP_DELTA"]]
         regs["step_count"]=self.telemetry[yarn.registers["STEP_COUNT"]]
         regs["step_reset"]=self.telemetry[yarn.registers["STEP_COUNT_RESET"]]
-
+        regs["robot"]=self.telemetry[yarn.registers["ROBOT_ID"]]

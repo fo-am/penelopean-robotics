@@ -24,7 +24,7 @@ class win:
 
         self.line_offset=0
         
-        self.regs = [{"robot": i,
+        self.regs = [{"robot": 0,
                       "state": "disconnected",
                       "ping": 0,
                       "pc": 2,

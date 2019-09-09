@@ -22,17 +22,17 @@ def osc_loop(swarm):
 class swarm:
     def __init__(self):
         self.radio = radio.radio([0xa7, 0xa7, 0xa7, 0xa7, 0xaa])
-        self.swarm = [robot.robot([0xa7, 0xa7, 0xa7, 0xa7, 0x01]),
-                      robot.robot([0xa7, 0xa7, 0xa7, 0xa7, 0x02]),
-                      robot.robot([0xa7, 0xa7, 0xa7, 0xa7, 0x03]),
+        self.swarm = [#robot.robot([0xa7, 0xa7, 0xa7, 0xa7, 0x01]),
+                      #robot.robot([0xa7, 0xa7, 0xa7, 0xa7, 0x02]),
+                      #robot.robot([0xa7, 0xa7, 0xa7, 0xa7, 0x03]),
                       robot.robot([0xa7, 0xa7, 0xa7, 0xa7, 0x04]),
-                      robot.robot([0xa7, 0xa7, 0xa7, 0xa7, 0x05]),
-                      robot.robot([0xa7, 0xa7, 0xa7, 0xa7, 0x06]),
-                      robot.robot([0xa7, 0xa7, 0xa7, 0xa7, 0x07]),
-                      robot.robot([0xa7, 0xa7, 0xa7, 0xa7, 0x08])
+                      #robot.robot([0xa7, 0xa7, 0xa7, 0xa7, 0x05]),
+                      #robot.robot([0xa7, 0xa7, 0xa7, 0xa7, 0x06]),
+                      #robot.robot([0xa7, 0xa7, 0xa7, 0xa7, 0x07]),
+                      #robot.robot([0xa7, 0xa7, 0xa7, 0xa7, 0x08])
         ]
     
-        self.bpm=220
+        self.bpm=150
         self.beat=0
         self.beats_per_cycle = 1
         self.ms_per_beat = self.bpm_to_mspb(self.bpm)    
@@ -43,9 +43,9 @@ class swarm:
         self.state="weft-walking"
         
         self.compiler = yarn.compiler()
-        #self.osc_server = OSCServer(("192.168.0.1", 8000))
-        #self.osc_server.timeout = 0
-        #self.osc_server.addMsgHandler("/sync", sync_callback)
+        self.osc_server = OSCServer(("0.0.0.0", 8000))
+        self.osc_server.timeout = 0
+        self.osc_server.addMsgHandler("/sync", sync_callback)
         self.sync_pos=0
 
         # load code here
@@ -56,7 +56,7 @@ class swarm:
         #for id in self.warp_swarm:
         #    self.swarm[id].load_asm("../asm/warp.asm",self.compiler,self.radio)
 
-        #self.swarm[0].load_asm("../asm/slow_led.asm",self.compiler,self.radio)
+        #self.swarm[0].load_asm("../asm/pm.asm",self.compiler,self.radio)
         #self.swarm[0].load_asm("../asm/back_forward2.asm",self.compiler,self.radio)
 
         # start sync osc server
@@ -68,12 +68,18 @@ class swarm:
         #for r in self.swarm:
         #    r.pretty_print(self.compiler)
 
+        #self.some_leds_on([0])
+        #self.some_leds_on([4,5,6,7])
+        #self.some_leds_on([0,1,2,3])
 
-        self.leds_on()
+        #self.leds_on()
         #self.leds_off()
         #self.weave_pattern()
+
+        self.swarm[0].write(32+1,1,self.radio)
         
         if time.time()>self.last_sync+self.ms_per_beat/1000.0:
+            #self.swarm[0].load_asm("../asm/back_forward2.asm",self.compiler,self.radio)
             self.sync(self.beat,self.bpm)
             self.beat+=1
 
@@ -120,7 +126,12 @@ class swarm:
 
     def leds_on(self):
         for r in self.swarm:
-            r.led_state(True)
+            r.led_set(True)
+            
+    def some_leds_on(self,sel):
+        for i,r in enumerate(self.swarm):
+            if i in sel: r.led_set(True)
+            else: r.led_set(False)
 
     def leds_off(self):
         for r in self.swarm:
