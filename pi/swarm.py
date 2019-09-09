@@ -32,7 +32,7 @@ class swarm:
                       robot.robot([0xa7, 0xa7, 0xa7, 0xa7, 0x08])
         ]
     
-        self.bpm=220
+        self.bpm=150
         self.beat=0
         self.beats_per_cycle = 1
         self.ms_per_beat = self.bpm_to_mspb(self.bpm)    
@@ -43,9 +43,9 @@ class swarm:
         self.state="weft-walking"
         
         self.compiler = yarn.compiler()
-        #self.osc_server = OSCServer(("192.168.0.1", 8000))
-        #self.osc_server.timeout = 0
-        #self.osc_server.addMsgHandler("/sync", sync_callback)
+        self.osc_server = OSCServer(("0.0.0.0", 8000))
+        self.osc_server.timeout = 0
+        self.osc_server.addMsgHandler("/sync", sync_callback)
         self.sync_pos=0
 
         # load code here
@@ -68,14 +68,17 @@ class swarm:
         #for r in self.swarm:
         #    r.pretty_print(self.compiler)
 
+        #self.some_leds_on([0])
         #self.some_leds_on([4,5,6,7])
-        self.some_leds_on([0,1,2,3])
+        #self.some_leds_on([0,1,2,3])
 
         #self.leds_on()
-        #self.leds_off()
+        self.leds_off()
         #self.weave_pattern()
+
         
         if time.time()>self.last_sync+self.ms_per_beat/1000.0:
+            #self.swarm[0].load_asm("../asm/back_forward2.asm",self.compiler,self.radio)
             self.sync(self.beat,self.bpm)
             self.beat+=1
 
