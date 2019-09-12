@@ -41,10 +41,10 @@ class robot:
         reg_sets = []
         # update A register here, based on if the start flag has been set
         if self.start_walking:
-            reg_sets+=[yarn.registers["A"],1]
+            reg_sets+=[[yarn.registers["A"],1]]
             self.start_walking=False
         if self.set_led:
-            reg_sets+=[yarn.registers["LED"],self.led_state]
+            reg_sets+=[[yarn.registers["LED"],self.led_state]]
 
         telemetry = radio.send_sync(self.address,beat,ms_per_beat,reg_sets)
         if telemetry!=[]:

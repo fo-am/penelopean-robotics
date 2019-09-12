@@ -4,6 +4,84 @@ import yarn
 from OSC import OSCServer
 import time
 import threading
+import tangible
+
+import tangible
+import smbus
+bus = smbus.SMBus(1)
+
+i2c_addrs = [#0x0a, 0x0b, 0x0c, 0x0d,
+             0x0e, 0x0f, 0x10, 0x11,
+             0x12, 0x13, 0x14, 0x15,
+             0x16, 0x17, 0x18, 0x19]
+
+frequency=0.1
+
+def read_sensor_byte(bus,address,loc):
+    r=0
+    try:
+        r = bus.read_byte_data(address,loc)
+        if r!=0 and r!=1: r=0
+    except:
+        pass
+        #print("err: "+str(address))
+    return r
+
+def read_sensor(bus,addr):
+    return [read_sensor_byte(bus,addr,0x00),
+            read_sensor_byte(bus,addr,0x01),
+            read_sensor_byte(bus,addr,0x02),
+            read_sensor_byte(bus,addr,0x03)]
+    
+dn = 0
+up = 1
+lr = 2
+rl = 3
+st = 4
+
+layout = [[0x0a,0,st], [0x0b,0,st], [0x0c,0,st], [0x0d,0,st],
+          [0x0e,0,st], [0x0f,0,st], [0x10,0,st], [0x11,0,st],
+          [0x12,0,st], [0x13,0,st], [0x14,0,st], [0x15,0,st],
+          [0x16,0,st], [0x17,0,st], [0x18,0,st], [0x19,0,st]]
+
+tokens = {"circle":    [[0,0,0,0],[1,1,1,1]],
+
+          "rectangle": [[0,1,
+                         1,0],
+                        [1,0,
+                         0,1]],
+
+          "triangle":  [[1,1,
+                         0,0],
+                        [0,1,
+                         0,1],
+                        [0,0,
+                         1,1],
+                        [1,0,
+                         1,0]],
+          
+          "square":    [[0,0,0,1],[0,0,1,0],[0,1,0,0],[1,0,0,0],
+                        [1,1,1,0],[1,1,0,1],[1,0,1,1],[0,1,1,1]]}
+
+symbols = [[".",[1,1,1,1]],[".",[0,0,0,0]],
+           [".",[1,0,1,0]],[".",[0,1,0,1]],
+           [".",[1,1,0,0]],["f",[0,1,1,0]],[".",[0,0,1,1]],["b",[1,0,0,1]],
+           ["_",[1,0,0,0]],["_",[0,1,0,0]],["_",[0,0,1,0]],["_",[0,0,0,1]],
+           ["_",[0,1,1,1]],["_",[1,0,1,1]],["_",[1,1,0,1]],["_",[1,1,1,0]]]
+
+def convert_symbols(s):
+    return {tangible.convert_4bit_twist(v):k for k, v in s}
+
+symbols = convert_symbols(symbols)
+
+def build_pattern(data,symbols):
+    pat=[]
+    for i in range(0,4):
+        s=""
+        for v in data[i][:4]:
+            s+=symbols[v]+" "
+        pat.append(s)
+    return pat
 
 global _swarm 
 
@@ -24,7 +102,7 @@ class pmswarm:
         self.radio = radio.radio([0xa7, 0xa7, 0xa7, 0xa7, 0xaa])
         self.swarm = [#robot.robot([0xa7, 0xa7, 0xa7, 0xa7, 0x01]),
                       #robot.robot([0xa7, 0xa7, 0xa7, 0xa7, 0x02]),
-                      #robot.robot([0xa7, 0xa7, 0xa7, 0xa7, 0x03]),
+                      robot.robot([0xa7, 0xa7, 0xa7, 0xa7, 0x03]),
                       robot.robot([0xa7, 0xa7, 0xa7, 0xa7, 0x04]),
                       #robot.robot([0xa7, 0xa7, 0xa7, 0xa7, 0x05]),
                       #robot.robot([0xa7, 0xa7, 0xa7, 0xa7, 0x06]),
@@ -44,9 +122,16 @@ class pmswarm:
         self.osc_server.addMsgHandler("/sync", sync_callback)
         self.sync_pos=0
 
+        
         # load code here
-        self.swarm[0].load_asm("../asm/pm.asm",self.compiler,self.radio)
-
+        for r in self.swarm:
+            r.load_asm("../asm/pm.asm",self.compiler,self.radio)
+            r.write(13,240,self.radio)
+            
+        self.grid=tangible.sensor_grid(16,layout,tokens)
+        self.last=""
+        self.next_address=0
+        self.seq=0
         # start sync osc server
         #t = threading.Thread(target=osc_loop, args=(self,))
         #t.start()
@@ -61,14 +146,50 @@ class pmswarm:
         #self.leds_on()
         #self.leds_off()
 
-        # read pm and update robots directly
-        self.swarm[0].write(32+1,1,self.radio)
+        self.next_address+=1
+        if self.next_address>=len(i2c_addrs):
+            self.next_address=0
         
-        for robot in self.swarm:
-            if robot:
-                robot.update(self.radio)
+        address=i2c_addrs[self.next_address]
+        sensor_data=read_sensor(bus,address)
+        #print(address,sensor_data)
+        self.grid.update(frequency*16,address,sensor_data)
+        data = self.grid.data(4)
+        pat = build_pattern(data,symbols)
+        cc = pat[0]+pat[1]+pat[2]+pat[3]
+        #print("   "+pat[0]+"\n   "+pat[1]+"\n   "+pat[2]+"\n   "+pat[3])
+        if cc!=self.last:
+            self.last=cc
+            print("   "+pat[0]+"\n   "+pat[1]+"\n   "+pat[2]+"\n   "+pat[3])
 
-        self.radio.update()
+
+        if self.next_address==0:
+            self.seq+=1
+            if self.seq>=4: self.seq=0
+            for robot in range(0,len(self.swarm)):
+                row=robot+1
+                token = data[row][self.seq]
+                print(robot,row,self.seq,symbols[token])
+                if symbols[token]=='f':
+                    print("forward")
+                    self.swarm[robot].write(32+1,2,self.radio)
+                elif symbols[token]=='b':
+                    print("back")
+                    self.swarm[robot].write(32+1,3,self.radio)
+                else:
+                    pass
+                    self.swarm[robot].write(32+1,1,self.radio)
+                robot+=1
+                
+        # read pm and update robots directly
+        #self.swarm[0].write(32+1,2,self.radio)
+        #self.swarm[1].write(32+1,2,self.radio)
+        
+        #for robot in self.swarm:
+        #    if robot:
+        #        robot.update(self.radio)
+
+        #self.radio.update()
 
         
     def bpm_to_mspb(self,bpm):
@@ -102,4 +223,4 @@ if __name__ == "__main__":
     s = pmswarm()
     while True:
         s.update()
-        time.sleep(0.1)
+        time.sleep(frequency)
