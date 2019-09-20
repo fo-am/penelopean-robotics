@@ -5,6 +5,45 @@ from OSC import OSCServer
 import time
 import threading
 
+import tangible
+import smbus
+bus = smbus.SMBus(1)
+
+i2c_addrs = [0x0a, 0x0b, 0x0c, 0x0d,
+             0x0e, 0x0f, 0x10, 0x11,  
+             0x12, 0x13, 0x14, 0x15,
+             0x16, 0x17, 0x18, 0x19]
+
+dn = 0
+up = 1
+lr = 2
+rl = 3
+
+layout = [[0x0a,0,dn], [0x0b,1,dn], [0x0c,2,dn], [0x0d,3,dn],  
+          [0x0e,0,dn], [0x0f,1,dn], [0x10,2,dn], [0x11,3,dn], 
+          [0x12,0,dn], [0x13,1,dn], [0x14,2,dn], [0x15,3,dn],
+          [0x16,0,dn], [0x17,1,dn], [0x18,2,dn], [0x19,3,dn]]
+  
+tokens = {"circle":    [[0,0,0,0],[1,1,1,1]],
+
+          "rectangle": [[0,1,
+                         1,0],
+                        [1,0,
+                         0,1]],
+
+          "triangle":  [[1,1,
+                         0,0],
+                        [0,1,
+                         0,1],
+                        [0,0,
+                         1,1],
+                        [1,0,
+                         1,0]],
+          
+          "square":    [[0,0,0,1],[0,0,1,0],[0,1,0,0],[1,0,0,0],
+                        [1,1,1,0],[1,1,0,1],[1,0,1,1],[0,1,1,1]]}
+
+
 global _swarm 
 
 def sync_callback(path, tags, args, source):
@@ -37,6 +76,7 @@ class pmswarm:
         self.beats_per_cycle = 1
         self.ms_per_beat = self.bpm_to_mspb(self.bpm)    
         self.last_sync = time.time()
+        self.last=""
         
         self.compiler = yarn.compiler()
         self.osc_server = OSCServer(("0.0.0.0", 8000))
@@ -61,6 +101,18 @@ class pmswarm:
         #self.leds_on()
         #self.leds_off()
 
+        for address in i2c_addrs:
+            grid.update(frequency,address,
+                        mcp23017.read_inputs_a(bus,address),
+                        mcp23017.read_inputs_b(bus,address))
+            pat = build_pattern(grid.data(5),symbols)
+            cc = pat[0]+pat[1]+pat[2]+pat[3]+pat[4]
+            if cc!=self.last:
+                self.last=cc    
+                print("   "+pat[0]+"\n   "+pat[1]+"\n   "+pat[2]+"\n   "+pat[3]+"\n   "+pat[4]+"\n")
+
+
+        
         # read pm and update robots directly
         self.swarm[0].write(32+1,1,self.radio)
         

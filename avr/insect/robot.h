@@ -32,6 +32,7 @@
 #define REG_SERVO_STEP_COUNT 6
 #define REG_SERVO_STEP_COUNT_RESET 7
 #define REG_SERVO_NEXT_PATTERN_ID 8
+// telemetry visible user area
 #define REG_USR_A 9
 #define REG_USR_B 10
 #define REG_USR_C 11
