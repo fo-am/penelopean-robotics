@@ -16,6 +16,7 @@ class radio:
         self.startup()
         self.debug()
         self.stop_osc=False
+        self.telemetry=[]
         
     def debug(self):
         self.device.printDetails()        
@@ -34,9 +35,11 @@ class radio:
         self.device.enableAckPayload()
         self.device.openReadingPipe(1, self.address)
         self.device.openWritingPipe(self.destination_address)
+        self.telemetry=[]
 
 
     def set_destination(self,addr):
+        self.device.flush_tx();  
         if self.destination_address!=addr:
             self.destination_address=addr
             self.device.openWritingPipe(addr)
@@ -44,7 +47,11 @@ class radio:
     def request_telemetry(self,addr):
         self.set_destination(addr)
         return self.send(self.build_telemetry(0))
-        
+
+    def send_set(self,addr,address,val):
+        self.set_destination(addr)
+        self.send(self.build_write(address,struct.pack("H",val)))
+    
     def send_code(self,addr,code):
         self.set_destination(addr)
         l = len(code)
@@ -71,32 +78,34 @@ class radio:
         self.send(self.build_reset())                
         #self.send(self.build_eewrite())
         
-    def send_sync(self,addr,beat,ms_per_step,a_reg_set,a_reg_val,led_set,led_val,callback,context):
+    def send_sync(self,addr,beat,ms_per_step,reg_sets):
         self.set_destination(addr)
-        self.update_callback=callback
-        self.update_context=context
-        if a_reg_set==1: print("starting: "+str(addr[4]))
-        self.send(self.build_sync(beat,ms_per_step,reg_sets))
-
+        #if a_reg_set==1: print("starting: "+str(addr[4]))
+        return self.send(self.build_sync(beat,ms_per_step,reg_sets))
+        
     def send(self,b):
         #print("sending "+b[0]+" to "+str(self.destination_address))
         if len(b)!=32:
             print("wrong number of bytes in message: "+str(len(b)))
         else:
-            status = 0
-            while status!=32 and retries<self.max_retries: 
-                status = self.device.write(b)
-                if status!=32:
-                    print("send failed to "+str(self.destination_address[4])+" retries: "+str(retries)+" "+str(status))
-                    #self.device.stopListening()
-                    #self.device.powerDown()
-                    #time.sleep(1)
-                    #self.device.powerUp()
-                    retries+=1
-                    #self.stop_osc=True
-                    #exit(0)
-                return status
-            
+            status = self.device.write(b)
+            if status!=32:
+                print("send failed to "+str(self.destination_address[4])+" "+str(status))
+                
+            time.sleep(0.05)
+            self.update()
+            return self.telemetry
+
+    def update(self):
+        if self.device.isAckPayloadAvailable():
+            data=[]
+            size = self.device.getDynamicPayloadSize()
+            self.device.read(data, size)
+            if size==32:
+                self.telemetry = struct.unpack_from("hhhhhhhhhhhhhhhh","".join(map(chr,data)))
+            else:
+                print("ack payload size other than 32 bytes need supporting")
+
     def build_ping(self):
         return struct.pack("cxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx","P")
 
@@ -109,23 +118,14 @@ class radio:
     def build_eewrite(self):
         return struct.pack("cxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx","E")
 
-    def build_sync(self,beat,ms_per_step,a_reg_set,a_reg_val,led_set,led_val):
-        #print(a_reg_set,a_reg_val)
-        #todo: fix for new format
-        send_a_reg=0
-        send_a_val=0
-        send_led_reg=0
-        send_led_val=0
-        if a_reg_set:
-            # hack for pm test
-            #send_a_reg=9
-            # overwrite code...
-            send_a_reg=32+6
-            send_a_val=a_reg_val
-        if led_set:
-            send_led_reg=2
-            send_led_val=led_val
-        return struct.pack("cxHHHHHHxxxxxxxxxxxxxxxxxx","S",beat,ms_per_step,send_a_reg,send_a_val,send_led_reg,send_led_val)
+    def build_sync(self,beat,ms_per_step,reg_sets):
+        regs=[[0,0],[0,0],[0,0],[0,0],[0,0],[0,0],[0,0]]
+        
+        for i in range(0,len(reg_sets)):
+            regs[i]=reg_sets[i]
+
+        # just sending two regs for now because arg
+        return struct.pack("cxHHHHHHxxxxxxxxxxxxxxxxxx","S",beat,ms_per_step,regs[0][0],regs[0][1],regs[1][0],regs[1][1])
 
     def build_calibrate(self,samples):
         return struct.pack("cxHxxxxxxxxxxxxxxxxxxxxxxxxxxx","C",samples)

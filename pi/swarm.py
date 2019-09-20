@@ -49,7 +49,7 @@ class swarm:
         self.sync_pos=0
 
         # load code here
-        #self.swarm[0].load_asm("../asm/comptest.asm",self.compiler,self.radio)
+        self.swarm[0].load_asm("../asm/comptest.asm",self.compiler,self.radio)
 
         #for id in self.weft_swarm:
         #    self.swarm[id].load_asm("../asm/warp.asm",self.compiler,self.radio)
@@ -72,11 +72,11 @@ class swarm:
         #self.some_leds_on([4,5,6,7])
         #self.some_leds_on([0,1,2,3])
 
-        #self.leds_on()
+        self.leds_on()
         #self.leds_off()
         #self.weave_pattern()
 
-        self.swarm[0].write(32+1,1,self.radio)
+        #self.swarm[0].write(32+1,1,self.radio)
         
         if time.time()>self.last_sync+self.ms_per_beat/1000.0:
             #self.swarm[0].load_asm("../asm/back_forward2.asm",self.compiler,self.radio)
