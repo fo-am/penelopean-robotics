@@ -60,6 +60,7 @@
   (assert-eq 2 (argscheck2 1 2 3) 26)
   (assert-eq 5 (argscheck3 1 2 3) 27)
   (assert-eq 100 (subcall1 200 -100 888) 28)
+  (assert-eq 10 (subcall3 -100 888) 29)
   
   (set! led 9999)
   )
@@ -83,6 +84,10 @@
  (defun (subcall2 a b c)
    (+ c b))
 
+ (defun (subcall3 a b)
+   (set! a 10)
+   (subcall1 1 2 b)
+   a)
 
  
  (defun (assert-eq a b c)

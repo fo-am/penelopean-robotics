@@ -88,10 +88,10 @@ int main(int argc, char **argv) {
       	       yarn_stack_pos(&m),
       	       m.m_heap[24], // print the stack frame
       	       m.m_heap[REG_LED]);
-      //printf("%s",out);
-      //printf("\n");
+      printf("%s",out);
+      printf("\n");
       
-      //print_stack(&m);
+      print_stack(&m);
       //printf("\n");
       char c;
       //      scanf("%c",&c);

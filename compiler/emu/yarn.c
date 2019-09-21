@@ -58,6 +58,7 @@ void yarn_run(yarn_machine* m) {
   case ST: if (yarn_stack_count(m,1)) yarn_poke(m,yarn_peek(m,pc++),yarn_pop(m)); break;
   case STI: if (yarn_stack_count(m,1)) yarn_poke(m,yarn_peek(m,yarn_peek(m,pc++)),yarn_pop(m)); break;
   case STS: yarn_poke(m,yarn_peek(m,pc++),yarn_stack_pos(m)); break;
+  case STSI: if (yarn_stack_count(m,2)) { cell_t addr=yarn_pop(m); cell_t val=yarn_pop(m); yarn_poke(m,addr,val); } break;
   case DUP: if (yarn_stack_count(m,1)) yarn_push(m,yarn_top(m)); break;
   case DROP: for (unsigned int i=0; i<yarn_peek(m,pc); i++) { yarn_pop(m); } pc++; break;
   case SWAP: { cell_t a=yarn_pop(m); cell_t b=yarn_pop(m); yarn_push(m,a); yarn_push(m,b); } break;
@@ -92,7 +93,7 @@ void yarn_run(yarn_machine* m) {
   yarn_set_pc(m,pc);
 }
 
-cell_t yarn_pc(yarn_machine *m) {
+cell_t yarn_pc(const yarn_machine *m) {
   return m->m_heap[REG_PC];
 }
 
@@ -100,11 +101,11 @@ void yarn_set_pc(yarn_machine *m, cell_t v) {
   m->m_heap[REG_PC]=v;
 }
 
-cell_t yarn_stack_pos(yarn_machine *m) {
+cell_t yarn_stack_pos(const yarn_machine *m) {
   return m->m_heap[REG_ST];
 }
 
-const cell_t yarn_stack_count(yarn_machine* m, cell_t c) { 
+cell_t yarn_stack_count(const yarn_machine* m, cell_t c) { 
   return (c-1)<=STACK_START-m->m_heap[REG_ST];
 }
 
@@ -121,7 +122,7 @@ cell_t yarn_pop(yarn_machine* m) {
   return 0;   
 }
 
-cell_t yarn_top(yarn_machine* m) {
+cell_t yarn_top(const yarn_machine* m) {
   if (m->m_heap[REG_ST]<=STACK_START) {
     return m->m_heap[REG_ST];
   }
@@ -145,6 +146,7 @@ char *yarn_opcode_text(cell_t opcode) {
   case ST: return "st  ";
   case STI: return "sti ";
   case STS: return "sts ";
+  case STSI: return "stsi";
   case DUP: return "dup ";
   case DROP: return "drop";
   case SWAP: return "swap";

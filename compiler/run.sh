@@ -1,3 +1,3 @@
 racket yarnc.scm test.scm
-python yarn.py out.asm
+python yarnasm.py out.asm
 emu/yarnemu out.asm.bin    

@@ -42,39 +42,40 @@ typedef short signed_cell_t;
 #define ST    11 // store value on top of stack to address
 #define STI   12 // store value to location pointed to by contents of address
 #define STS   13 // store stack pointer in location
-#define DUP   14 // push a copy of the top value to the stack
-#define DROP  15
-#define SWAP  16
+#define STSI  14 // pop the address then pop the value to write to it 
+#define DUP   15 // push a copy of the top value to the stack
+#define DROP  16
+#define SWAP  17
 
 // decision making
-#define EQU  17 // push 1 if top two values are equal, 0 if not
-#define LT   18 // push 1 if top two values are less than, 0 if not
-#define GT   19 // push 1 if top two values are greater than, 0 if not
-#define LTE  20 // push 1 if top two values are less than or equal, 0 if not
-#define GTE  21 // ...
-#define SLT  22 // signed versions
-#define SGT  23
-#define SLTE 24
-#define SGTE 25
+#define EQU  18 // push 1 if top two values are equal, 0 if not
+#define LT   19 // push 1 if top two values are less than, 0 if not
+#define GT   20 // push 1 if top two values are greater than, 0 if not
+#define LTE  21 // push 1 if top two values are less than or equal, 0 if not
+#define GTE  22 // ...
+#define SLT  23 // signed versions
+#define SGT  24
+#define SLTE 25
+#define SGTE 26
 
 // maths
-#define ADD  26
-#define SUB  27
-#define ADDL 28
-#define SUBL 29
-#define INC  30
-#define DEC  31
-#define AND  32 // bitwise stuff
-#define OR   33
-#define XOR  34
-#define NOT  35
-#define NOTL 36
-#define RR   37 // rotate right
-#define RL   38 // rotate left
-#define SIN  39 // uses degrees
-#define COS  40 // "
-#define TAN  41 // "
-#define RND  42
+#define ADD  27
+#define SUB  28
+#define ADDL 29
+#define SUBL 30
+#define INC  31
+#define DEC  32
+#define AND  33 // bitwise stuff
+#define OR   34
+#define XOR  35
+#define NOT  36
+#define NOTL 37
+#define RR   38 // rotate right
+#define RL   39 // rotate left
+#define SIN  40 // uses degrees
+#define COS  41 // "
+#define TAN  42 // "
+#define RND  43
 
 typedef struct {
   cell_t *m_heap;
@@ -83,16 +84,16 @@ typedef struct {
 void yarn_init(yarn_machine *t);
 void yarn_reset(yarn_machine *t);
 void yarn_run(yarn_machine *t);
-cell_t yarn_pc(yarn_machine *t);
+cell_t yarn_pc(const yarn_machine *t);
 void yarn_set_pc(yarn_machine *t, cell_t v);
-cell_t yarn_stack_pos(yarn_machine *t);
+cell_t yarn_stack_pos(const yarn_machine *t);
 cell_t yarn_peek(const yarn_machine *m, cell_t addr);
 void yarn_poke(yarn_machine *m, cell_t addr, cell_t data);
 void yarn_run(yarn_machine *m);
-const cell_t yarn_stack_count(yarn_machine* m, cell_t c);
+cell_t yarn_stack_count(const yarn_machine* m, cell_t c);
 void yarn_push(yarn_machine *m, cell_t data);
 cell_t yarn_pop(yarn_machine *m);
-cell_t yarn_top(yarn_machine *m);
+cell_t yarn_top(const yarn_machine *m);
 
 char *yarn_opcode_text(cell_t opcode);
 

@@ -91,7 +91,7 @@
 (define (variable-lookup name)
   (define (_ l c)
     (cond
-     ((null? l) (display "cant find variable ")(display name)(newline) #f)
+     ((null? l) (display "yarnc ERROR: cant find variable ")(display name)(newline) #f)
      ((equal? name (car l)) (byte->string (+ c var-start)))
      (else (_ (cdr l) (+ c 1)))))
   (_ variables 0))
@@ -102,7 +102,7 @@
 
 (define (make-constant! name value)
   (when (not (string? value))
-	(display "ERROR: constant ")(display name)(display " is not a string: ")
+	(display "yarnc ERROR: constant ")(display name)(display " is not a string: ")
 	(display value)(newline))
   (set! constants (cons (list name value) constants)))
 
@@ -182,7 +182,7 @@
       (number->string x)
       (let ((lu (lookup x)))	
         (if lu
-	    (string-append lu "\t;; " (symbol->string x))
+	    (string-append lu "\t\t;; " (symbol->string x))
 	    (symbol->string x)))))
 
 ;; is this an immediate value
@@ -313,8 +313,9 @@
   (if (is-fnarg? (cadr x))
       (append
        (emit-expr (caddr x))
-       (emit "ld" (fnarg-lookup (cadr x)))
-       (emit "st" stack-frame)
+       (emit "ld" stack-frame)
+       (emit "addl" (fnarg-lookup (cadr x)))
+       (emit "stsi")
        (emit "ldl" "0"))
       (append
        (emit-expr (caddr x))
@@ -523,7 +524,7 @@
        (emit ";; ending " (symbol->string (car x)))
        )))
    (else
-    (display "don't understand ")(display x)(newline) '())))
+    (display "yarnc: I don't understand ")(display x)(newline) '())))
 
 ;----------------------------------------------------------------
 
@@ -567,15 +568,14 @@
 (define (compile-program x)
   (set! variables '())
   (set! constants '())
-  (foldl
-   (lambda (x r)
-     (append r (emit-expr (pre-process x))))
-   '() x))
-
-;;  (let ((done (emit-expr (pre-process x))))
-    ;;(display "compiled size: ")(display (length done))(newline)
+  (let ((done
+	 (foldl
+	  (lambda (x r)
+	    (append r (emit-expr (pre-process x))))
+	  '() x)))
+    (display "yarnc: compiled size: ")(display (length done))(newline)
     ;;(histogram-print (sort histogram (lambda (a b) (> (cadr a) (cadr b)))))
-;;    done))
+    done))
 
 (define (output fn x)
   (let ((f (open-output-file fn #:exists 'replace)))
