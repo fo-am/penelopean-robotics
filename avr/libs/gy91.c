@@ -36,6 +36,7 @@ static const unsigned char i2c_gy91_compass=0x0c<<1;
 static const unsigned char i2c_gy91_pressure=0x76<<1;
 
 // store calibration data in eeprom
+float EEMEM ee_gy91_mag_calibrated=0.0;
 float EEMEM ee_gy91_mag_xbias=0.0;
 float EEMEM ee_gy91_mag_ybias=0.0;
 float EEMEM ee_gy91_mag_zbias=0.0;
@@ -43,6 +44,7 @@ float EEMEM ee_gy91_mag_xscale=1.0f;
 float EEMEM ee_gy91_mag_yscale=1.0f;
 float EEMEM ee_gy91_mag_zscale=1.0f;
 
+float gy91_mag_calibrated=0.0;
 float gy91_mag_xbias=0.0;
 float gy91_mag_ybias=0.0;
 float gy91_mag_zbias=0.0;
@@ -105,12 +107,13 @@ int gy91_init() {
   _delay_ms(50);
 
   // update RAM calibration data from eeprom
-  gy91_mag_xbias=ee_gy91_mag_xbias;
-  gy91_mag_ybias=ee_gy91_mag_ybias;
-  gy91_mag_zbias=ee_gy91_mag_zbias;
-  gy91_mag_xscale=ee_gy91_mag_xscale;
-  gy91_mag_yscale=ee_gy91_mag_yscale;
-  gy91_mag_zscale=ee_gy91_mag_zscale;
+  gy91_mag_calibrated=eeprom_read_float(&ee_gy91_mag_calibrated);
+  gy91_mag_xbias=eeprom_read_float(&ee_gy91_mag_xbias);
+  gy91_mag_ybias=eeprom_read_float(&ee_gy91_mag_ybias);
+  gy91_mag_zbias=eeprom_read_float(&ee_gy91_mag_zbias);
+  gy91_mag_xscale=eeprom_read_float(&ee_gy91_mag_xscale);
+  gy91_mag_yscale=eeprom_read_float(&ee_gy91_mag_yscale);
+  gy91_mag_zscale=eeprom_read_float(&ee_gy91_mag_zscale);
 
   return 0;
 }
@@ -185,9 +188,9 @@ void gy91_read_mag_uncalibrated(float *x, float *y, float *z) {
 void gy91_read_mag(float *x, float *y, float *z) {
   gy91_read_mag_uncalibrated(x,y,z);
   // apply calibration
-  *x = *x/gy91_mag_xscale+gy91_mag_xbias;
-  *y = *y/gy91_mag_yscale+gy91_mag_ybias;
-  *z = *z/gy91_mag_zscale+gy91_mag_zbias;
+  *x = *x/gy91_mag_xscale-gy91_mag_xbias;
+  *y = *y/gy91_mag_yscale-gy91_mag_ybias;
+  *z = *z/gy91_mag_zscale-gy91_mag_zbias;
 }
 
 void gy91_calibrate_mag(unsigned int samples) {
@@ -233,6 +236,7 @@ void gy91_calibrate_mag(unsigned int samples) {
   yscale = av/yscale;
   zscale = av/zscale;
 
+  gy91_mag_calibrated=samples;
   gy91_mag_xbias=xbias;
   gy91_mag_ybias=ybias;
   gy91_mag_zbias=zbias;
@@ -241,23 +245,25 @@ void gy91_calibrate_mag(unsigned int samples) {
   gy91_mag_zscale=zscale;
 
   // update eeprom
-  ee_gy91_mag_xbias=xbias;
-  ee_gy91_mag_ybias=ybias;
-  ee_gy91_mag_zbias=zbias;
-  ee_gy91_mag_xscale=xscale;
-  ee_gy91_mag_yscale=yscale;
-  ee_gy91_mag_zscale=zscale;
+  eeprom_update_float(&ee_gy91_mag_calibrated,gy91_mag_calibrated);
+  eeprom_update_float(&ee_gy91_mag_xbias,xbias);
+  eeprom_update_float(&ee_gy91_mag_ybias,ybias);
+  eeprom_update_float(&ee_gy91_mag_zbias,zbias);
+  eeprom_update_float(&ee_gy91_mag_xscale,xscale);
+  eeprom_update_float(&ee_gy91_mag_yscale,yscale);
+  eeprom_update_float(&ee_gy91_mag_zscale,zscale);
 }
 
 // for testing - need to free this
 float *gy91_mag_calibration_data() {
-  float *ret=(float*)malloc(sizeof(float)*9);
-  ret[0]=gy91_mag_xbias;
-  ret[1]=gy91_mag_ybias;
-  ret[2]=gy91_mag_zbias;
-  ret[3]=gy91_mag_xscale;
-  ret[4]=gy91_mag_yscale;
-  ret[5]=gy91_mag_zscale;
+  float *ret=(float*)malloc(sizeof(float)*7);
+  ret[0]=gy91_mag_calibrated;
+  ret[1]=gy91_mag_xbias;
+  ret[2]=gy91_mag_ybias;
+  ret[3]=gy91_mag_zbias;
+  ret[4]=gy91_mag_xscale;
+  ret[5]=gy91_mag_yscale;
+  ret[6]=gy91_mag_zscale;
   return ret;
 }
 

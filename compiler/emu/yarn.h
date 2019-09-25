@@ -19,7 +19,7 @@
 typedef unsigned short cell_t;    
 typedef short signed_cell_t;    
 #define HEAP_SIZE 2048
-#define STACK_START HEAP_SIZE
+#define STACK_START (HEAP_SIZE-1)
 #define REG_PC 0
 #define REG_ST 1
 

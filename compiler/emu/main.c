@@ -34,7 +34,7 @@
 
 void print_stack(yarn_machine *m) {
   char stack[1024]="\0";
-  for (int i=HEAP_SIZE; i>HEAP_SIZE-10; i--) {
+  for (int i=yarn_stack_pos(m); i<HEAP_SIZE; i++) {
     char t[1024];
     if (yarn_stack_pos(m)==i) {
       snprintf(t,1024,"[%03d] ", m->m_heap[i]);

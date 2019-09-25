@@ -85,13 +85,13 @@ void robot_tick(unsigned int delta_ms, robot_t *r) {
 
 void robot_write_ee_heap(robot_t *r) {
   for (int n=0; n<HEAP_SIZE; n++) {
-    ee_heap[n]=r->machine.m_heap[n];
+    eeprom_update_word((uint16_t*)(&ee_heap[n]),r->machine.m_heap[n]);
   }
 }
 
 void robot_read_ee_heap(robot_t *r) {
   for (int n=0; n<HEAP_SIZE; n++) {
-    r->machine.m_heap[n]=ee_heap[n];
+    r->machine.m_heap[n]=eeprom_read_word((uint16_t*)(&ee_heap[n]));
   }
 }
 
