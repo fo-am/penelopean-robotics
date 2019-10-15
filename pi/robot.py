@@ -3,8 +3,6 @@ import radio
 import time
 
 # things we want to be able to do:
-# * calibrate
-# * write code to eeprom
 # * tweak servo defaults
 # * queue of messages to send?
 
@@ -52,7 +50,14 @@ class robot:
             print("telemetry: "+str(self.address[4])+" "+str(self.telemetry[0])+" "+str(self.telemetry[9]))
             # stop update requesting telemetry for a bit
             self.ping_time=time.time()
+
+    def sync2(self,radio,beat,ms_per_beat):
+        reg_sets = []
+        radio.send_sync(self.address,beat,ms_per_beat,reg_sets)
             
+    def calibrate(self,radio,do_cali,samples,mode):
+        return radio.send_calibrate(self.address,do_cali,samples,mode)
+
     def load_asm(self,fn,compiler,radio):
         with open(fn, 'r') as f:
             self.source=f.read()
@@ -61,6 +66,9 @@ class robot:
 
     def write(self,addr,val,radio):
         radio.send_set(self.address,addr,val)
+
+    def save_eeprom(self,radio):
+        radio.send_save_eeprom(self.address)
         
     # A register is cleared when the robot reaches it's end position
     # and set by the Pi when we are ready to start again

@@ -52,6 +52,14 @@ class radio:
         self.set_destination(addr)
         self.send(self.build_write(address,struct.pack("H",val)))
     
+    def send_calibrate(self,addr,do_cali,samples,sense):
+        self.set_destination(addr)
+        return self.send(self.build_calibrate(do_cali,samples,sense))
+
+    def send_save_eeprom(self,addr):
+        self.set_destination(addr)
+        self.send(self.build_eewrite())
+    
     def send_code(self,addr,code):
         self.set_destination(addr)
         l = len(code)
@@ -99,12 +107,17 @@ class radio:
     def update(self):
         if self.device.isAckPayloadAvailable():
             data=[]
+            self.telemetry=[]
             size = self.device.getDynamicPayloadSize()
             self.device.read(data, size)
             if size==32:
                 self.telemetry = struct.unpack_from("hhhhhhhhhhhhhhhh","".join(map(chr,data)))
+            elif size==28: # calibration data
+                self.telemetry = struct.unpack_from("fffffff","".join(map(chr,data)))                
+            elif size==12: # sense data
+                self.telemetry = struct.unpack_from("fff","".join(map(chr,data)))                
             else:
-                print("ack payload size other than 32 bytes need supporting")
+                print("unexpected ack payload size of "+str(size))
 
     def build_ping(self):
         return struct.pack("cxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx","P")
@@ -127,11 +140,8 @@ class radio:
         # just sending two regs for now because arg
         return struct.pack("cxHHHHHHxxxxxxxxxxxxxxxxxx","S",beat,ms_per_step,regs[0][0],regs[0][1],regs[1][0],regs[1][1])
 
-    def build_calibrate(self,samples):
-        return struct.pack("cxHxxxxxxxxxxxxxxxxxxxxxxxxxxx","C",samples)
-
-    def build_save_eeprom(self):
-        return struct.pack("cxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx","E",samples)
+    def build_calibrate(self,do_cali,samples,return_sense):
+        return struct.pack("cbHbxxxxxxxxxxxxxxxxxxxxxxxxxxx","C",do_cali,samples,return_sense)
 
     def build_telemetry(self,addr):
         return struct.pack("cxHxxxxxxxxxxxxxxxxxxxxxxxxxxxx","T",addr)  

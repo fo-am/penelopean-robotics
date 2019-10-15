@@ -3,7 +3,7 @@ start:	ldl	1
 	ldl	WALK_FORWARD
 	st	NEXT_PATTERN
 xxx:	ld   	STEP_COUNT  
-	ldl	5
+	ldl	10
 	lte
 	jpz	xxx
 	ldl	1
@@ -11,7 +11,7 @@ xxx:	ld   	STEP_COUNT
 	ldl	WALK_BACKWARD
 	st	NEXT_PATTERN
 yyy:	ld   	STEP_COUNT  
-	ldl	5
+	ldl	10
 	lte
 	jpz	yyy
 	jmp  	start
