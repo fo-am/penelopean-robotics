@@ -274,7 +274,8 @@
 (define (emit-load-immediate x)
   (cond
     ((number? x) (emit "ldl" (number->string x)))
-    ;; todo - is the symbol a constant??
+    ((and (symbol? x) (constant-lookup x))
+     (emit "ldl" (constant-lookup x) (string-append "\t;; const " (symbol->string x))))
     ((symbol? x) (emit-load-variable x))))
 
 (define (emit-defvar x)

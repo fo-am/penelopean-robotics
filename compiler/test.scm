@@ -1,20 +1,25 @@
 (
+ (defconst ccc "213")
+
  (forever
   (defvar i 99)
   (assert-eq i 99 1)
   (set! i 20)
   (assert-eq i 20 2)
+  (assert-eq ccc 213 4)
+  (assert-eq walk-forward 2 4)
+
   ;; basic maths
   (set! i (+ i 1))
-  (assert-eq i 21 3)
+  (assert-eq i 21 5)
   (set! i (- i 1))
-  (assert-eq i 20 4)
+  (assert-eq i 20 6)
 
   ;; if
   (if 0 (set! i 99) (set! i 30))
-  (assert-eq i 30 5)
+  (assert-eq i 30 7)
   (if 1 (set! i 99) (set! i 20))
-  (assert-eq i 99 6)
+  (assert-eq i 99 7)
   ;; when
   (when 0 (set! i 102))
   (assert-eq i 99 7)
