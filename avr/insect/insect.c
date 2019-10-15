@@ -21,8 +21,8 @@
 #include <robot.h>
 #include <insect.h>
 
-#define ROBOT_ID 0x09 // also change the id below!
-#define RADIO_ID 0xA7A7A7A709
+#define ROBOT_ID 0x08 // also change the id below!
+#define RADIO_ID 0xA7A7A7A708
 #define RADIO_PI 0xA7A7A7A7AA
 
 #define UPDATE_FREQ_HZ 50
@@ -122,7 +122,7 @@ int main (void) {
 	  nRF24L01p_ack_payload(0,(const byte *)calibration_data,sizeof(float)*7);
 	  free(calibration_data);
 	} break;
-	case 1: { // or calculated calibration data
+	case 1: { // or factory calibration data
 	  float *sense_data = gy91_mag_sense_data();	
 	  nRF24L01p_enable_ack_payload();
 	  nRF24L01p_ack_payload(0,(const byte *)sense_data,sizeof(float)*3);

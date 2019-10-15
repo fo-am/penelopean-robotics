@@ -128,13 +128,40 @@ void servo_motion_seq_load_next_pattern(servo_motion_seq *seq) {
     // skip
   } break;
   case MOTION_SEQ_PATTERN_ID_STOPPED: {
-    servo_motion_seq_pattern(seq, "00000000000000000000000000");
+    servo_motion_seq_pattern(seq, "000000000000");
   } break;
   case MOTION_SEQ_PATTERN_ID_FORWARD: {
-    servo_motion_seq_pattern(seq, "AAaaAaaAAAaa00000000000000");
+    servo_motion_seq_pattern(seq, "AAaaAaaAAAaa");
   } break;
   case MOTION_SEQ_PATTERN_ID_BACKWARD: {
-    servo_motion_seq_pattern(seq, "AAaaaAAaAAaa00000000000000");
+    servo_motion_seq_pattern(seq, "AAaaaAAaAAaa");
+  } break;
+  case MOTION_SEQ_PATTERN_ID_LEFT1: {
+    servo_motion_seq_pattern(seq, "AAaaa00aAAaa");
+  } break;
+  case MOTION_SEQ_PATTERN_ID_LEFT2: {
+    servo_motion_seq_pattern(seq, "AAaab00bAAaa");
+  } break;
+  case MOTION_SEQ_PATTERN_ID_LEFT3: {
+    servo_motion_seq_pattern(seq, "AAaabaabAAaa");
+  } break;
+  case MOTION_SEQ_PATTERN_ID_LEFT4: {
+    servo_motion_seq_pattern(seq, "AAaacaacAAaa");
+  } break;
+  case MOTION_SEQ_PATTERN_ID_RIGHT1: {
+    servo_motion_seq_pattern(seq, "AAaa0aa0AAaa");
+  } break;
+  case MOTION_SEQ_PATTERN_ID_RIGHT2: {
+    servo_motion_seq_pattern(seq, "AAaa0bb0AAaa");
+  } break;
+  case MOTION_SEQ_PATTERN_ID_RIGHT3: {
+    servo_motion_seq_pattern(seq, "AAaaabbaAAaa");
+  } break;
+  case MOTION_SEQ_PATTERN_ID_RIGHT4: {
+    servo_motion_seq_pattern(seq, "AAaaaccaAAaa");
+  } break;
+  case MOTION_SEQ_PATTERN_ID_SILLY: {
+    servo_motion_seq_pattern(seq, "AaAaAaAaAaAa");
   } break;
   default: {
 
@@ -227,7 +254,7 @@ void main() {
 
   servo_motion_seq_init(&seq, 8);
   seq.ms_per_step=500;
-  servo_motion_seq_pattern(&seq, "aAaAaAaAaAaAaAaAaAaAaAaA");
+  servo_motion_seq_pattern(&seq, "aAaAaAaAaAaA");
   seq.next_pattern_id=MOTION_SEQ_PATTERN_ID_NULL;
 
   int last=0;
