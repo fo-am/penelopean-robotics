@@ -18,75 +18,84 @@
 
 typedef unsigned short cell_t;    
 typedef short signed_cell_t;    
-#define STACK_SIZE 8
-#define HEAP_SIZE 256
+#define HEAP_SIZE 2048
+#define STACK_START (HEAP_SIZE-1)
+#define REG_PC 0
+#define REG_ST 1
+#define REG_CODE_START 32
 
 // yarn machine instructions
 #define NOP   0 // do nothing
 
 // flow control
-#define JMP   1 // jump absolute
-#define JPR   2 // jupp relative (operand can be negative)
-#define JPZ   3 // jump if top is zero
-#define JPRZ  4 // jupp relative (operand can be negative) if top is zero
+#define JMP   1  // jump absolute
+#define JPR   2  // jupp relative (operand can be negative)
+#define JPZ   3  // jump if top is zero
+#define JPRZ  4  // jupp relative (operand can be negative) if top is zero
+#define JSR   5 
+#define RTS   6
 
 // memory operators
-#define LDL   5 // load literal to stack
-#define LD    6 // load contents of address to stack
-#define LDI   7 // load value pointed to by contents of address
-#define ST    8 // store value on top of stack to address
-#define STI   9 // store value to location pointed to by contents of address
-#define DUP   10 // push a copy of the top value to the stack
+#define LDL   7  // load literal to stack
+#define LD    8  // load contents of address to stack
+#define LDI   9  // load value pointed to by contents of address
+#define LDSI  10  // load value pointed to by top of stack
+#define ST    11 // store value on top of stack to address
+#define STI   12 // store value to location pointed to by contents of address
+#define STS   13 // store stack pointer in location
+#define STSI  14 // pop the address then pop the value to write to it 
+#define DUP   15 // push a copy of the top value to the stack
+#define DROP  16
+#define SWAP  17
 
 // decision making
-#define EQU  11 // push 1 if top two values are equal, 0 if not
-#define LT   12 // push 1 if top two values are less than, 0 if not
-#define GT   13 // push 1 if top two values are greater than, 0 if not
-#define LTE  14 // push 1 if top two values are less than or equal, 0 if not
-#define GTE  15 // ...
-#define SLT  16 // signed versions
-#define SGT  17
-#define SLTE 18
-#define SGTE 19
+#define EQU  18 // push 1 if top two values are equal, 0 if not
+#define LT   19 // push 1 if top two values are less than, 0 if not
+#define GT   20 // push 1 if top two values are greater than, 0 if not
+#define LTE  21 // push 1 if top two values are less than or equal, 0 if not
+#define GTE  22 // ...
+#define SLT  23 // signed versions
+#define SGT  24
+#define SLTE 25
+#define SGTE 26
 
 // maths
-#define ADD  20
-#define SUB  21
-#define INC  22
-#define DEC  23
-#define AND  24 // bitwise stuff
-#define OR   25
-#define XOR  26
-#define NOT  27
-#define RR   28 // rotate right
-#define RL   29 // rotate left
-#define SIN  30 // uses degrees
-#define COS  31 // "
-#define TAN  32 // "
-#define RND  33
-
-// misc helper for looping
-#define INCI 34 // increment value in address in place
-#define DECI 35 // decrement value in address in place
-#define INCP 36 // increment value in address in place and push
-#define DECP 37 // decrement value in address in place and push
+#define ADD  27
+#define SUB  28
+#define ADDL 29
+#define SUBL 30
+#define INC  31
+#define DEC  32
+#define AND  33 // bitwise stuff
+#define OR   34
+#define XOR  35
+#define NOT  36
+#define NOTL 37
+#define RR   38 // rotate right
+#define RL   39 // rotate left
+#define SIN  40 // uses degrees
+#define COS  41 // "
+#define TAN  42 // "
+#define RND  43
 
 typedef struct {
-  cell_t m_pc;
-  int m_stack_pos;
-  cell_t *m_stack;
   cell_t *m_heap;
 } yarn_machine;
-    
+
 void yarn_init(yarn_machine *t);
 void yarn_reset(yarn_machine *t);
 void yarn_run(yarn_machine *t);
+cell_t yarn_pc(const yarn_machine *t);
+void yarn_set_pc(yarn_machine *t, cell_t v);
+cell_t yarn_stack_pos(const yarn_machine *t);
 cell_t yarn_peek(const yarn_machine *m, cell_t addr);
 void yarn_poke(yarn_machine *m, cell_t addr, cell_t data);
 void yarn_run(yarn_machine *m);
-const cell_t yarn_stack_count(yarn_machine* m, cell_t c);
+cell_t yarn_stack_count(const yarn_machine* m, cell_t c);
 void yarn_push(yarn_machine *m, cell_t data);
 cell_t yarn_pop(yarn_machine *m);
-cell_t yarn_top(yarn_machine *m);
+cell_t yarn_top(const yarn_machine *m);
+
+char *yarn_opcode_text(cell_t opcode);
 
 #endif

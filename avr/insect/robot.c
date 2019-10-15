@@ -25,26 +25,14 @@
 // probably is zero anyway, but it makes the eep file so...
 cell_t EEMEM ee_heap[HEAP_SIZE]={ [0 ... HEAP_SIZE-1] = 0 };
 
-// yarn.asm: wait - forward - wait - back (1st version running)
-//cell_t compiled_code[] = {6, 9, 3, 32, 5, 1, 8, 7, 5, 2, 8, 8, 6, 6, 5, 8, 14, 3, 44, 5, 1, 8, 8, 5, 0, 8, 9, 0, 6, 9, 3, 60, 5, 3, 8, 8, 5, 1, 8, 7, 6, 6, 5, 8, 14, 3, 72, 5, 1, 8, 8, 5, 0, 8, 9, 1, 32 };
-//unsigned int compiled_code_len = 57;
-
-// weft-simple.asm: wait - forward - wait - back (1st version running)
-//cell_t compiled_code[] = {6, 9, 3, 32, 5, 1, 8, 7, 5, 2, 8, 8, 6, 6, 5, 8, 14, 3, 44, 5, 1, 8, 8, 5, 0, 8, 9, 1, 32};
-//unsigned int compiled_code_len = 29;
-
 void robot_init(robot_t *r, unsigned char id) {
   yarn_init(&r->machine);
   robot_reset(r,id);
-  //for (unsigned int i=0; i<compiled_code_len; i++) {
-  //  yarn_poke(&r->machine,32+i,compiled_code[i]);
-  //}
 }
 
 void robot_reset(robot_t *r, unsigned char id) {
   r->running=1;
   r->id=id;
-  r->machine.m_pc=REG_CODE_START;
   // set up motion sequencer for default walk patterns
   servo_motion_seq_init(&r->seq, 4);
   // 500 ms = 120 bpm
@@ -69,7 +57,6 @@ void robot_tick(unsigned int delta_ms, robot_t *r) {
     // update registers
     // for debugging, but pc should prob be an internal register anyway
     yarn_poke(&r->machine,REG_ROBOT_ID,r->id);
-    yarn_poke(&r->machine,REG_PC_MIRROR,r->machine.m_pc);
     robot_update_sensors(r);
     robot_update_servos(r);
     yarn_run(&r->machine);
