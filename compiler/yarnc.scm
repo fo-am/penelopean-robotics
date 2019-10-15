@@ -52,12 +52,6 @@
     (reg-usr-end                "0032")
     (reg-code-start             "0032")
     
-    ;; constants
-    (walk-null "0000")
-    (walk-stop "0001")
-    (walk-forward "0002")
-    (walk-backward "0003")
-
     (swarm-pulse "0009")
     
     ))
@@ -99,7 +93,21 @@
 
 ;;----------------------------------------------------------------
 ;; constants lookup
-(define constants '())
+(define constants 
+  '((walk-null "0")
+    (walk-stop "1")
+    (walk-forward "2")
+    (walk-backward "3")
+    (turn-left1 "4")
+    (turn-left2 "5")
+    (turn-left3 "6")
+    (turn-left4 "7")
+    (turn-right1 "8")
+    (turn-right2 "9")
+    (turn-right3 "10")
+    (turn-right4 "11")
+    (walk-silly "12")
+    ))
 
 (define (make-constant! name value)
   (when (not (string? value))
@@ -266,6 +274,7 @@
 (define (emit-load-immediate x)
   (cond
     ((number? x) (emit "ldl" (number->string x)))
+    ;; todo - is the symbol a constant??
     ((symbol? x) (emit-load-variable x))))
 
 (define (emit-defvar x)
@@ -575,7 +584,7 @@
 
 (define (compile-program x)
   (set! variables '())
-  (set! constants '())
+;;  (set! constants '())
   (let ((done
 	 (foldl
 	  (lambda (x r)
