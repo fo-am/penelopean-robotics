@@ -235,7 +235,14 @@
 	   (emit "drop" "1")
 	   (emit-expr-list (cdr l))))))))
 
-
+(define (emit-expr-list-no-value l)
+  (cond
+    ((null? l) '())
+    (else     
+     (append
+      (emit-expr (car l))
+      (emit "drop" "1")
+      (emit-expr-list-no-value (cdr l))))))
 
 (define (emit-asm x)
   (let ((r
@@ -343,7 +350,7 @@
   (let ((label-start (generate-label "forever_start")))
     (append
      (emit-label label-start)
-     (emit-expr-list (cdr x))
+     (emit-expr-list-no-value (cdr x))
      (emit "jmp" label-start)))) 
 
 ;; (loop var from to expr)

@@ -14,7 +14,7 @@ class radio:
         self.max_retries = 1 # can be a bit cleverer than this
         self.time_between_sends=0
         self.startup()
-        self.debug()
+        #self.debug()
         self.stop_osc=False
         self.telemetry=[]
         
@@ -24,7 +24,7 @@ class radio:
     def startup(self):
         self.device = NRF24(GPIO, spidev.SpiDev())
         self.device.begin(0, 17)
-        time.sleep(1)
+        time.sleep(0.1)
         self.device.setRetries(15,15)
         self.device.setPayloadSize(32)
         self.device.setChannel(100)

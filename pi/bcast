@@ -1,0 +1,93 @@
+#! /usr/bin/env python
+
+import radio
+import robot
+import yarn
+from OSC import OSCServer
+import time
+import threading
+import sys 
+import math
+import subprocess
+
+class pmswarm:
+    def __init__(self):
+        self.radio = radio.radio([0xa7, 0xa7, 0xa7, 0xa7, 0xaa])
+        self.swarm = [#robot.robot([0xa7, 0xa7, 0xa7, 0xa7, 0x01]),
+                      ##robot.robot([0xa7, 0xa7, 0xa7, 0xa7, 0x02]),
+                      ##robot.robot([0xa7, 0xa7, 0xa7, 0xa7, 0x03]),
+                      ##robot.robot([0xa7, 0xa7, 0xa7, 0xa7, 0x04]),
+                      ##robot.robot([0xa7, 0xa7, 0xa7, 0xa7, 0x05]),
+                      #robot.robot([0xa7, 0xa7, 0xa7, 0xa7, 0x06]),
+                      #robot.robot([0xa7, 0xa7, 0xa7, 0xa7, 0x07]),
+                      #robot.robot([0xa7, 0xa7, 0xa7, 0xa7, 0x08]),
+                      robot.robot([0xa7, 0xa7, 0xa7, 0xa7, 0x09])
+        ]
+    
+        self.compiler = yarn.compiler()
+
+        if len(sys.argv)>2 and sys.argv[1]=="prog":
+            # load code here
+            for r in self.swarm:
+                r.load_asm(sys.argv[2],self.compiler,self.radio)
+
+        if len(sys.argv)>2 and sys.argv[1]=="compile":
+            result = subprocess.Popen(['racket', '../compiler/yarnc.scm', sys.argv[2]],
+                                      stdout=subprocess.PIPE).communicate()[0]
+            print(result)
+            for r in self.swarm:
+                r.load_asm("out.asm",self.compiler,self.radio)
+                
+        if len(sys.argv)>2 and sys.argv[1]=="led":
+            status=0
+            if sys.argv[2]=="1": status=1
+            for r in self.swarm:
+                r.write(3,status,self.radio)
+                    
+        if len(sys.argv)>1 and sys.argv[1]=="tele":
+            while True:
+                for r in self.swarm:
+                    print self.radio.request_telemetry(r.address)
+                time.sleep(0.5)
+
+        if len(sys.argv)>1 and sys.argv[1]=="docali":
+            for r in self.swarm:
+                print(r.calibrate(self.radio,1,1000,0))
+
+        if len(sys.argv)>1 and sys.argv[1]=="readcali":
+            while(1):
+                for r in self.swarm:
+                    print(r.calibrate(self.radio,0,10,0))
+                time.sleep(1)
+
+        if len(sys.argv)>1 and sys.argv[1]=="readmagfactory":
+            while(1):
+                for r in self.swarm:
+                    print(r.calibrate(self.radio,0,0,1))
+                time.sleep(1)
+
+        if len(sys.argv)>1 and sys.argv[1]=="readmagraw":
+            while(1):
+                for r in self.swarm:
+                    ret=r.calibrate(self.radio,0,0,2)
+                    print(ret)
+                    print(180+(math.atan2(ret[1],ret[0])*57.2958))
+                time.sleep(1)
+
+        if len(sys.argv)>1 and sys.argv[1]=="readmag":
+            while(1):
+                for r in self.swarm:
+                    ret=r.calibrate(self.radio,0,0,3)
+                    print(ret)
+                    print(180+(math.atan2(ret[1],ret[0])*57.2958))
+                time.sleep(1)
+
+        if len(sys.argv)>1 and sys.argv[1]=="saveee":
+            for r in self.swarm:
+                r.save_eeprom(self.radio)    
+        
+
+
+if __name__ == "__main__":
+    s = pmswarm()
+    
