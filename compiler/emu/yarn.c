@@ -28,7 +28,7 @@ void yarn_init(yarn_machine *m) {
 }
 
 void yarn_reset(yarn_machine *m) {
-  m->m_heap[REG_PC]=REG_CODE_START;
+  m->m_heap[REG_PC]=0;
   m->m_heap[REG_ST]=STACK_START;
 }
 

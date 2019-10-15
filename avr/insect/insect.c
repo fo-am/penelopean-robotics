@@ -21,8 +21,8 @@
 #include <robot.h>
 #include <insect.h>
 
-#define ROBOT_ID 0x03
-#define RADIO_ID 0xA7A7A7A704
+#define ROBOT_ID 0x09 // also change the id below!
+#define RADIO_ID 0xA7A7A7A709
 #define RADIO_PI 0xA7A7A7A7AA
 
 #define UPDATE_FREQ_HZ 50
@@ -67,7 +67,7 @@ int main (void) {
   robot_t robot;
   robot_init(&robot,ROBOT_ID);
   // load saved code
-  //robot_read_ee_heap(&robot);
+  robot_read_ee_heap(&robot);
 
   // switch on indicator
   DDRB |= 0x01;
@@ -115,19 +115,34 @@ int main (void) {
 	}	
 
 	// return either sense data from rom...
-	if (!p->return_sense) {
+	switch (p->return_sense) {
+	case 0: {
 	  float *calibration_data = gy91_mag_calibration_data();	
 	  nRF24L01p_enable_ack_payload();
-	  nRF24L01p_ack_payload(0,(const byte *)calibration_data,sizeof(float)*9);
+	  nRF24L01p_ack_payload(0,(const byte *)calibration_data,sizeof(float)*7);
 	  free(calibration_data);
-	} else { // or calculated calibration data
+	} break;
+	case 1: { // or calculated calibration data
 	  float *sense_data = gy91_mag_sense_data();	
 	  nRF24L01p_enable_ack_payload();
 	  nRF24L01p_ack_payload(0,(const byte *)sense_data,sizeof(float)*3);
 	  free(sense_data);
+	} break;
+	case 2: { // or uncalibrated sensor
+	  float sense_data[3];
+	  gy91_read_mag_uncalibrated(&sense_data[0], &sense_data[1], &sense_data[2]);
+	  nRF24L01p_enable_ack_payload();
+	  nRF24L01p_ack_payload(0,(const byte *)sense_data,sizeof(float)*3);
+	} break;
+	default: { // or calibrated sensor
+	  float sense_data[3];
+	  gy91_read_mag(&sense_data[0], &sense_data[1], &sense_data[2]);
+	  nRF24L01p_enable_ack_payload();
+	  nRF24L01p_ack_payload(0,(const byte *)sense_data,sizeof(float)*3);
+	} break;  
 	}
       }
-      
+	
       // super sync
       if (msg_type=='S') {
 	sync_packet *p=(sync_packet *)&msg[1];

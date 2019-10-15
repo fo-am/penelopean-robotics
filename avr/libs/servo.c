@@ -120,6 +120,7 @@ void servo_motion_seq_pattern(servo_motion_seq* seq, char *pattern) {
   }
 }
 
+
 // higher level pattern control... preset patterns for walking
 void servo_motion_seq_load_next_pattern(servo_motion_seq *seq) {
   switch (seq->next_pattern_id) {
