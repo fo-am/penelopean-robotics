@@ -30,8 +30,8 @@ typedef struct {
   char pad;
   unsigned int ms_per_step;      // 2
   unsigned int length;           // 2 
-  char pattern[MAX_PATTERN_LENGTH]; // 26
-} seq_pattern_packet;                 // = 32 bytes
+  char pattern[24];              // not max pattern, which is now 12 
+} seq_pattern_packet;            // = 32 bytes
 
 typedef struct {
   char pad; // 1

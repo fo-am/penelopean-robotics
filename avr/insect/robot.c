@@ -31,6 +31,7 @@ void robot_init(robot_t *r, unsigned char id) {
 }
 
 void robot_reset(robot_t *r, unsigned char id) {
+  yarn_reset(&r->machine);
   r->running=1;
   r->id=id;
   // set up motion sequencer for default walk patterns
@@ -101,7 +102,7 @@ void robot_update_sensors(robot_t *r) {
 /*  yarn_poke(m,REG_COMP_X,MAKE_FIXED(x/100.0f));
   yarn_poke(m,REG_COMP_Y,MAKE_FIXED(y/100.0f));
   yarn_poke(m,REG_COMP_Z,MAKE_FIXED(z/100.0f));*/
-  float angle=atan2(y,x)*57.2958;
+  float angle=180+atan2(y,x)*57.2958;
   //angle+=180; // set range to 0-360
   yarn_poke(m,REG_COMP_ANGLE,(short)angle);
   // check and clear flag
