@@ -206,8 +206,6 @@ void gy91_calibrate_mag(unsigned int samples) {
   float yscale=1.0f;
   float zscale=1.0f;
 
-  if (samples>1000) samples=1000;
-
   unsigned int n=0;
   while (n<samples) {
     gy91_read_mag_uncalibrated(&x, &y, &z);

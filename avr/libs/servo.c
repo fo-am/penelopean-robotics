@@ -136,29 +136,17 @@ void servo_motion_seq_load_next_pattern(servo_motion_seq *seq) {
   case MOTION_SEQ_PATTERN_ID_BACKWARD: {
     servo_motion_seq_pattern(seq, "AAaaaAAaAAaa");
   } break;
-  case MOTION_SEQ_PATTERN_ID_LEFT1: {
-    servo_motion_seq_pattern(seq, "AAaaa00aAAaa");
+  case MOTION_SEQ_PATTERN_ID_LEFT: {
+    servo_motion_seq_pattern(seq, "AAaa0CC0aaAA");
+  } break;
+  case MOTION_SEQ_PATTERN_ID_RIGHT: {
+    servo_motion_seq_pattern(seq, "AAaaC00CaaAA");
   } break;
   case MOTION_SEQ_PATTERN_ID_LEFT2: {
-    servo_motion_seq_pattern(seq, "AAaab00bAAaa");
-  } break;
-  case MOTION_SEQ_PATTERN_ID_LEFT3: {
-    servo_motion_seq_pattern(seq, "AAaabaabAAaa");
-  } break;
-  case MOTION_SEQ_PATTERN_ID_LEFT4: {
-    servo_motion_seq_pattern(seq, "AAaacaacAAaa");
-  } break;
-  case MOTION_SEQ_PATTERN_ID_RIGHT1: {
-    servo_motion_seq_pattern(seq, "AAaa0aa0AAaa");
+    servo_motion_seq_pattern(seq, "AAaa0DD0aaAA");
   } break;
   case MOTION_SEQ_PATTERN_ID_RIGHT2: {
-    servo_motion_seq_pattern(seq, "AAaa0bb0AAaa");
-  } break;
-  case MOTION_SEQ_PATTERN_ID_RIGHT3: {
-    servo_motion_seq_pattern(seq, "AAaaabbaAAaa");
-  } break;
-  case MOTION_SEQ_PATTERN_ID_RIGHT4: {
-    servo_motion_seq_pattern(seq, "AAaaaccaAAaa");
+    servo_motion_seq_pattern(seq, "AAaaD00DaaAA");
   } break;
   case MOTION_SEQ_PATTERN_ID_SILLY: {
     servo_motion_seq_pattern(seq, "AaAaAaAaAaAa");

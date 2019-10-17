@@ -21,8 +21,8 @@
 #include <robot.h>
 #include <insect.h>
 
-#define ROBOT_ID 0x08 // also change the id below!
-#define RADIO_ID 0xA7A7A7A708
+#define ROBOT_ID 0x09 // also change the id below!
+#define RADIO_ID 0xA7A7A7A709
 #define RADIO_PI 0xA7A7A7A7AA
 
 #define UPDATE_FREQ_HZ 50
