@@ -16,13 +16,7 @@
 
 (require racket/cmdline)
 
-;; internal compiler register on zero page
-(define working-reg "23")
-(define stack-frame "24")
-(define var-start 25)
-
 (define reg-table
-  ;; ppu registers
   '((pc                     "0000")
     (stack                  "0001")
     (robot-id               "0002")
@@ -47,14 +41,19 @@
     (servo-1-smooth         "0021")
     (servo-2-smooth         "0022")
     (servo-3-smooth         "0023")
-    (reg-usr-start              "0024") 
 
+    (reg-usr-start              "0024") 
     (reg-usr-end                "0032")
     (reg-code-start             "0032")
     
     (swarm-pulse "0009")
     
     ))
+
+;; internal compiler register on zero page
+(define working-reg "24")
+(define stack-frame "25")
+(define var-start 26)
 
 (define (reg-table-lookup x)
   (let ((lu (assoc x reg-table)))
@@ -78,16 +77,11 @@
   (when (not (memq name variables))
         (set! variables (append variables (list name)))))
 
-(define (byte->string byte)
-  (string-upcase (string-append
-                  (number->string (quotient byte 16) 16)
-                  (number->string (remainder byte 16) 16))))
-
 (define (variable-lookup name)
   (define (_ l c)
     (cond
      ((null? l) (display "yarnc ERROR: cant find variable ")(display name)(newline) #f)
-     ((equal? name (car l)) (byte->string (+ c var-start)))
+     ((equal? name (car l)) (number->string (+ c var-start)))
      (else (_ (cdr l) (+ c 1)))))
   (_ variables 0))
 
@@ -98,15 +92,11 @@
     (walk-stop "1")
     (walk-forward "2")
     (walk-backward "3")
-    (turn-left1 "4")
-    (turn-left2 "5")
-    (turn-left3 "6")
-    (turn-left4 "7")
-    (turn-right1 "8")
-    (turn-right2 "9")
-    (turn-right3 "10")
-    (turn-right4 "11")
-    (walk-silly "12")
+    (turn-left "4")
+    (turn-right "5")
+    (turn-left2 "6")
+    (turn-right2 "7")
+    (walk-silly "8")
     ))
 
 (define (make-constant! name value)
@@ -274,7 +264,8 @@
 (define (emit-load-immediate x)
   (cond
     ((number? x) (emit "ldl" (number->string x)))
-    ;; todo - is the symbol a constant??
+    ((and (symbol? x) (constant-lookup x))
+     (emit "ldl" (constant-lookup x) (string-append "\t;; const " (symbol->string x))))
     ((symbol? x) (emit-load-variable x))))
 
 (define (emit-defvar x)

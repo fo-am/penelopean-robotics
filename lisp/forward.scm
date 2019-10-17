@@ -1,3 +1,3 @@
 (
- (forever (set! next-pattern walk-forward))
+ (forever (set! next-pattern turn-left))
  )

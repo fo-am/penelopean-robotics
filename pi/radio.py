@@ -1,5 +1,6 @@
 import RPi.GPIO as GPIO
 GPIO.setmode(GPIO.BCM)
+GPIO.setwarnings(False)
 from lib_nrf24 import NRF24
 import time
 import spidev
@@ -90,7 +91,11 @@ class radio:
         self.set_destination(addr)
         #if a_reg_set==1: print("starting: "+str(addr[4]))
         return self.send(self.build_sync(beat,ms_per_step,reg_sets))
-        
+
+    def send_pattern(self,addr,p,ms_per_step):
+        self.set_destination(addr)
+        self.send(self.build_pattern(p,ms_per_step))
+    
     def send(self,b):
         #print("sending "+b[0]+" to "+str(self.destination_address))
         if len(b)!=32:
@@ -128,6 +133,9 @@ class radio:
     def build_reset(self):
         return struct.pack("cxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx","R")
 
+    def build_pattern(self,p,ms_per_step):
+        return struct.pack("cxHH", 'M', ms_per_step, 4)+p+"00000000000000"
+    
     def build_eewrite(self):
         return struct.pack("cxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx","E")
 
