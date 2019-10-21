@@ -1,26 +1,8 @@
-IDIR =.
-CC=gcc
-CFLAGS=-I$(IDIR)
-
-ODIR=obj
-LDIR =.
-
-LIBS=-lm
-
-_DEPS = yarn.h
-DEPS = $(patsubst %,$(IDIR)/%,$(_DEPS))
-
-_OBJ = main.o yarn.o
-OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
-
-
-$(ODIR)/%.o: %.c $(DEPS)
-	$(CC) -c -o $@ $< $(CFLAGS)
-
-yarnemu: $(OBJ)
-	$(CC) -o $@ $^ $(CFLAGS) $(LIBS)
-
-.PHONY: clean
-
-clean:
-	rm -f $(ODIR)/*.o *~ core $(INCDIR)/*~ 
+yarnemu : main.o yarn.o
+	cc -o yarnemu main.o yarn.o -lm
+main.o : main.c ../../avr/libs/yarn.h
+	cc -c -I ../../avr/libs/ main.c 
+yarn.o : ../../avr/libs/yarn.c ../../avr/libs/yarn.h
+	cc -c ../../avr/libs/yarn.c
+clean :
+	rm yarnemu main.o yarn.o

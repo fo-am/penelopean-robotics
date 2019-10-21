@@ -31,9 +31,9 @@
   ;; ;; while
   (while (< i 105)
 	 (set! i (+ i 1)))
-  (assert i 105 11)
+  (assert-eq i 105 11)
   ;; more comparisons
-  (assert (<= i 105) 12) 
+  (assert (<= i 105) 12)
   (assert (>= i 105) 13) 
   ;; signed numbers
   (set! i -203)
@@ -103,6 +103,7 @@
  
  (defun (error c)
    (set! led c)
+   (asm "nop")
    (forever))
  
  

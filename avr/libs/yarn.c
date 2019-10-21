@@ -19,6 +19,9 @@
 
 //////////////////////////////////////////////////////////
 
+unsigned char cell_instr(cell_t v) { return v>>10; }
+cell_t cell_arg(cell_t v) { return v&0x03ff; }
+
 void yarn_init(yarn_machine *m) {
   m->m_heap=(cell_t*)malloc(sizeof(cell_t)*HEAP_SIZE);
   for (int n=0; n<HEAP_SIZE; n++) {
@@ -41,26 +44,28 @@ void yarn_poke(yarn_machine* m, cell_t addr, cell_t data) {
 }
 
 void yarn_run(yarn_machine* m) {
-  cell_t pc=yarn_pc(m);
-  cell_t instr=yarn_peek(m,pc++);
+  cell_t pc = yarn_pc(m);
+  cell_t cur = yarn_peek(m,pc++);
+  unsigned char instr = cell_instr(cur);
+  cell_t arg = cell_arg(cur);
+  
   switch(instr) {
   case NOP: break;
-  case JMP: pc=yarn_peek(m,pc++); break;
-  case JPR: pc+=(signed_cell_t)yarn_peek(m,pc); break;
-  case JPZ: if (yarn_stack_count(m,1) && yarn_pop(m)==0) pc=yarn_peek(m,pc); else pc++; break;
-  case JPRZ: if (yarn_stack_count(m,1) && yarn_pop(m)==0) pc+=(signed_cell_t)yarn_peek(m,pc); else pc++; break;
-  case JSR: yarn_push(m,pc+1); pc=yarn_peek(m,pc++); break;
+  case JMP: pc=arg; break;
+  case JPZ: if (yarn_stack_count(m,1) && yarn_pop(m)==0) pc=arg; break;
+  case JSR: yarn_push(m,pc); pc=arg; break;
   case RTS: if (yarn_stack_count(m,1)) pc=yarn_pop(m); break;
-  case LDL: yarn_push(m,yarn_peek(m,pc++)); break;
-  case LD: yarn_push(m,yarn_peek(m,yarn_peek(m,pc++))); break;
-  case LDI: yarn_push(m,yarn_peek(m,yarn_peek(m,yarn_peek(m,pc++)))); break;
+  case LDL: yarn_push(m,arg); break;
+  case LDL16: yarn_push(m,yarn_peek(m,pc++)); break;
+  case LD: yarn_push(m,yarn_peek(m,arg)); break;
+  case LDI: yarn_push(m,yarn_peek(m,yarn_peek(m,arg))); break;
   case LDSI: yarn_push(m,yarn_peek(m,yarn_pop(m))); break;
-  case ST: if (yarn_stack_count(m,1)) yarn_poke(m,yarn_peek(m,pc++),yarn_pop(m)); break;
-  case STI: if (yarn_stack_count(m,1)) yarn_poke(m,yarn_peek(m,yarn_peek(m,pc++)),yarn_pop(m)); break;
-  case STS: yarn_poke(m,yarn_peek(m,pc++),yarn_stack_pos(m)); break;
+  case ST: if (yarn_stack_count(m,1)) yarn_poke(m,arg,yarn_pop(m)); break;
+  case STI: if (yarn_stack_count(m,1)) yarn_poke(m,yarn_peek(m,arg),yarn_pop(m)); break;
+  case STS: yarn_poke(m,arg,yarn_stack_pos(m)); break;
   case STSI: if (yarn_stack_count(m,2)) { cell_t addr=yarn_pop(m); cell_t val=yarn_pop(m); yarn_poke(m,addr,val); } break;
   case DUP: if (yarn_stack_count(m,1)) yarn_push(m,yarn_top(m)); break;
-  case DROP: for (unsigned int i=0; i<yarn_peek(m,pc); i++) { yarn_pop(m); } pc++; break;
+  case DROP: for (unsigned int i=0; i<arg; i++) { yarn_pop(m); } break;
   case SWAP: { cell_t a=yarn_pop(m); cell_t b=yarn_pop(m); yarn_push(m,a); yarn_push(m,b); } break;
   case EQU: if (yarn_stack_count(m,2)) yarn_push(m,yarn_pop(m)==yarn_pop(m)); break;
   case LT: if (yarn_stack_count(m,2)) yarn_push(m,yarn_pop(m)<yarn_pop(m)); break;
@@ -73,21 +78,21 @@ void yarn_run(yarn_machine* m) {
   case SGTE: if (yarn_stack_count(m,2)) yarn_push(m,(signed_cell_t)yarn_pop(m)>=(signed_cell_t)yarn_pop(m)); break;
   case ADD: if (yarn_stack_count(m,2)) yarn_push(m,yarn_pop(m)+yarn_pop(m)); break;
   case SUB: if (yarn_stack_count(m,2)) yarn_push(m,yarn_pop(m)-yarn_pop(m)); break;
-  case ADDL: if (yarn_stack_count(m,1)) yarn_push(m,yarn_pop(m)+yarn_peek(m,pc++)); break;
-  case SUBL: if (yarn_stack_count(m,1)) yarn_push(m,yarn_pop(m)-yarn_peek(m,pc++)); break;
-  case INC: if (yarn_stack_count(m,1)) yarn_push(m,yarn_pop(m)+1); break;
-  case DEC: if (yarn_stack_count(m,1)) yarn_push(m,yarn_pop(m)-1); break;
+  case ADDL: if (yarn_stack_count(m,1)) yarn_push(m,yarn_pop(m)+arg); break;
+  case SUBL: if (yarn_stack_count(m,1)) yarn_push(m,yarn_pop(m)-arg); break;
+  case MUL: if (yarn_stack_count(m,2)) yarn_push(m,yarn_pop(m)*yarn_pop(m)); break;
+  case DIV: if (yarn_stack_count(m,2)) yarn_push(m,yarn_pop(m)/yarn_pop(m)); break;
+  case MOD: if (yarn_stack_count(m,2)) yarn_push(m,yarn_pop(m)%yarn_pop(m)); break;
   case AND: if (yarn_stack_count(m,2)) yarn_push(m,yarn_pop(m)&yarn_pop(m)); break;
   case OR: if (yarn_stack_count(m,2)) yarn_push(m,yarn_pop(m)|yarn_pop(m)); break;
   case XOR: if (yarn_stack_count(m,2)) yarn_push(m,yarn_pop(m)^yarn_pop(m)); break;
   case NOT: if (yarn_stack_count(m,1)) yarn_push(m,~yarn_pop(m)); break;
   case NOTL: if (yarn_stack_count(m,1)) yarn_push(m,!yarn_pop(m)); break;
-  case RR: if (yarn_stack_count(m,2)) yarn_push(m,yarn_pop(m)>>(yarn_peek(m,pc++)%8)); break;
-  case RL: if (yarn_stack_count(m,2)) yarn_push(m,yarn_pop(m)<<(yarn_peek(m,pc++)%8)); break;
-  case SIN: if (yarn_stack_count(m,1)) yarn_push(m,sin(yarn_pop(m)*57.2958)); break;
-  case COS: if (yarn_stack_count(m,1)) yarn_push(m,cos(yarn_pop(m)*57.2958)); break;
-  case TAN: if (yarn_stack_count(m,1)) yarn_push(m,tan(yarn_pop(m)*57.2958)); break;
-  case RND: yarn_push(m,rand()); break;
+  case RR: if (yarn_stack_count(m,2)) yarn_push(m,yarn_pop(m)>>(arg%8)); break;
+  case RL: if (yarn_stack_count(m,2)) yarn_push(m,yarn_pop(m)<<(arg%8)); break;
+  case SIN: if (yarn_stack_count(m,1)) yarn_push(m,1000*sin(yarn_pop(m)*57.2958)); break;
+  case COS: if (yarn_stack_count(m,1)) yarn_push(m,1000*cos(yarn_pop(m)*57.2958)); break;
+  case TAN: if (yarn_stack_count(m,1)) yarn_push(m,1000*tan(yarn_pop(m)*57.2958)); break;
   default : break;
   };
   yarn_set_pc(m,pc);
@@ -131,15 +136,14 @@ cell_t yarn_top(const yarn_machine* m) {
 
 
 char *yarn_opcode_text(cell_t opcode) {
-  switch(opcode) {
+  switch(cell_instr(opcode)) {
   case NOP: return "nop "; 
   case JMP: return "jmp ";
-  case JPR: return "jpr ";
   case JPZ: return "jpz ";
-  case JPRZ: return "jprz";
   case JSR: return "jsr ";
   case RTS: return "rts ";
   case LDL: return "ldl ";
+  case LDL16: return "ldl16";
   case LD: return "ld  ";
   case LDI: return "ldi ";
   case LDSI: return "ldsi";
@@ -163,8 +167,9 @@ char *yarn_opcode_text(cell_t opcode) {
   case SUB: return "sub ";
   case ADDL: return "addl";
   case SUBL: return "subl";
-  case INC: return "inc ";
-  case DEC: return "dec ";
+  case MUL: return "mul ";
+  case DIV: return "div ";
+  case MOD: return "mod ";
   case AND: return "and ";
   case OR: return "or  ";
   case XOR: return "xor ";
@@ -175,7 +180,6 @@ char *yarn_opcode_text(cell_t opcode) {
   case SIN: return "sin ";
   case COS: return "cos ";
   case TAN: return "tan ";
-  case RND: return "rnd ";
   default: return"????";
   };   
 }
