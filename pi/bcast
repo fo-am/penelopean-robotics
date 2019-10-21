@@ -20,8 +20,8 @@ class pmswarm:
                       ##robot.robot([0xa7, 0xa7, 0xa7, 0xa7, 0x05]),
                       #robot.robot([0xa7, 0xa7, 0xa7, 0xa7, 0x06]),
                       #robot.robot([0xa7, 0xa7, 0xa7, 0xa7, 0x07]),
-                      robot.robot([0xa7, 0xa7, 0xa7, 0xa7, 0x08]),
-                      #robot.robot([0xa7, 0xa7, 0xa7, 0xa7, 0x09])
+                      #robot.robot([0xa7, 0xa7, 0xa7, 0xa7, 0x08]),
+                      robot.robot([0xa7, 0xa7, 0xa7, 0xa7, 0x09])
         ]
     
         self.compiler = yarn.compiler()
@@ -38,6 +38,13 @@ class pmswarm:
             for r in self.swarm:
                 r.load_asm("out.asm",self.compiler,self.radio)
                 
+        if len(sys.argv)>3 and sys.argv[1]=="pat":
+            if not len(sys.argv[3])==12:
+                print("wrong pattern size "+str(len(sys.argv[3])))
+            else:
+                for r in self.swarm:
+                    r.walk_pattern(sys.argv[3],500,self.radio)            
+            
         if len(sys.argv)>2 and sys.argv[1]=="led":
             status=0
             if sys.argv[2]=="1": status=1
@@ -47,7 +54,10 @@ class pmswarm:
         if len(sys.argv)>1 and sys.argv[1]=="tele":
             while True:
                 for r in self.swarm:
-                    print self.radio.request_telemetry(r.address)
+                    print("------")
+                    t=self.radio.request_telemetry(r.address)
+                    for i,desc in enumerate(["pc","stack","robot_id","led","comp-angle","comp-delta-reset","comp-delta","step-count","step-count-reset","next-pattern","a","b","c","d"]):
+                        print(desc+": "+str(t[i]))
                 time.sleep(0.5)
 
         if len(sys.argv)>1 and sys.argv[1]=="docali":

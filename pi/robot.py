@@ -54,7 +54,10 @@ class robot:
     def sync2(self,radio,beat,ms_per_beat):
         reg_sets = []
         radio.send_sync(self.address,beat,ms_per_beat,reg_sets)
-            
+
+    def walk_pattern(self,pat,ms_per_step,radio):
+        radio.send_pattern(self.address,pat,ms_per_step)
+        
     def calibrate(self,radio,do_cali,samples,mode):
         return radio.send_calibrate(self.address,do_cali,samples,mode)
 
