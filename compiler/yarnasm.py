@@ -2,31 +2,32 @@ import array
 
 code_start = 32
 
-# change robot.c registers to match here
+# change robot.c and yarnc.scm registers to match here
 registers = {
-    "ROBOT_ID": 0,
-    "PC_MIRROR": 1,
-    "LED": 2,
-    "COMP_ANGLE": 3,
-    "COMP_DELTA_RESET": 4,
-    "COMP_DELTA": 5,
-    "STEP_COUNT": 6,
-    "STEP_COUNT_RESET": 7,
-    "NEXT_PATTERN": 8,
-    "A": 9,
-    "B": 10,
-    "C": 11,
-    "D": 12,
-    "SERVO_MS_PER_STEP": 13, # arg step not=step counter type of step
-    "SERVO_1_AMP": 14,
-    "SERVO_2_AMP": 15,
-    "SERVO_3_AMP": 16,
-    "SERVO_1_BIAS": 17,
-    "SERVO_2_BIAS": 18,
-    "SERVO_3_BIAS": 19,
-    "SERVO_1_SMOOTH": 20,
-    "SERVO_2_SMOOTH": 21,
-    "SERVO_3_SMOOTH": 22,
+    "PC": 0,
+    "STACK": 1,
+    "ROBOT_ID": 2,
+    "LED": 3,
+    "COMP_ANGLE": 4,
+    "COMP_DELTA_RESET": 5,
+    "COMP_DELTA": 6,
+    "STEP_COUNT": 7,
+    "STEP_COUNT_RESET": 8,
+    "NEXT_PATTERN": 9,
+    "A": 10,
+    "B": 11,
+    "C": 12,
+    "D": 13,
+    "SERVO_MS_PER_STEP": 14, # arg step not=step counter type of step
+    "SERVO_1_AMP": 15,
+    "SERVO_2_AMP": 16,
+    "SERVO_3_AMP": 17,
+    "SERVO_1_BIAS": 18,
+    "SERVO_2_BIAS": 19,
+    "SERVO_3_BIAS": 20,
+    "SERVO_1_SMOOTH": 21,
+    "SERVO_2_SMOOTH": 22,
+    "SERVO_3_SMOOTH": 23,
     
     "NULL": 0,
     "ALL_STOP": 1,
@@ -37,37 +38,37 @@ registers = {
 instructions = {
     "nop":  0,
     "jmp":  1,
-    "jpr":  2,
-    "jpz":  3,
-    "jprz": 4,
-    "jsr":  5, 
-    "rts":  6,
-    "ldl":  7,
-    "ld":   8,
-    "ldi":  9,
-    "ldsi": 10,
-    "st":   11,
-    "sti":  12,
-    "sts":  13,
-    "stsi": 14,
-    "dup":  15,
-    "drop": 16,
-    "swap": 17,
-    "equ":  18, 
-    "lt":   19, 
-    "gt":   20, 
-    "lte":  21, 
-    "gte":  22,
-    "slt":  23,
-    "sgt":  24,
-    "slte": 25,
-    "sgte": 26,
-    "add":  27,
-    "sub":  28,
-    "addl": 29,
-    "sub;": 30,
-    "inc":  31,
-    "dec":  32,
+    "jpz":  2,
+    "jsr":  3, 
+    "rts":  4,
+    "ldl":  5,
+    "ldl16":  6,
+    "ld":   7,
+    "ldi":  8,
+    "ldsi": 9,
+    "st":   10,
+    "sti":  11,
+    "sts":  12,
+    "stsi": 13,
+    "dup":  14,
+    "drop": 15,
+    "swap": 16,
+    "equ":  17, 
+    "lt":   18, 
+    "gt":   19, 
+    "lte":  20, 
+    "gte":  21,
+    "slt":  22,
+    "sgt":  23,
+    "slte": 24,
+    "sgte": 25,
+    "add":  26,
+    "sub":  27,
+    "addl": 28,
+    "sub;": 29,
+    "mul":  30,
+    "div":  31,
+    "mod":  32,
     "and":  33,
     "or":   34,
     "xor":  35,
@@ -77,8 +78,7 @@ instructions = {
     "rl":   39,
     "sin":  40,
     "cos":  41,
-    "tan":  42,
-    "rnd":  43,
+    "tan":  42
 }
 
 
@@ -102,7 +102,7 @@ class compiler:
         if l[0].endswith(":"):
             # add new label
             self.labels[l[0][:-1]]=addr+code_start
-            #print(l[0][:-1],addr+code_start)
+            #print("label: "+l[0][:-1],addr+code_start)
             l=l[1:] # strip out label
 
     def assemble_line(self,i,l):
@@ -113,26 +113,29 @@ class compiler:
             if len(l)==0:
                 return []
         if not l[0] in self.instr:
-            print("instruction "+l[0]+" not understood on line "+str(i))
+            print("yarnasm: instruction "+l[0]+" not understood on line "+str(i))
             return []
         else:
             if len(l)>1:
                 # deal with operand
                 operand = l[1]
                 if self.is_int(operand):
-                    return [self.instr[l[0]],int(operand)]
+                    if int(operand)>=0 and int(operand)<1024:
+                        return [(self.instr[l[0]]<<10)|int(operand)]
+                    else: # add 16bit value
+                        if self.instr[l[0]]!=instructions["ldl16"]:
+                            print("yarnasm: trying to add 16bit data for op: "+str(self.instr[l[0]]))
+                        return [(self.instr[l[0]]<<10),int(operand)]
                 if operand in self.regs:
-                    return [self.instr[l[0]],self.regs[operand]]
+                    return [(self.instr[l[0]]<<10)|self.regs[operand]]
                 if operand in self.labels.keys():
-                    return [self.instr[l[0]],self.labels[operand]]
-                if operand == ";;":
-                    return []
+                    return [(self.instr[l[0]]<<10)|self.labels[operand]]
                 else:
                     print(l)
-                    print("i do not understand "+operand+" on line "+str(i))
+                    print("yarnasm: i do not understand "+operand+" on line "+str(i))
                     return []
 
-            return [self.instr[l[0]]]
+            return [self.instr[l[0]]<<10]
 
     def remove_comments(self,s):
         ret = []
@@ -164,11 +167,22 @@ class compiler:
     
     def line_size(self,l):
         ls=l.split()
+        #print(ls)
         if len(ls)==0: return 0
         # strip out label
         if ls[0].endswith(":"):
             ls=ls[1:]
-        return len(ls)
+        
+        if len(ls)>0:
+            if ls[0]=="ldl16":
+                #print(2)
+                return 2
+            else:
+                #print(1)
+                return 1
+        else:
+            #print(0)
+            return 0
 
     def assemble(self,s):
         s = s.split("\n")
@@ -176,14 +190,14 @@ class compiler:
         s = self.remove_comments(s)
         print("yarnasm: "+str(len(s))+" with comments removed")
         s = self.optimise(s)
-        print("yarnasm: "+str(len(s))+" optimised instructions")
-        
+        print("yarnasm: "+str(len(s))+" optimised instructions + labels")
         addr=0
         for i,line in enumerate(s):
             sl = line.strip()
             self.collect_label(addr,sl)
-            if len(sl)>0:
+            if len(sl)>0: 
                 addr+=self.line_size(sl)
+        print("yarnasm: "+str(len(self.labels))+ " labels")
         code = []
         for i,line in enumerate(s):
             sl=line.strip()

@@ -13,12 +13,27 @@
 // You should have received a copy of the GNU Affero General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+// A bytecode interpreter designed to allow remote livecoding
+// of robotics on avr microcontrollers or other small spaces.
+// 16 bit machine, optimised for 1K heap/stack as that is about
+// all I can use on atmega328
+
 #ifndef YARN_MACHINE
 #define YARN_MACHINE
 
 typedef unsigned short cell_t;    
 typedef short signed_cell_t;    
-#define HEAP_SIZE 512
+
+// we pack intructions and one argument into each 16 bit cell
+//  instr argument
+// fedcba9876543210
+// iiiiiiaaaaaaaaaa
+//   64     1024
+
+unsigned char cell_instr(cell_t v);
+cell_t cell_arg(cell_t v);
+
+#define HEAP_SIZE 1024
 #define STACK_START (HEAP_SIZE-1)
 #define REG_PC 0
 #define REG_ST 1
@@ -27,58 +42,63 @@ typedef short signed_cell_t;
 // yarn machine instructions
 #define NOP   0 // do nothing
 
-// flow control
+// flow control (careful: 10bit address arguments unless on stack)
 #define JMP   1  // jump absolute
-#define JPR   2  // jupp relative (operand can be negative)
-#define JPZ   3  // jump if top is zero
-#define JPRZ  4  // jupp relative (operand can be negative) if top is zero
-#define JSR   5 
-#define RTS   6
+#define JPZ   2  // jump if top is zero
+#define JSR   3  // subroutine jump - pushes pc then jumps
+#define RTS   4  // return from subroutine - jump to stack top
+
+// (so we could jmp to 16bit addr via)
+// ldl16 addr
+// rts
+// or use some page mode thingy
 
 // memory operators
-#define LDL   7  // load literal to stack
-#define LD    8  // load contents of address to stack
-#define LDI   9  // load value pointed to by contents of address
-#define LDSI  10  // load value pointed to by top of stack
-#define ST    11 // store value on top of stack to address
-#define STI   12 // store value to location pointed to by contents of address
-#define STS   13 // store stack pointer in location
-#define STSI  14 // pop the address then pop the value to write to it 
-#define DUP   15 // push a copy of the top value to the stack
-#define DROP  16
-#define SWAP  17
+#define LDL   5  // load literal to stack
+#define LDL16 6  // load next address as 16 bit value
+#define LD    7  // load contents of address to stack
+#define LDI   8  // load value pointed to by contents of address
+#define LDSI  9  // load value pointed to by top of stack
+#define ST    10 // store value on top of stack to address
+#define STI   11 // store value to location pointed to by contents of address
+#define STS   12 // store stack pointer in location
+#define STSI  13 // pop the address then pop the value to write to it 
+#define DUP   14 // push a copy of the top value to the stack
+#define DROP  15 // discard stack items
+#define SWAP  16 // swap the top two items on the stack
 
 // decision making
-#define EQU  18 // push 1 if top two values are equal, 0 if not
-#define LT   19 // push 1 if top two values are less than, 0 if not
-#define GT   20 // push 1 if top two values are greater than, 0 if not
-#define LTE  21 // push 1 if top two values are less than or equal, 0 if not
-#define GTE  22 // ...
-#define SLT  23 // signed versions
-#define SGT  24
-#define SLTE 25
-#define SGTE 26
+#define EQU  17 // push 1 if top two values are equal, 0 if not
+#define LT   18 // push 1 if top two values are less than, 0 if not
+#define GT   19 // push 1 if top two values are greater than, 0 if not
+#define LTE  20 // push 1 if top two values are less than or equal, 0 if not
+#define GTE  21 // ...
+#define SLT  22 // signed versions
+#define SGT  23
+#define SLTE 24
+#define SGTE 25
 
 // maths
-#define ADD  27
-#define SUB  28
-#define ADDL 29
-#define SUBL 30
-#define INC  31
-#define DEC  32
+#define ADD  26
+#define SUB  27
+#define ADDL 28
+#define SUBL 29
+#define MUL  30
+#define DIV  31
+#define MOD  32
 #define AND  33 // bitwise stuff
 #define OR   34
 #define XOR  35
-#define NOT  36
-#define NOTL 37
+#define NOT  36 // bitwise not
+#define NOTL 37 // logical not (0/1 only)
 #define RR   38 // rotate right
 #define RL   39 // rotate left
-#define SIN  40 // uses degrees
+#define SIN  40 // uses degrees, returns fixed point
 #define COS  41 // "
 #define TAN  42 // "
-#define RND  43
 
 typedef struct {
+  // used to have other things - now all stored on heap
   cell_t *m_heap;
 } yarn_machine;
 
@@ -96,6 +116,7 @@ void yarn_push(yarn_machine *m, cell_t data);
 cell_t yarn_pop(yarn_machine *m);
 cell_t yarn_top(const yarn_machine *m);
 
+// for debugging
 char *yarn_opcode_text(cell_t opcode);
 
 #endif

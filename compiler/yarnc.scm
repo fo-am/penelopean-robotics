@@ -145,9 +145,8 @@
 
 (define (emit-load-fnarg name)
   (append
-   (emit "ld" stack-frame)
+   (emit "ld" stack-frame "\t ;; loading fnarg " (symbol->string name))
    (emit "addl" (fnarg-lookup name))
-   ;;(emit "inc") ;; skip the pc stored from rts
    (emit "ldsi"))) ;; load from top of stack indirect
   
 ;;----------------------------------------------------------------
@@ -263,10 +262,17 @@
 
 (define (emit-load-immediate x)
   (cond
-    ((number? x) (emit "ldl" (number->string x)))
-    ((and (symbol? x) (constant-lookup x))
-     (emit "ldl" (constant-lookup x) (string-append "\t;; const " (symbol->string x))))
-    ((symbol? x) (emit-load-variable x))))
+   ((number? x)
+    (if (or (< x 0) (> x 1023))
+	(emit "ldl16" (number->string x))
+	(emit "ldl" (number->string x))))
+   ((and (symbol? x) (constant-lookup x))
+    (emit "ldl" (constant-lookup x) (string-append "\t;; const " (symbol->string x))))
+   ((symbol? x) (emit-load-variable x))
+   (else
+    (display "yarnc ERROR: unknown immediate: ")
+    (display x)
+    (newline))))
 
 (define (emit-defvar x)
   (make-variable! (cadr x))
@@ -482,14 +488,14 @@
    ((eq? (car x) 's>=) (binary-procedure "sgte" x))
    ((eq? (car x) '+) (binary-procedure "add" x))
    ((eq? (car x) '-) (binary-procedure "sub" x))
-   ;; ((eq? (car x) '*) (emit-mul x))
+   ((eq? (car x) '*) (binary-procedure "mul" x))
+   ((eq? (car x) '/) (binary-procedure "div" x))
+   ((eq? (car x) 'mod) (binary-procedure "mod" x))
    ((eq? (car x) 'and) (binary-procedure "and" x))
    ((eq? (car x) 'or) (binary-procedure "or" x))
    ((eq? (car x) 'xor) (binary-procedure "xor" x))
    ((eq? (car x) 'bitwise-not) (unary-procedure "not" x))
    ((eq? (car x) 'not) (unary-procedure "notl" x))
-   ;; ((eq? (car x) 'inc) (emit "inc" (immediate-value (cadr x))))
-   ;; ((eq? (car x) 'dec) (emit "dec" (immediate-value (cadr x))))
    ((eq? (car x) '<<) (emit-left-shift x))
    ((eq? (car x) '>>) (emit-right-shift x))
    ;; ((eq? (car x) 'poke!) (emit-poke! x))
