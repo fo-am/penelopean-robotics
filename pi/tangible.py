@@ -98,6 +98,8 @@ class sensor_grid:
         for i,p in enumerate(self.layout):
             if p[0]==address:
                 converted = 0
+                #print(p)
+                #print(sensor_data)
                 if p[2]==self.sensor_orientation_st:
                     converted=convert_4bit_st(sensor_data[p[1]])
                 if p[2]==self.sensor_orientation_dn:

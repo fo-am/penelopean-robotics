@@ -10,12 +10,12 @@ import tangible
 import smbus
 bus = smbus.SMBus(1)
 
-i2c_addrs = [#0x0a, 0x0b, 0x0c, 0x0d,
+i2c_addrs = [0x0a, 0x0b, 0x0c, 0x0d,
              0x0e, 0x0f, 0x10, 0x11,
              0x12, 0x13, 0x14, 0x15,
              0x16, 0x17, 0x18, 0x19]
 
-frequency=0.1
+frequency=0.01
 
 def read_sensor_byte(bus,address,loc):
     r=0
@@ -23,8 +23,7 @@ def read_sensor_byte(bus,address,loc):
         r = bus.read_byte_data(address,loc)
         if r!=0 and r!=1: r=0
     except:
-        pass
-        #print("err: "+str(address))
+        print("err: "+str(address))
     return r
 
 def read_sensor(bus,addr):
@@ -63,11 +62,11 @@ tokens = {"circle":    [[0,0,0,0],[1,1,1,1]],
           "square":    [[0,0,0,1],[0,0,1,0],[0,1,0,0],[1,0,0,0],
                         [1,1,1,0],[1,1,0,1],[1,0,1,1],[0,1,1,1]]}
 
-symbols = [[".",[1,1,1,1]],[".",[0,0,0,0]],
-           [".",[1,0,1,0]],[".",[0,1,0,1]],
-           [".",[1,1,0,0]],["f",[0,1,1,0]],[".",[0,0,1,1]],["b",[1,0,0,1]],
-           ["_",[1,0,0,0]],["_",[0,1,0,0]],["_",[0,0,1,0]],["_",[0,0,0,1]],
-           ["_",[0,1,1,1]],["_",[1,0,1,1]],["_",[1,1,0,1]],["_",[1,1,1,0]]]
+symbols = [[".",[1,1,1,1]],["#",[0,0,0,0]],
+           ["-",[1,0,1,0]],["!",[0,1,0,1]],
+           ["u",[1,1,0,0]],["f",[0,1,1,0]],["d",[0,0,1,1]],["b",[1,0,0,1]],
+           ["1",[1,0,0,0]],["2",[0,1,0,0]],["3",[0,0,1,0]],["4",[0,0,0,1]],
+           ["5",[0,1,1,1]],["6",[1,0,1,1]],["7",[1,1,0,1]],["8",[1,1,1,0]]]
 
 def convert_symbols(s):
     return {tangible.convert_4bit_twist(v):k for k, v in s}
@@ -82,45 +81,6 @@ def build_pattern(data,symbols):
             s+=symbols[v]+" "
         pat.append(s)
     return pat
-
-import tangible
-import smbus
-bus = smbus.SMBus(1)
-
-i2c_addrs = [0x0a, 0x0b, 0x0c, 0x0d,
-             0x0e, 0x0f, 0x10, 0x11,  
-             0x12, 0x13, 0x14, 0x15,
-             0x16, 0x17, 0x18, 0x19]
-
-dn = 0
-up = 1
-lr = 2
-rl = 3
-
-layout = [[0x0a,0,dn], [0x0b,1,dn], [0x0c,2,dn], [0x0d,3,dn],  
-          [0x0e,0,dn], [0x0f,1,dn], [0x10,2,dn], [0x11,3,dn], 
-          [0x12,0,dn], [0x13,1,dn], [0x14,2,dn], [0x15,3,dn],
-          [0x16,0,dn], [0x17,1,dn], [0x18,2,dn], [0x19,3,dn]]
-  
-tokens = {"circle":    [[0,0,0,0],[1,1,1,1]],
-
-          "rectangle": [[0,1,
-                         1,0],
-                        [1,0,
-                         0,1]],
-
-          "triangle":  [[1,1,
-                         0,0],
-                        [0,1,
-                         0,1],
-                        [0,0,
-                         1,1],
-                        [1,0,
-                         1,0]],
-          
-          "square":    [[0,0,0,1],[0,0,1,0],[0,1,0,0],[1,0,0,0],
-                        [1,1,1,0],[1,1,0,1],[1,0,1,1],[0,1,1,1]]}
-
 
 global _swarm 
 
@@ -168,9 +128,9 @@ class pmswarm:
         print(self.ms_per_step)
 
         # load code here
-        for r in self.swarm:
-            r.load_asm("../asm/pm.asm",self.compiler,self.radio)
-            r.write(13,self.ms_per_step,self.radio)
+        #for r in self.swarm:
+        #    r.load_asm("../asm/pm.asm",self.compiler,self.radio)
+        #    r.write(13,self.ms_per_step,self.radio)
             
         self.grid=tangible.sensor_grid(16,layout,tokens)
         self.last=""
@@ -217,18 +177,19 @@ class pmswarm:
         if cc!=self.last:
             self.last=cc
             print("   "+pat[0]+"\n   "+pat[1]+"\n   "+pat[2]+"\n   "+pat[3])
+            print("")
 
 
         if self.next_address==0:
             self.seq+=1
             if self.seq>=4: self.seq=0
 
-            self.swarm[self.seq].sync2(self.radio,0,self.ms_per_step)
+            #self.swarm[self.seq].sync2(self.radio,0,self.ms_per_step)
                         
-            self.interpret_token(0,data[2][self.seq])
-            self.interpret_token(1,data[2][self.seq])
-            self.interpret_token(2,data[3][self.seq])
-            self.interpret_token(3,data[3][self.seq])
+            #self.interpret_token(0,data[2][self.seq])
+            #self.interpret_token(1,data[2][self.seq])
+            #self.interpret_token(2,data[3][self.seq])
+            #self.interpret_token(3,data[3][self.seq])
                 
         # read pm and update robots directly
         #self.swarm[0].write(32+1,2,self.radio)
