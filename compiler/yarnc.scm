@@ -27,6 +27,8 @@
     (step-count             "0007")
     (step-count-reset       "0008")
     (next-pattern           "0009")
+    (ready-semaphore        "0010")
+    (usr-a                  "0010")
     (usr-a                  "0010")
     (usr-b                  "0011")
     (usr-c                  "0012")

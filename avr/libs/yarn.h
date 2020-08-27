@@ -33,7 +33,7 @@ typedef short signed_cell_t;
 unsigned char cell_instr(cell_t v);
 cell_t cell_arg(cell_t v);
 
-#define HEAP_SIZE 1024
+#define HEAP_SIZE 500
 #define STACK_START (HEAP_SIZE-1)
 #define REG_PC 0
 #define REG_ST 1

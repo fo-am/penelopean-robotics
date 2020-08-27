@@ -1,0 +1,3 @@
+(fp_lib_table
+  (lib (name linefollower)(type KiCad)(uri ${KIPRJMOD}/linefollower.pretty)(options "")(descr ""))
+)
