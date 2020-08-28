@@ -3,8 +3,7 @@
 
 #define CLK_PIN PB1
 #define SI_PIN PB3
-char image[128];
 
-void read_camera(int exposure);
+void read_camera(unsigned int exposure, unsigned char *image);
 
 #endif

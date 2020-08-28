@@ -1,3 +1,5 @@
+#include "pattern_recognition.h"
+
 // one dimensional pattern recognition
 
 unsigned char pattern_avg(unsigned char *img, unsigned long len) {
@@ -8,13 +10,6 @@ unsigned char pattern_avg(unsigned char *img, unsigned long len) {
   t/=len;
   return (unsigned char)t;
 }
-
-typedef struct {
-  unsigned int start;
-  unsigned int end;
-  unsigned int width;
-} feature;
-
 
 // record where the pattern goes over/under threshold
 // assumed start is dark - so first one is a change to light
@@ -55,8 +50,6 @@ unsigned int pattern_read_line(feature *features, unsigned long features_len, un
   return 0;
 }
 
-#include <stdio.h>
-
 unsigned int pattern_read_barcode(feature *features, unsigned long features_len, unsigned int skip, unsigned char *data) {
   unsigned int len=features_len-skip;
   if (len<1) {
@@ -89,6 +82,11 @@ unsigned int pattern_read_barcode(feature *features, unsigned long features_len,
   }
   return 0;
 }
+
+
+/*
+
+#include <stdio.h>
 
 
 // testing
@@ -124,3 +122,4 @@ void main() {
 }
 
 
+*/

@@ -17,7 +17,8 @@ TARGET = linefollower
 SRC = $(TARGET).c \
 	usiTwiSlave.c \
 	adc.c \
-	camera.c
+	camera.c \
+	pattern_recognition.c
 
 # List Assembler source files here.
 # Make them always end in a capital .S.  Files ending in a lowercase .s
