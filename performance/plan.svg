@@ -1,0 +1,773 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="744.09448819"
+   height="1052.3622047"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.48.4 r9939"
+   sodipodi:docname="New document 1">
+  <defs
+     id="defs4">
+    <marker
+       inkscape:stockid="Arrow2Mend"
+       orient="auto"
+       refY="0.0"
+       refX="0.0"
+       id="Arrow2Mend"
+       style="overflow:visible;">
+      <path
+         id="path3861"
+         style="fill-rule:evenodd;stroke-width:0.62500000;stroke-linejoin:round;"
+         d="M 8.7185878,4.0337352 L -2.2072895,0.016013256 L 8.7185884,-4.0017078 C 6.9730900,-1.6296469 6.9831476,1.6157441 8.7185878,4.0337352 z "
+         transform="scale(0.6) rotate(180) translate(0,0)" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow2Mstart"
+       orient="auto"
+       refY="0.0"
+       refX="0.0"
+       id="Arrow2Mstart"
+       style="overflow:visible">
+      <path
+         id="path3858"
+         style="fill-rule:evenodd;stroke-width:0.62500000;stroke-linejoin:round"
+         d="M 8.7185878,4.0337352 L -2.2072895,0.016013256 L 8.7185884,-4.0017078 C 6.9730900,-1.6296469 6.9831476,1.6157441 8.7185878,4.0337352 z "
+         transform="scale(0.6) translate(0,0)" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow1Sstart"
+       orient="auto"
+       refY="0.0"
+       refX="0.0"
+       id="Arrow1Sstart"
+       style="overflow:visible">
+      <path
+         id="path3846"
+         d="M 0.0,0.0 L 5.0,-5.0 L -12.5,0.0 L 5.0,5.0 L 0.0,0.0 z "
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1.0pt"
+         transform="scale(0.2) translate(6,0)" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow2Lstart"
+       orient="auto"
+       refY="0.0"
+       refX="0.0"
+       id="Arrow2Lstart"
+       style="overflow:visible">
+      <path
+         id="path3852"
+         style="fill-rule:evenodd;stroke-width:0.62500000;stroke-linejoin:round"
+         d="M 8.7185878,4.0337352 L -2.2072895,0.016013256 L 8.7185884,-4.0017078 C 6.9730900,-1.6296469 6.9831476,1.6157441 8.7185878,4.0337352 z "
+         transform="scale(1.1) translate(1,0)" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow1Lend"
+       orient="auto"
+       refY="0.0"
+       refX="0.0"
+       id="Arrow1Lend"
+       style="overflow:visible;">
+      <path
+         id="path3837"
+         d="M 0.0,0.0 L 5.0,-5.0 L -12.5,0.0 L 5.0,5.0 L 0.0,0.0 z "
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1.0pt;"
+         transform="scale(0.8) rotate(180) translate(12.5,0)" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow1Lstart"
+       orient="auto"
+       refY="0.0"
+       refX="0.0"
+       id="Arrow1Lstart"
+       style="overflow:visible">
+      <path
+         id="path3834"
+         d="M 0.0,0.0 L 5.0,-5.0 L -12.5,0.0 L 5.0,5.0 L 0.0,0.0 z "
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1.0pt"
+         transform="scale(0.8) translate(12.5,0)" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow1Lstart"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="Arrow1Lstart-5"
+       style="overflow:visible">
+      <path
+         inkscape:connector-curvature="0"
+         id="path3834-3"
+         d="M 0,0 5,-5 -12.5,0 5,5 0,0 z"
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt"
+         transform="matrix(0.8,0,0,0.8,10,0)" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow1Lend"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="Arrow1Lend-5"
+       style="overflow:visible">
+      <path
+         inkscape:connector-curvature="0"
+         id="path3837-6"
+         d="M 0,0 5,-5 -12.5,0 5,5 0,0 z"
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt"
+         transform="matrix(-0.8,0,0,-0.8,-10,0)" />
+    </marker>
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.7"
+     inkscape:cx="389.71898"
+     inkscape:cy="474.82439"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     showguides="true"
+     inkscape:guide-bbox="true"
+     inkscape:snap-bbox="false"
+     inkscape:snap-bbox-midpoints="true"
+     inkscape:snap-global="false"
+     inkscape:window-width="1366"
+     inkscape:window-height="744"
+     inkscape:window-x="0"
+     inkscape:window-y="24"
+     inkscape:window-maximized="1">
+    <inkscape:grid
+       type="xygrid"
+       id="grid2985" />
+  </sodipodi:namedview>
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <rect
+       style="fill:#ffffff;stroke:none;stroke-width:2;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:4, 2;stroke-dashoffset:0;fill-opacity:1"
+       id="rect8045"
+       width="894.28571"
+       height="570"
+       x="-60"
+       y="246.6479"
+       ry="6.0609155"
+       inkscape:export-filename="/home/dave/code/penelopean-robotics/performance/layout.png"
+       inkscape:export-xdpi="200"
+       inkscape:export-ydpi="200" />
+    <path
+       sodipodi:type="arc"
+       style="fill:none;stroke:#000000;stroke-width:5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:5, 5;stroke-dashoffset:0"
+       id="path3017"
+       sodipodi:cx="525"
+       sodipodi:cy="537.36218"
+       sodipodi:rx="115"
+       sodipodi:ry="115"
+       d="m 640,537.36218 a 115,115 0 1 1 -230,0 115,115 0 1 1 230,0 z"
+       transform="translate(60.949237,-7.0710678)"
+       inkscape:export-filename="/home/dave/code/penelopean-robotics/performance/layout.png"
+       inkscape:export-xdpi="200"
+       inkscape:export-ydpi="200" />
+    <path
+       sodipodi:type="arc"
+       style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       id="path2987"
+       sodipodi:cx="370"
+       sodipodi:cy="492.36218"
+       sodipodi:rx="10"
+       sodipodi:ry="10"
+       d="m 380,492.36218 a 10,10 0 1 1 -20,0 10,10 0 1 1 20,0 z"
+       transform="translate(216,40)"
+       inkscape:export-filename="/home/dave/code/penelopean-robotics/performance/layout.png"
+       inkscape:export-xdpi="200"
+       inkscape:export-ydpi="200" />
+    <rect
+       style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       id="rect2989"
+       width="80"
+       height="140"
+       x="72.520302"
+       y="460.86218"
+       inkscape:export-filename="/home/dave/code/penelopean-robotics/performance/layout.png"
+       inkscape:export-xdpi="200"
+       inkscape:export-ydpi="200" />
+    <rect
+       style="fill:#000000;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;fill-opacity:1"
+       id="rect2991"
+       width="50"
+       height="40"
+       x="-246.18054"
+       y="302.14273"
+       transform="matrix(0.46982905,-0.88275742,0.88275742,0.46982905,0,0)"
+       inkscape:export-filename="/home/dave/code/penelopean-robotics/performance/layout.png"
+       inkscape:export-xdpi="200"
+       inkscape:export-ydpi="200" />
+    <rect
+       style="fill:#000000;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;fill-opacity:1"
+       id="rect2991-3"
+       width="50"
+       height="40"
+       x="685.4021"
+       y="217.38185"
+       transform="matrix(0.53480548,0.8449752,-0.8449752,0.53480548,0,0)"
+       inkscape:export-filename="/home/dave/code/penelopean-robotics/performance/layout.png"
+       inkscape:export-xdpi="200"
+       inkscape:export-ydpi="200" />
+    <rect
+       style="fill:none;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:4, 2;stroke-dashoffset:0"
+       id="rect3015"
+       width="30"
+       height="40"
+       x="562.86218"
+       y="-131.52031"
+       transform="matrix(0,1,-1,0,0,0)"
+       inkscape:export-filename="/home/dave/code/penelopean-robotics/performance/layout.png"
+       inkscape:export-xdpi="200"
+       inkscape:export-ydpi="200" />
+    <rect
+       style="fill:#ffffff;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;fill-opacity:1"
+       id="rect3037"
+       width="400"
+       height="10"
+       x="-733.03229"
+       y="17.91361"
+       transform="matrix(0,-1,1,0,0,0)"
+       inkscape:export-filename="/home/dave/code/penelopean-robotics/performance/layout.png"
+       inkscape:export-xdpi="200"
+       inkscape:export-ydpi="200" />
+    <rect
+       style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       id="rect2989-7"
+       width="80"
+       height="140"
+       x="460.86218"
+       y="-291.5"
+       transform="matrix(0,1,-1,0,0,0)"
+       inkscape:export-filename="/home/dave/code/penelopean-robotics/performance/layout.png"
+       inkscape:export-xdpi="200"
+       inkscape:export-ydpi="200" />
+    <rect
+       style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:3;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       id="rect3013"
+       width="45"
+       height="45"
+       x="238.26776"
+       y="480.88248"
+       inkscape:export-filename="/home/dave/code/penelopean-robotics/performance/layout.png"
+       inkscape:export-xdpi="200"
+       inkscape:export-ydpi="200" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:6, 2;stroke-dashoffset:0;marker-start:url(#Arrow2Mstart);marker-mid:none;marker-end:url(#Arrow2Mend)"
+       d="m 691.05586,662.67186 -218.19295,0.10662"
+       id="path3828"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc"
+       inkscape:export-filename="/home/dave/code/penelopean-robotics/performance/layout.png"
+       inkscape:export-xdpi="200"
+       inkscape:export-ydpi="200" />
+    <g
+       id="g5348"
+       style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:2;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       transform="translate(11,-74)"
+       inkscape:export-filename="/home/dave/code/penelopean-robotics/performance/layout.png"
+       inkscape:export-xdpi="200"
+       inkscape:export-ydpi="200">
+      <path
+         transform="translate(15,75)"
+         d="m 225,487.36218 c 0,2.76143 -2.23858,5 -5,5 -2.76142,0 -5,-2.23857 -5,-5 0,-2.76142 2.23858,-5 5,-5 2.76142,0 5,2.23858 5,5 z"
+         sodipodi:ry="5"
+         sodipodi:rx="5"
+         sodipodi:cy="487.36218"
+         sodipodi:cx="220"
+         id="path5220"
+         style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:2;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+         sodipodi:type="arc" />
+      <path
+         transform="translate(25,75)"
+         d="m 225,487.36218 c 0,2.76143 -2.23858,5 -5,5 -2.76142,0 -5,-2.23857 -5,-5 0,-2.76142 2.23858,-5 5,-5 2.76142,0 5,2.23858 5,5 z"
+         sodipodi:ry="5"
+         sodipodi:rx="5"
+         sodipodi:cy="487.36218"
+         sodipodi:cx="220"
+         id="path5220-1"
+         style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:2;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+         sodipodi:type="arc" />
+      <path
+         transform="translate(35,75)"
+         d="m 225,487.36218 c 0,2.76143 -2.23858,5 -5,5 -2.76142,0 -5,-2.23857 -5,-5 0,-2.76142 2.23858,-5 5,-5 2.76142,0 5,2.23858 5,5 z"
+         sodipodi:ry="5"
+         sodipodi:rx="5"
+         sodipodi:cy="487.36218"
+         sodipodi:cx="220"
+         id="path5220-2"
+         style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:2;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+         sodipodi:type="arc" />
+      <path
+         transform="translate(45,75)"
+         d="m 225,487.36218 c 0,2.76143 -2.23858,5 -5,5 -2.76142,0 -5,-2.23857 -5,-5 0,-2.76142 2.23858,-5 5,-5 2.76142,0 5,2.23858 5,5 z"
+         sodipodi:ry="5"
+         sodipodi:rx="5"
+         sodipodi:cy="487.36218"
+         sodipodi:cx="220"
+         id="path5220-1-7"
+         style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:2;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+         sodipodi:type="arc" />
+      <path
+         transform="translate(15,85)"
+         d="m 225,487.36218 c 0,2.76143 -2.23858,5 -5,5 -2.76142,0 -5,-2.23857 -5,-5 0,-2.76142 2.23858,-5 5,-5 2.76142,0 5,2.23858 5,5 z"
+         sodipodi:ry="5"
+         sodipodi:rx="5"
+         sodipodi:cy="487.36218"
+         sodipodi:cx="220"
+         id="path5220-0"
+         style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:2;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+         sodipodi:type="arc" />
+      <path
+         transform="translate(25,85)"
+         d="m 225,487.36218 c 0,2.76143 -2.23858,5 -5,5 -2.76142,0 -5,-2.23857 -5,-5 0,-2.76142 2.23858,-5 5,-5 2.76142,0 5,2.23858 5,5 z"
+         sodipodi:ry="5"
+         sodipodi:rx="5"
+         sodipodi:cy="487.36218"
+         sodipodi:cx="220"
+         id="path5220-1-9"
+         style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:2;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+         sodipodi:type="arc" />
+      <path
+         transform="translate(35,85)"
+         d="m 225,487.36218 c 0,2.76143 -2.23858,5 -5,5 -2.76142,0 -5,-2.23857 -5,-5 0,-2.76142 2.23858,-5 5,-5 2.76142,0 5,2.23858 5,5 z"
+         sodipodi:ry="5"
+         sodipodi:rx="5"
+         sodipodi:cy="487.36218"
+         sodipodi:cx="220"
+         id="path5220-2-3"
+         style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:2;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+         sodipodi:type="arc" />
+      <path
+         transform="translate(45,85)"
+         d="m 225,487.36218 c 0,2.76143 -2.23858,5 -5,5 -2.76142,0 -5,-2.23857 -5,-5 0,-2.76142 2.23858,-5 5,-5 2.76142,0 5,2.23858 5,5 z"
+         sodipodi:ry="5"
+         sodipodi:rx="5"
+         sodipodi:cy="487.36218"
+         sodipodi:cx="220"
+         id="path5220-1-7-6"
+         style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:2;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+         sodipodi:type="arc" />
+      <path
+         transform="translate(15,95)"
+         d="m 225,487.36218 c 0,2.76143 -2.23858,5 -5,5 -2.76142,0 -5,-2.23857 -5,-5 0,-2.76142 2.23858,-5 5,-5 2.76142,0 5,2.23858 5,5 z"
+         sodipodi:ry="5"
+         sodipodi:rx="5"
+         sodipodi:cy="487.36218"
+         sodipodi:cx="220"
+         id="path5220-06"
+         style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:2;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+         sodipodi:type="arc" />
+      <path
+         transform="translate(25,95)"
+         d="m 225,487.36218 c 0,2.76143 -2.23858,5 -5,5 -2.76142,0 -5,-2.23857 -5,-5 0,-2.76142 2.23858,-5 5,-5 2.76142,0 5,2.23858 5,5 z"
+         sodipodi:ry="5"
+         sodipodi:rx="5"
+         sodipodi:cy="487.36218"
+         sodipodi:cx="220"
+         id="path5220-1-2"
+         style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:2;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+         sodipodi:type="arc" />
+      <path
+         transform="translate(35,95)"
+         d="m 225,487.36218 c 0,2.76143 -2.23858,5 -5,5 -2.76142,0 -5,-2.23857 -5,-5 0,-2.76142 2.23858,-5 5,-5 2.76142,0 5,2.23858 5,5 z"
+         sodipodi:ry="5"
+         sodipodi:rx="5"
+         sodipodi:cy="487.36218"
+         sodipodi:cx="220"
+         id="path5220-2-6"
+         style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:2;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+         sodipodi:type="arc" />
+      <path
+         transform="translate(45,95)"
+         d="m 225,487.36218 c 0,2.76143 -2.23858,5 -5,5 -2.76142,0 -5,-2.23857 -5,-5 0,-2.76142 2.23858,-5 5,-5 2.76142,0 5,2.23858 5,5 z"
+         sodipodi:ry="5"
+         sodipodi:rx="5"
+         sodipodi:cy="487.36218"
+         sodipodi:cx="220"
+         id="path5220-1-7-1"
+         style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:2;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+         sodipodi:type="arc" />
+      <path
+         transform="translate(15,105)"
+         d="m 225,487.36218 c 0,2.76143 -2.23858,5 -5,5 -2.76142,0 -5,-2.23857 -5,-5 0,-2.76142 2.23858,-5 5,-5 2.76142,0 5,2.23858 5,5 z"
+         sodipodi:ry="5"
+         sodipodi:rx="5"
+         sodipodi:cy="487.36218"
+         sodipodi:cx="220"
+         id="path5220-0-8"
+         style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:2;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+         sodipodi:type="arc" />
+      <path
+         transform="translate(25,105)"
+         d="m 225,487.36218 c 0,2.76143 -2.23858,5 -5,5 -2.76142,0 -5,-2.23857 -5,-5 0,-2.76142 2.23858,-5 5,-5 2.76142,0 5,2.23858 5,5 z"
+         sodipodi:ry="5"
+         sodipodi:rx="5"
+         sodipodi:cy="487.36218"
+         sodipodi:cx="220"
+         id="path5220-1-9-7"
+         style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:2;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+         sodipodi:type="arc" />
+      <path
+         transform="translate(35,105)"
+         d="m 225,487.36218 c 0,2.76143 -2.23858,5 -5,5 -2.76142,0 -5,-2.23857 -5,-5 0,-2.76142 2.23858,-5 5,-5 2.76142,0 5,2.23858 5,5 z"
+         sodipodi:ry="5"
+         sodipodi:rx="5"
+         sodipodi:cy="487.36218"
+         sodipodi:cx="220"
+         id="path5220-2-3-9"
+         style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:2;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+         sodipodi:type="arc" />
+      <path
+         transform="translate(45,105)"
+         d="m 225,487.36218 c 0,2.76143 -2.23858,5 -5,5 -2.76142,0 -5,-2.23857 -5,-5 0,-2.76142 2.23858,-5 5,-5 2.76142,0 5,2.23858 5,5 z"
+         sodipodi:ry="5"
+         sodipodi:rx="5"
+         sodipodi:cy="487.36218"
+         sodipodi:cx="220"
+         id="path5220-1-7-6-2"
+         style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:2;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+         sodipodi:type="arc" />
+    </g>
+    <path
+       style="fill:none;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:6, 2;stroke-dashoffset:0;marker-start:url(#Arrow2Mstart);marker-mid:none;marker-end:url(#Arrow2Mend)"
+       d="M 689.18024,528.2505 294.17259,505.32157"
+       id="path3828-2"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc"
+       inkscape:export-filename="/home/dave/code/penelopean-robotics/performance/layout.png"
+       inkscape:export-xdpi="200"
+       inkscape:export-ydpi="200" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:6, 2;stroke-dashoffset:0;marker-start:url(#Arrow2Mstart);marker-end:none"
+       d="m 192.09953,489.12995 7.79023,-48.06508"
+       id="path5366"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc"
+       inkscape:export-filename="/home/dave/code/penelopean-robotics/performance/layout.png"
+       inkscape:export-xdpi="200"
+       inkscape:export-ydpi="200" />
+    <rect
+       style="fill:#000000;fill-opacity:1;stroke:none"
+       id="rect7676"
+       width="17.172594"
+       height="26.263966"
+       x="97.8731"
+       y="511.66931"
+       inkscape:export-filename="/home/dave/code/penelopean-robotics/performance/layout.png"
+       inkscape:export-xdpi="200"
+       inkscape:export-ydpi="200" />
+    <text
+       xml:space="preserve"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="154.01019"
+       y="413.98639"
+       id="text7678"
+       sodipodi:linespacing="125%"
+       inkscape:export-filename="/home/dave/code/penelopean-robotics/performance/layout.png"
+       inkscape:export-xdpi="200"
+       inkscape:export-ydpi="200"><tspan
+         sodipodi:role="line"
+         x="154.01019"
+         y="413.98639"
+         style="font-size:15px;font-family:ubuntu;-inkscape-font-specification:ubuntu"
+         id="tspan7682">space for books, weaving &amp; example </tspan><tspan
+         sodipodi:role="line"
+         x="154.01019"
+         y="432.73639"
+         style="font-size:15px;font-family:ubuntu;-inkscape-font-specification:ubuntu"
+         id="tspan7686">technology ancient and contemporary</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="217.05272"
+       y="555.45288"
+       id="text7678-0"
+       sodipodi:linespacing="125%"
+       inkscape:export-filename="/home/dave/code/penelopean-robotics/performance/layout.png"
+       inkscape:export-xdpi="200"
+       inkscape:export-ydpi="200"><tspan
+         sodipodi:role="line"
+         x="217.05272"
+         y="555.45288"
+         style="font-size:15px;font-family:ubuntu;-inkscape-font-specification:ubuntu"
+         id="tspan7686-3">pattern matrix</tspan><tspan
+         sodipodi:role="line"
+         x="217.05272"
+         y="574.20288"
+         style="font-size:15px;font-family:ubuntu;-inkscape-font-specification:ubuntu"
+         id="tspan7927">(raspberry pi based)</tspan><tspan
+         sodipodi:role="line"
+         x="217.05272"
+         y="592.95288"
+         style="font-size:15px;font-family:ubuntu;-inkscape-font-specification:ubuntu"
+         id="tspan7728" /></text>
+    <rect
+       style="fill:#ffffff;fill-opacity:1;stroke:none"
+       id="rect7789"
+       width="268.16272"
+       height="16.697203"
+       x="307.62427"
+       y="475.56506"
+       inkscape:export-filename="/home/dave/code/penelopean-robotics/performance/layout.png"
+       inkscape:export-xdpi="200"
+       inkscape:export-ydpi="200" />
+    <text
+       xml:space="preserve"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="316.71564"
+       y="489.23181"
+       id="text7678-0-7"
+       sodipodi:linespacing="125%"
+       inkscape:export-filename="/home/dave/code/penelopean-robotics/performance/layout.png"
+       inkscape:export-xdpi="200"
+       inkscape:export-ydpi="200"><tspan
+         sodipodi:role="line"
+         x="316.71564"
+         y="489.23181"
+         style="font-size:15px;font-family:ubuntu;-inkscape-font-specification:ubuntu"
+         id="tspan7728-2">max distance to robots for radio: 20m</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="486.5116"
+       y="701.7677"
+       id="text7678-0-7-2"
+       sodipodi:linespacing="125%"
+       inkscape:export-filename="/home/dave/code/penelopean-robotics/performance/layout.png"
+       inkscape:export-xdpi="200"
+       inkscape:export-ydpi="200"><tspan
+         sodipodi:role="line"
+         x="486.5116"
+         y="701.7677"
+         style="font-size:15px;font-family:ubuntu;-inkscape-font-specification:ubuntu"
+         id="tspan7728-2-8">may pole max diameter: 4m</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="144.45181"
+       y="292.72748"
+       id="text7791"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan7793"
+         x="144.45181"
+         y="292.72748" /></text>
+    <text
+       xml:space="preserve"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="150.09746"
+       y="305.95135"
+       id="text7678-0-9"
+       sodipodi:linespacing="125%"
+       inkscape:export-filename="/home/dave/code/penelopean-robotics/performance/layout.png"
+       inkscape:export-xdpi="200"
+       inkscape:export-ydpi="200"><tspan
+         sodipodi:role="line"
+         x="150.09746"
+         y="305.95135"
+         style="font-size:15px;font-family:ubuntu;-inkscape-font-specification:ubuntu"
+         id="tspan7686-3-7">speaker</tspan><tspan
+         sodipodi:role="line"
+         x="150.09746"
+         y="324.70135"
+         style="font-size:15px;font-family:ubuntu;-inkscape-font-specification:ubuntu"
+         id="tspan7728-3" /></text>
+    <text
+       xml:space="preserve"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="149.88229"
+       y="681.01794"
+       id="text7678-0-9-6"
+       sodipodi:linespacing="125%"
+       inkscape:export-filename="/home/dave/code/penelopean-robotics/performance/layout.png"
+       inkscape:export-xdpi="200"
+       inkscape:export-ydpi="200"><tspan
+         sodipodi:role="line"
+         x="149.88229"
+         y="681.01794"
+         style="font-size:15px;font-family:ubuntu;-inkscape-font-specification:ubuntu"
+         id="tspan7686-3-7-1">speaker</tspan><tspan
+         sodipodi:role="line"
+         x="149.88229"
+         y="699.76794"
+         style="font-size:15px;font-family:ubuntu;-inkscape-font-specification:ubuntu"
+         id="tspan7728-3-2" /></text>
+    <text
+       xml:space="preserve"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="33.714745"
+       y="650.71338"
+       id="text7678-0-9-9"
+       sodipodi:linespacing="125%"
+       inkscape:export-filename="/home/dave/code/penelopean-robotics/performance/layout.png"
+       inkscape:export-xdpi="200"
+       inkscape:export-ydpi="200"><tspan
+         sodipodi:role="line"
+         x="33.714745"
+         y="650.71338"
+         style="font-size:15px;font-family:ubuntu;-inkscape-font-specification:ubuntu"
+         id="tspan7686-3-7-3">screen</tspan><tspan
+         sodipodi:role="line"
+         x="33.714745"
+         y="669.46338"
+         style="font-size:15px;font-family:ubuntu;-inkscape-font-specification:ubuntu"
+         id="tspan7867">for</tspan><tspan
+         sodipodi:role="line"
+         x="33.714745"
+         y="688.21338"
+         style="font-size:15px;font-family:ubuntu;-inkscape-font-specification:ubuntu"
+         id="tspan7869">projection</tspan><tspan
+         sodipodi:role="line"
+         x="33.714745"
+         y="706.96338"
+         style="font-size:15px;font-family:ubuntu;-inkscape-font-specification:ubuntu"
+         id="tspan7728-3-1" /></text>
+    <text
+       xml:space="preserve"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="63.009163"
+       y="621.41895"
+       id="text7678-0-9-94"
+       sodipodi:linespacing="125%"
+       inkscape:export-filename="/home/dave/code/penelopean-robotics/performance/layout.png"
+       inkscape:export-xdpi="200"
+       inkscape:export-ydpi="200"><tspan
+         sodipodi:role="line"
+         x="63.009163"
+         y="621.41895"
+         style="font-size:15px;font-family:ubuntu;-inkscape-font-specification:ubuntu"
+         id="tspan7686-3-7-7">space for laptop</tspan><tspan
+         sodipodi:role="line"
+         x="63.009163"
+         y="640.16895"
+         style="font-size:15px;font-family:ubuntu;-inkscape-font-specification:ubuntu"
+         id="tspan7728-3-8" /></text>
+    <text
+       xml:space="preserve"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="78.248299"
+       y="478.98746"
+       id="text7678-0-9-94-4"
+       sodipodi:linespacing="125%"
+       inkscape:export-filename="/home/dave/code/penelopean-robotics/performance/layout.png"
+       inkscape:export-xdpi="200"
+       inkscape:export-ydpi="200"><tspan
+         sodipodi:role="line"
+         x="78.248299"
+         y="478.98746"
+         style="font-size:15px;font-family:ubuntu;-inkscape-font-specification:ubuntu"
+         id="tspan7686-3-7-7-5">mixer &amp;</tspan><tspan
+         sodipodi:role="line"
+         x="78.248299"
+         y="497.73746"
+         style="font-size:15px;font-family:ubuntu;-inkscape-font-specification:ubuntu"
+         id="tspan7919">stage mic</tspan><tspan
+         sodipodi:role="line"
+         x="78.248299"
+         y="516.48743"
+         style="font-size:15px;font-family:ubuntu;-inkscape-font-specification:ubuntu"
+         id="tspan7728-3-8-0" /></text>
+    <rect
+       style="fill:none;stroke:#000000;stroke-width:1;stroke-opacity:1"
+       id="rect7929"
+       width="35.607883"
+       height="31.819834"
+       x="719.67554"
+       y="199.28642"
+       ry="6.0609155"
+       transform="matrix(0.80078887,0.59894672,-0.59894672,0.80078887,0,0)" />
+    <rect
+       style="fill:none;stroke:#000000;stroke-width:1;stroke-opacity:1"
+       id="rect7929-3"
+       width="35.607883"
+       height="31.819834"
+       x="759.15826"
+       y="168.52264"
+       ry="6.0609155"
+       transform="matrix(0.94943209,0.31397246,-0.31397246,0.94943209,0,0)" />
+    <rect
+       style="fill:none;stroke:#000000;stroke-width:1;stroke-opacity:1"
+       id="rect7929-3-6"
+       width="35.607883"
+       height="31.819834"
+       x="72.653252"
+       y="-957.37079"
+       ry="6.0609155"
+       transform="matrix(-0.58951923,0.80775434,-0.80775434,-0.58951923,0,0)" />
+    <rect
+       style="fill:none;stroke:#000000;stroke-width:1;stroke-opacity:1"
+       id="rect7929-3-6-1"
+       width="35.607883"
+       height="31.819834"
+       x="-377.46497"
+       y="-569.00922"
+       ry="6.0609155"
+       transform="matrix(-0.94330634,0.3319234,-0.3319234,-0.94330634,0,0)" />
+    <rect
+       style="fill:none;stroke:#000000;stroke-width:1;stroke-opacity:1"
+       id="rect7929-3-6-1-0"
+       width="35.607883"
+       height="31.819834"
+       x="-717.23621"
+       y="-606.30188"
+       ry="6.0609155"
+       transform="matrix(-0.96884773,-0.24765718,0.24765718,-0.96884773,0,0)" />
+    <rect
+       style="fill:none;stroke:#000000;stroke-width:1;stroke-opacity:1"
+       id="rect7929-3-6-1-0-6"
+       width="35.607883"
+       height="31.819834"
+       x="-295.09927"
+       y="567.38214"
+       ry="6.0609155"
+       transform="matrix(0.30579367,-0.95209781,0.95209781,0.30579367,0,0)" />
+    <text
+       xml:space="preserve"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="455.96274"
+       y="373.93753"
+       id="text7678-0-9-3"
+       sodipodi:linespacing="125%"
+       inkscape:export-filename="/home/dave/code/penelopean-robotics/performance/layout.png"
+       inkscape:export-xdpi="200"
+       inkscape:export-ydpi="200"><tspan
+         sodipodi:role="line"
+         x="455.96274"
+         y="373.93753"
+         style="font-size:15px;font-family:ubuntu;-inkscape-font-specification:ubuntu"
+         id="tspan7686-3-7-2">scattered cushions</tspan><tspan
+         sodipodi:role="line"
+         x="455.96274"
+         y="392.68753"
+         style="font-size:15px;font-family:ubuntu;-inkscape-font-specification:ubuntu"
+         id="tspan7728-3-0" /></text>
+  </g>
+</svg>

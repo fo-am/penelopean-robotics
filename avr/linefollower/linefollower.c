@@ -4,72 +4,8 @@
 #include <util/delay_basic.h>
 #include <util/delay.h>
 #include "usiTwiSlave.h"
-
-////////////////////////////////////////////////////////////////
-// adc
-
-// 8 bit mode, should be sufficient, using ADC2
-void init_adc() {
-  ADMUX =   (1 << ADLAR) |     // left shift result
-            (0 << REFS1) |     // Sets ref. voltage to VCC, bit 1
-            (0 << REFS0) |     // Sets ref. voltage to VCC, bit 0
-            (0 << MUX3)  |     // use ADC2 for input (PB4), MUX bit 3
-            (0 << MUX2)  |     // use ADC2 for input (PB4), MUX bit 2
-            (1 << MUX1)  |     // use ADC2 for input (PB4), MUX bit 1
-            (0 << MUX0);       // use ADC2 for input (PB4), MUX bit 0
-
-  ADCSRA =  (1 << ADEN)  |     // Enable ADC 
-            (1 << ADPS2) |     // set prescaler to 64, bit 2 
-            (1 << ADPS1) |     // set prescaler to 64, bit 1 
-            (0 << ADPS0);      // set prescaler to 64, bit 0  
-}
-
-char read_adc() {
-  ADCSRA |= (1 << ADSC);         // start ADC measurement
-  while (ADCSRA & (1 << ADSC) ); // wait till conversion complete 
-  return ADCH;
-}
-
-//////////////////////////////////////////////////////////////
-// camera
-
-#define CLK_PIN PB1
-#define SI_PIN PB3
-char image[128];
-
-void read_camera(int exposure) {
-  // pulse clock and si
-  PORTB &= ~CLK_PIN;
-  PORTB |= SI_PIN;
-  PORTB |= CLK_PIN;
-  PORTB &= ~SI_PIN;
-
-  PORTB &= ~CLK_PIN;
-    
-  for (unsigned char j=0; j<128; j++) {
-    PORTB |= CLK_PIN;
-    PORTB &= ~CLK_PIN;
-  }
- 
-  for (unsigned char j=0; j<exposure; j++) {
-    _delay_ms(1);
-  }
-  
-  PORTB |= SI_PIN;
-  PORTB |= CLK_PIN;
-  PORTB &= ~SI_PIN;
- 
-  PORTB &= ~CLK_PIN;
-    
-  for (unsigned char j=0; j<128; j++) {
-    _delay_ms;
-    PORTB &= ~CLK_PIN;
-  }
- 
-  _delay_ms(20);
-}
-
-///////////////////////////////////////////////////////////
+#include "camera.h"
+#include "adc.h"
 
 #define       I2C_ADDR 0x0a
 unsigned char counter=0;
