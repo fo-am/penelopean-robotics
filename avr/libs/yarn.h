@@ -37,7 +37,7 @@ cell_t cell_arg(cell_t v);
 #define STACK_START (HEAP_SIZE-1)
 #define REG_PC 0
 #define REG_ST 1
-#define REG_CODE_START 32
+#define REG_CODE_START 64
 
 // yarn machine instructions
 #define NOP   0 // do nothing

@@ -17,6 +17,7 @@
 #include <avr/io.h>
 #include <util/delay.h>
 #include <nrf24l01.h>
+#include <avr/wdt.h>
 #include <i2c-master.h>
 #include <robot.h>
 #include <insect.h>
@@ -42,6 +43,11 @@
 
 ISR(TIMER1_COMPA_vect) {
   servo_pulse_update();
+}
+
+// watchdog interrupt
+ISR(WDT_vect) {
+  wdt_disable(); // disable watchdog
 }
 
 int main (void) {

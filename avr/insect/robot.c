@@ -21,6 +21,9 @@
 #include <fixed.h>
 #include <math.h>
 #include <robot.h>
+#include <avr/interrupt.h>
+#include "i2c-master.h"
+#include "adc.h"
 
 // only have 1k of eeprom to play with...
 // make sure it's init to zero with funky gcc stuff
@@ -57,19 +60,43 @@ void robot_halt(robot_t *r) {
 
 void robot_tick(unsigned int delta_ms, robot_t *r) {
   if (r->running) {
+    yarn_machine *m = &r->machine;
+
     // update registers
     // for debugging, but pc should prob be an internal register anyway
-    yarn_poke(&r->machine,REG_ROBOT_ID,r->id);
+    yarn_poke(m,REG_ROBOT_ID,r->id);
     robot_update_sensors(r);
     robot_update_servos(r);
-    yarn_run(&r->machine);
+    yarn_run(m);
     // our ONE led - getting a bit tiresome
-    if (yarn_peek(&r->machine,REG_LED)!=0) {
+    if (yarn_peek(m,REG_LED)!=0) {
       PORTB |= 0x01;
     } else {
       PORTB &= ~0x01;
     }
     servo_motion_seq_update(delta_ms,&r->seq);
+
+    if (yarn_peek(m,REG_SLEEP)==1) {
+      yarn_poke(m,REG_SLEEP,0);
+      robot_sleep();
+    }
+
+    // direct access to all i2c devices attached
+    if (yarn_peek(m,REG_I2C_CTRL)!=0) {
+      if (yarn_peek(m,REG_I2C_CTRL)==0x01) { // read
+	unsigned char d=0;
+	i2c_read_reg(yarn_peek(m,REG_I2C_DEVICE),yarn_peek(m,REG_I2C_ADDR),&d,1);
+	yarn_poke(m,REG_I2C_DATA,d);
+      }
+      if (yarn_peek(m,REG_I2C_CTRL)==0x02) { // write
+	unsigned char d=yarn_peek(m,REG_I2C_DATA);
+	i2c_write_reg(yarn_peek(m,REG_I2C_DEVICE),yarn_peek(m,REG_I2C_ADDR),&d,1);		
+      }
+      yarn_poke(m,REG_I2C_CTRL,0);
+    }	
+
+    // not sure if adc is init or will mess with servos
+    //yarn_poke(m,REG_VCC,(short)(internal_vcc(3)*100.0f));
   }
 }
 
@@ -114,6 +141,7 @@ void robot_update_sensors(robot_t *r) {
     compare_angle=angle;
   }
   yarn_poke(m,REG_COMP_DELTA,(short)angle_compare(compare_angle,angle));
+  yarn_poke(m,REG_TEMPERATURE,(short)(gy91_read_temp()*100.0f));
 }
 
 void robot_update_servos(robot_t *r) {
@@ -145,9 +173,9 @@ void robot_update_servos(robot_t *r) {
 }
 
 // watchdog interrupt
-ISR (WDT_vect) {
+/*ISR (WDT_vect) {
   wdt_disable(); // disable watchdog
-}
+  }*/
  
 void robot_sleep() {
   // disable ADC
@@ -155,19 +183,20 @@ void robot_sleep() {
   // clear various "reset" flags
   MCUSR = 0;
   // allow changes, disable reset
-  WDTCSR = bit (WDCE) | bit (WDE);
+  WDTCSR = _BV(WDCE) | _BV(WDE);
   // set interrupt mode and an interval
-  WDTCSR = bit (WDIE) | bit (WDP3) | bit (WDP0); // set WDIE, and 8 seconds delay
+  WDTCSR = _BV(WDIE) | _BV(WDP3) | _BV(WDP0); // set WDIE, and 8 seconds delay
   wdt_reset(); // reset the watchdog
   set_sleep_mode (SLEEP_MODE_PWR_DOWN);
-  noInterrupts (); // timed sequence follows
+  cli(); // timed sequence follows
   sleep_enable();
   // turn off brown‐out enable in software
-  MCUCR = bit (BODS) | bit (BODSE);
-  MCUCR = bit (BODS);
-  interrupts (); // guarantees next instruction executed
+  MCUCR = _BV(BODS) | _BV(BODSE);
+  MCUCR = _BV(BODS);
+  sei(); // guarantees next instruction executed
   sleep_cpu ();
   // cancel sleep as a precaution
   sleep_disable();
+  //adc_init();
 }
 

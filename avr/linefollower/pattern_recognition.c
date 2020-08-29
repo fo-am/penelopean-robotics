@@ -1,3 +1,18 @@
+// Penelopean Robotics Copyright (C) 2020 FoAM Kernow
+// 
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Affero General Public License as
+// published by the Free Software Foundation, either version 3 of the
+// License, or (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Affero General Public License for more details.
+//
+// You should have received a copy of the GNU Affero General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 #include "pattern_recognition.h"
 
 // one dimensional pattern recognition
@@ -16,22 +31,30 @@ unsigned char pattern_avg(unsigned char *img, unsigned long len) {
 // returns number of features found
 unsigned long pattern_to_features(unsigned char *img, unsigned long img_len,
 				  unsigned char thresh,
+				  unsigned char courseness,
+				  unsigned char min_width,
+				  unsigned char max_width,
 				  feature *features, unsigned long feature_len) {
   unsigned long feature_i=0;
   unsigned char state=0; // 0=under 1=over
   for (unsigned int n=0; n<img_len; n++) {
     if (feature_i<feature_len) {
       if (state==0) { // dark, searching for light
-	if (img[n]>thresh) {
+	if (img[n]>thresh+courseness) {
 	  state=1;
 	  features[feature_i].start=n;
 	}
       } else { // light, searching for dark
-	if (img[n]<thresh) {
+	if (img[n]<thresh-courseness) {
 	  state=0;
 	  features[feature_i].end=n;
 	  features[feature_i].width=n-features[feature_i].start;
-	  feature_i++;
+
+	  // only save this one if it's large enough
+	  if (features[feature_i].width>min_width &&
+	      features[feature_i].width<max_width) {
+	    feature_i++;
+	  }
 	}
       }
     }
@@ -42,7 +65,9 @@ unsigned long pattern_to_features(unsigned char *img, unsigned long img_len,
 // we assume our navigation line is the "left" most (wrt to the data)
 // light line - so find the centre position of this from all the features
 // returns error code
-unsigned int pattern_read_line(feature *features, unsigned long features_len, unsigned int *centre) {
+unsigned int pattern_read_line(feature *features,
+			       unsigned long features_len,
+			       unsigned char *centre) {
   if (features_len<1) {
     return 1; // no features - all dark/light image
   }
@@ -50,14 +75,19 @@ unsigned int pattern_read_line(feature *features, unsigned long features_len, un
   return 0;
 }
 
-unsigned int pattern_read_barcode(feature *features, unsigned long features_len, unsigned int skip, unsigned char *data) {
+unsigned int pattern_read_barcode(feature *features,
+				  unsigned long features_len,
+				  unsigned int skip,
+				  unsigned char bits,
+				  unsigned char *data) {
+
   unsigned int len=features_len-skip;
   if (len<1) {
     return 1; // not found - all dark/light image or just line
   }
   
-  if (len<4) {
-    return 2; // some data, but not enough for 4 bits
+  if (len<bits) {
+    return 2; // some data, but not enough 
   }
   
   // find average width of feature
@@ -73,10 +103,7 @@ unsigned int pattern_read_barcode(feature *features, unsigned long features_len,
   unsigned char pos=0;
   for (unsigned int f=skip; f<features_len; f++) {    
     if (features[f].width>t) {
-      printf("high\n");
       *data|=1<<pos;
-    } else {
-      printf("low\n");
     }
     pos++;
   }

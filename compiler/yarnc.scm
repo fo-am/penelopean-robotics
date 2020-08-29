@@ -44,18 +44,78 @@
     (servo-2-smooth         "0022")
     (servo-3-smooth         "0023")
 
-    (reg-usr-start              "0024") 
-    (reg-usr-end                "0032")
-    (reg-code-start             "0032")
+    (temperature            "0024")
+    (sleep                  "0025")
+    (i2c-device             "0026")
+    (i2c-addr               "0027")
+    (i2c-data               "0028")
+    (i2c-ctrl               "0029")
+    (vcc                    "0030")
+
+    (accel-x                "0031")
+    (accel-y                "0032")
+    (accel-z                "0033")
+    (gyro-x                 "0034")
+    (gyro-y                 "0035")
+    (gyro-z                 "0036")
+    (comp-x                 "0037")
+    (comp-y                 "0038")
+    (comp-z                 "0039")
+
     
-    (swarm-pulse "0009")
+    (reg-usr-start              "0056") 
+    (reg-usr-end                "0064")
+    (reg-code-start             "0064")
+    
+;;    (swarm-pulse "0009") ??
     
     ))
 
 ;; internal compiler register on zero page
-(define working-reg "24")
-(define stack-frame "25")
-(define var-start 26)
+(define working-reg "53")
+(define stack-frame "54")
+(define var-start 55)
+
+;; constants lookup
+(define constants 
+  '((walk-null "0")
+    (walk-stop "1")
+    (walk-forward "2")
+    (walk-backward "3")
+    (turn-left "4")
+    (turn-right "5")
+    (turn-left2 "6")
+    (turn-right2 "7")
+    (walk-silly "8")
+
+    (i2c-read "1")
+    (i2c-write "2")
+
+    ;; see also linefollower.c
+    (linefollower-i2c "10")
+    (linefollower-id "0")
+    (linefollower-i2c "1") 
+    (linefollower-alive "2")
+    (linefollower-exposure-lo "3")
+    (linefollower-exposure-hi "4")
+    (linefollower-courseness "5")
+    (linefollower-min-width "6")
+    (linefollower-max-width "7")
+    (linefollower-average "8")
+    (linefollower-line-midpos "9")
+    (linefollower-barcode-bits "10")
+    (linefollower-barcode-skip "11")
+    (linefollower-barcode-data "12")
+    (linefollower-line-error "13")
+    (linefollower-barcode-error "14")
+    (linefollower-do-autoexposure "15")
+    (linefollower-num-features "31")
+    (linefollower-features-start "322")
+    (linefollower-raw-image-start "127")
+
+    ))
+
+
 
 (define (reg-table-lookup x)
   (let ((lu (assoc x reg-table)))
@@ -88,18 +148,6 @@
   (_ variables 0))
 
 ;;----------------------------------------------------------------
-;; constants lookup
-(define constants 
-  '((walk-null "0")
-    (walk-stop "1")
-    (walk-forward "2")
-    (walk-backward "3")
-    (turn-left "4")
-    (turn-right "5")
-    (turn-left2 "6")
-    (turn-right2 "7")
-    (walk-silly "8")
-    ))
 
 (define (make-constant! name value)
   (when (not (string? value))

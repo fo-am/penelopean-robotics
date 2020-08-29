@@ -1,6 +1,6 @@
 import array
 
-code_start = 32
+code_start = 64
 
 # change robot.c and yarnc.scm registers to match here
 registers = {
@@ -28,6 +28,14 @@ registers = {
     "SERVO_1_SMOOTH": 21,
     "SERVO_2_SMOOTH": 22,
     "SERVO_3_SMOOTH": 23,
+
+    "TEMPERATURE": 24,
+    "SLEEP": 25,
+    "I2C_DEVICE": 26,
+    "I2C_ADDR": 27,
+    "I2C_DATA": 28,
+    "I2C_CTRL": 29,
+    "VCC": 30,
     
     "NULL": 0,
     "ALL_STOP": 1,

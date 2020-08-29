@@ -48,7 +48,25 @@
 #define REG_SERVO_2_SMOOTH 22
 #define REG_SERVO_3_SMOOTH 23
 
-// 24->32 user area (enough RAM for anybody!!)
+#define REG_TEMPERATURE 24
+#define REG_SLEEP 25
+#define REG_I2C_DEVICE 26
+#define REG_I2C_ADDR 27
+#define REG_I2C_DATA 28
+#define REG_I2C_CTRL 29
+#define REG_VCC 30
+
+#define REG_ACCEL_X 31
+#define REG_ACCEL_Y 32
+#define REG_ACCEL_Z 33
+#define REG_GYRO_X 34
+#define REG_GYRO_Y 35
+#define REG_GYRO_Z 36
+#define REG_COMP_X 37
+#define REG_COMP_Y 38
+#define REG_COMP_Z 39
+
+// ->64 user area (enough RAM for anybody!!)
 
 typedef struct {
   unsigned char id;
@@ -67,5 +85,6 @@ void robot_update_sensors(robot_t *r);
 void robot_update_servos(robot_t *r);
 void robot_write_ee_heap(robot_t *r);
 void robot_read_ee_heap(robot_t *r);
+void robot_sleep();
 
 #endif
