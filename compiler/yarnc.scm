@@ -31,6 +31,20 @@
     (usr-b                  "0011")
     (usr-c                  "0012")
     (usr-d                  "0013")
+
+    ;; sentinel regs
+    (temperature "0014")
+    (sleep "0015")
+    (i2c-device "0016")
+    (i2c-addr "0017")
+    (i2c-data "0018")
+    (i2c-ctrl "0019")
+    (adc-1 "0020")
+    (adc-2 "0021")
+    (adc-3 "0022")
+    (vcc "0023")
+    
+    ;; robot regs
     (servo-ms-per-step      "0014")
     (servo-1-amp            "0015")
     (servo-2-amp            "0016")
@@ -97,6 +111,9 @@
     (turn-left2 "6")
     (turn-right2 "7")
     (walk-silly "8")
+
+    (i2c-read "1")
+    (i2c-write "2")
     ))
 
 (define (make-constant! name value)
@@ -421,18 +438,12 @@
 (define (emit-left-shift x)
   (append
    (emit-expr (list-ref x 1))
-   (map append
-        (build-list
-         (list-ref x 2)
-         (lambda (i) "rl")))))
+   (emit "rl" (immediate-value (list-ref x 2)))))
 
 (define (emit-right-shift x)
   (append
    (emit-expr (list-ref x 1))
-   (map append
-        (build-list
-         (list-ref x 2)
-         (lambda (i) "rl")))))
+   (emit "rr" (immediate-value (list-ref x 2)))))
 
 ;; (define (emit-mul x)
 ;;   (let ((label (generate-label "mul")))

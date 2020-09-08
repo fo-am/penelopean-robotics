@@ -2,7 +2,7 @@
 
 import radio
 import robot
-import yarn
+import yarnasm
 from OSC import OSCServer
 import time
 import threading
@@ -13,18 +13,18 @@ import subprocess
 class pmswarm:
     def __init__(self):
         self.radio = radio.radio([0xa7, 0xa7, 0xa7, 0xa7, 0xaa])
-        self.swarm = [#robot.robot([0xa7, 0xa7, 0xa7, 0xa7, 0x01]),
+        self.swarm = [#robot.robot([0xa7, 0xa7, 0xa7, 0xa7, 0x99]),
                       #robot.robot([0xa7, 0xa7, 0xa7, 0xa7, 0x02]),
                       #robot.robot([0xa7, 0xa7, 0xa7, 0xa7, 0x03]),
-                      robot.robot([0xa7, 0xa7, 0xa7, 0xa7, 0x04]),
+                      #robot.robot([0xa7, 0xa7, 0xa7, 0xa7, 0x04]),
                       ##robot.robot([0xa7, 0xa7, 0xa7, 0xa7, 0x05]),
                       #robot.robot([0xa7, 0xa7, 0xa7, 0xa7, 0x06]),
                       #robot.robot([0xa7, 0xa7, 0xa7, 0xa7, 0x07]),
-                      #robot.robot([0xa7, 0xa7, 0xa7, 0xa7, 0x08]),
+                      robot.robot([0xa7, 0xa7, 0xa7, 0xa7, 0x08]),
                       #robot.robot([0xa7, 0xa7, 0xa7, 0xa7, 0x09])
         ]
     
-        self.compiler = yarn.compiler()
+        self.compiler = yarnasm.compiler()
 
         if len(sys.argv)>2 and sys.argv[1]=="prog":
             # load code here
@@ -50,14 +50,27 @@ class pmswarm:
             if sys.argv[2]=="1": status=1
             for r in self.swarm:
                 r.write(3,status,self.radio)
-                    
+
+        if len(sys.argv)>1 and sys.argv[1]=="ping":
+            while True:
+                for r in self.swarm:
+                    r.write(3,1,self.radio)
+                time.sleep(1)
+                
         if len(sys.argv)>1 and sys.argv[1]=="tele":
+            start = 0
+            if len(sys.argv)>2: start=int(sys.argv[2])
             while True:
                 for r in self.swarm:
                     print("------")
-                    t=self.radio.request_telemetry(r.address)
-                    for i,desc in enumerate(["pc","stack","robot_id","led","comp-angle","comp-delta-reset","comp-delta","step-count","step-count-reset","next-pattern","a","b","c","d"]):
-                        print(desc+": "+str(t[i]))
+                    t=self.radio.request_telemetry(r.address,start)
+                    print(len(t))
+                    if start==0:
+                        for i,desc in enumerate(["pc","stack","robot_id","led","comp-angle","comp-delta-reset","comp-delta","step-count","step-count-reset","next-pattern","a","b","c","d"]):
+                            print(desc+": "+str(t[i]))
+                    else:
+                        for i in range(0,len(t)):
+                            print(str(start+i)+": "+str(t[i]))
                 time.sleep(0.5)
 
         if len(sys.argv)>1 and sys.argv[1]=="docali":

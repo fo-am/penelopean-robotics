@@ -185,6 +185,7 @@ class compiler:
             return 0
 
     def assemble(self,s):
+        print("yarnasm 2.0")
         s = s.split("\n")
         print("yarnasm: "+str(len(s))+" lines in asm")
         s = self.remove_comments(s)

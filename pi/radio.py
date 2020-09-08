@@ -45,10 +45,10 @@ class radio:
             self.destination_address=addr
             self.device.openWritingPipe(addr)
             
-    def request_telemetry(self,addr):
+    def request_telemetry(self,addr,start):
         self.set_destination(addr)
-        return self.send(self.build_telemetry(0))
-
+        return self.send(self.build_telemetry(start))
+    
     def send_set(self,addr,address,val):
         self.set_destination(addr)
         self.send(self.build_write(address,struct.pack("H",val)))
