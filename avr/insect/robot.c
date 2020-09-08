@@ -65,7 +65,7 @@ void robot_tick(unsigned int delta_ms, robot_t *r) {
     // update registers
     // for debugging, but pc should prob be an internal register anyway
     yarn_poke(m,REG_ROBOT_ID,r->id);
-    robot_update_sensors(r);
+    //robot_update_sensors(r);
     robot_update_servos(r);
     yarn_run(m);
     // our ONE led - getting a bit tiresome

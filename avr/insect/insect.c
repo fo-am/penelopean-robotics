@@ -65,7 +65,7 @@ int main (void) {
 
   // now the rest of the peripherals
   i2c_init();
-  gy91_init();
+  //gy91_init();
   servo_init();
   sei();   
 
