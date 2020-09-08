@@ -18,9 +18,10 @@
 #include "camera.h"
 #include "adc.h"
 
-unsigned int camera_autoexposure(unsigned int exposure, unsigned char average) {
+unsigned int camera_autoexposure(unsigned int exposure, unsigned char average, unsigned int speed) {
   // increase the exposure if it's dark on average and vice versa
   int new_exposure=(int)(exposure)-((int)(average)-127);
+  exposure=new_exposure;
   if (exposure<0) exposure=0;
   if (exposure>4000) exposure=4000;
   return exposure;

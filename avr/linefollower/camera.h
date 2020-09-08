@@ -19,7 +19,7 @@
 #define CLK_PIN PB1
 #define SI_PIN PB3
 
-unsigned int camera_autoexposure(unsigned int exposure, unsigned char average);
+unsigned int camera_autoexposure(unsigned int exposure, unsigned char average, unsigned int speed);
 void read_camera(unsigned int exposure, unsigned char *image);
 
 #endif

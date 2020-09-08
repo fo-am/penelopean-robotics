@@ -48,14 +48,14 @@ unsigned char counter=0;
 #define ADDR_BARCODE_DATA 12  
 #define ADDR_LINE_ERROR 13
 #define ADDR_BARCODE_ERROR 14
-#define ADDR_DO_AUTOEXPOSURE 15 // r/w
+#define ADDR_AUTOEXPOSURE 15 // r/w
 #define ADDR_NUM_FEATURES 31
 #define ADDR_FEATURES_START 32
 #define ADDR_RAW_IMAGE_START 127
 
 unsigned int  g_exposure=1000;
-unsigned char g_courseness=255;
-unsigned char g_min_width=0;
+unsigned char g_courseness=10;
+unsigned char g_min_width=20;
 unsigned char g_max_width=255;
 unsigned char g_average=0;
 unsigned char g_line_midpos=0;
@@ -64,7 +64,7 @@ unsigned char g_barcode_skip=1;
 unsigned char g_barcode_data=0;
 unsigned char g_line_error=0;
 unsigned char g_barcode_error=0;
-unsigned char g_do_autoexposure=1;
+unsigned char g_autoexposure=100;
 
 uint8_t i2c_read(uint8_t reg) {
   switch (reg) {
@@ -83,7 +83,7 @@ uint8_t i2c_read(uint8_t reg) {
   case ADDR_BARCODE_DATA: return g_barcode_data; break;
   case ADDR_LINE_ERROR: return g_line_error; break;
   case ADDR_BARCODE_ERROR: return g_barcode_error; break;
-  case ADDR_DO_AUTOEXPOSURE: return g_do_autoexposure; break;
+  case ADDR_AUTOEXPOSURE: return g_autoexposure; break;
     // feature outputs
   case ADDR_NUM_FEATURES: return num_features; break;
   default:
@@ -117,7 +117,7 @@ void i2c_write(uint8_t reg, uint8_t value) {
   case ADDR_MAX_WIDTH: g_max_width=value; break;
   case ADDR_BARCODE_BITS: g_barcode_bits=value; break;
   case ADDR_BARCODE_SKIP: g_barcode_skip=value; break;
-  case ADDR_DO_AUTOEXPOSURE: g_do_autoexposure=value; break;
+  case ADDR_AUTOEXPOSURE: g_autoexposure=value; break;
   }
 }
 
@@ -137,8 +137,8 @@ int main() {
     g_average = pattern_avg(image,IMAGE_SIZE);
 
     // alter exposure to centre avg
-    if (g_do_autoexposure) {
-      g_exposure=camera_autoexposure(g_exposure,g_average);
+    if (g_autoexposure) {
+      g_exposure=camera_autoexposure(g_exposure,g_average,g_autoexposure);
     }
 
     num_features=pattern_to_features(image,IMAGE_SIZE,
