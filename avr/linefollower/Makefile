@@ -1,26 +1,24 @@
 # MCU name
-MCU = atmega328p
+MCU = attiny85
 #MCU = atmega168p
 
 # Main Oscillator Frequency
 # This is only used to define F_OSC in all assembler and c-sources.
-F_CPU = 16000000UL
-F_OSC = 16000000UL
+F_CPU = 8000000UL
+F_OSC = 8000000UL
 
 # Output format. (can be srec, ihex, binary)
 FORMAT = ihex
 
 # Target file name (without extension).
-TARGET = insect
+TARGET = linefollower
 
 # List C source files here. (C dependencies are automatically generated.)
-SRC = $(TARGET).c  \
-	../libs/servo.c \
-	../libs/nrf24l01.c \
-	../libs/gy91.c \
-	../libs/i2c-master.c \
-	../libs/yarn.c \
-	robot.c
+SRC = $(TARGET).c \
+	usiTwiSlave.c \
+	adc.c \
+	camera.c \
+	pattern_recognition.c
 
 # List Assembler source files here.
 # Make them always end in a capital .S.  Files ending in a lowercase .s
@@ -74,7 +72,7 @@ CFLAGS = -g$(DEBUG)
 CFLAGS += $(CDEFS) $(CINCS)
 CFLAGS += -O$(OPT)
 CFLAGS += -funsigned-char -funsigned-bitfields -fpack-struct -fshort-enums
-CFLAGS += -Wall -Werror -Wno-unused
+CFLAGS += -Wall
 CFLAGS += -Wa,-adhlns=$(<:.c=.lst)
 CFLAGS += $(patsubst %,-I%,$(EXTRAINCDIRS))
 CFLAGS += $(CSTANDARD)
@@ -151,7 +149,18 @@ AVRDUDE_PORT = COM9   # programmer connected to serial device
 AVRDUDE_WRITE_FLASH = -U flash:w:$(TARGET).hex
 AVRDUDE_WRITE_EEPROM = -U eeprom:w:$(TARGET).eep
 #AVRDUDE_WRITE_FUSE = -U lfuse:w:0xe2:m
-AVRDUDE_WRITE_FUSE = -U lfuse:w:0xFF:m -U hfuse:w:0xDE:m -U efuse:w:0xFD:m
+
+# default attiny85
+#AVRDUDE_WRITE_FUSE = -U lfuse:w:0x62:m -U hfuse:w:0xDF:m -U efuse:w:0xFF:m
+
+# 8Mhz
+AVRDUDE_WRITE_FUSE = -U lfuse:w:0xe2:m -U hfuse:w:0xDF:m -U efuse:w:0xFF:m
+
+# 8Mhz - brick external reset pin for use...!!!!
+#AVRDUDE_WRITE_FUSE = -U lfuse:w:0xe2:m -U hfuse:w:0x5F:m -U efuse:w:0xFF:m
+
+# external 16Mhz
+#AVRDUDE_WRITE_FUSE = -U lfuse:w:0xff:m -U hfuse:w:0xDF:m -U efuse:w:0xFF:m
 
 # 4 when u brick yr atmega:
 # avrdude -p atmega328p -P usb -c usbtiny -U lfuse:w:0xFF:m -U hfuse:w:0xDE:m -U efuse:w:0x00:m -B250

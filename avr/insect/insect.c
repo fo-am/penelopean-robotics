@@ -17,12 +17,13 @@
 #include <avr/io.h>
 #include <util/delay.h>
 #include <nrf24l01.h>
+#include <avr/wdt.h>
 #include <i2c-master.h>
 #include <robot.h>
 #include <insect.h>
 
-#define ROBOT_ID 0x09 // also change the id below!
-#define RADIO_ID 0xA7A7A7A709
+#define ROBOT_ID 0x07 // also change the id below!
+#define RADIO_ID 0xA7A7A7A707
 #define RADIO_PI 0xA7A7A7A7AA
 
 #define UPDATE_FREQ_HZ 50
@@ -44,6 +45,11 @@ ISR(TIMER1_COMPA_vect) {
   servo_pulse_update();
 }
 
+// watchdog interrupt
+ISR(WDT_vect) {
+  wdt_disable(); // disable watchdog
+}
+
 int main (void) {
   // set up the radio first
   _delay_us(nRF24L01p_TIMING_INITIAL_US);
@@ -59,7 +65,7 @@ int main (void) {
 
   // now the rest of the peripherals
   i2c_init();
-  gy91_init();
+  //gy91_init();
   servo_init();
   sei();   
 

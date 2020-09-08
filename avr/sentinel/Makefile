@@ -11,7 +11,7 @@ F_OSC = 16000000UL
 FORMAT = ihex
 
 # Target file name (without extension).
-TARGET = insect
+TARGET = sentinel
 
 # List C source files here. (C dependencies are automatically generated.)
 SRC = $(TARGET).c  \
@@ -20,6 +20,7 @@ SRC = $(TARGET).c  \
 	../libs/gy91.c \
 	../libs/i2c-master.c \
 	../libs/yarn.c \
+	../libs/adc.c \
 	robot.c
 
 # List Assembler source files here.

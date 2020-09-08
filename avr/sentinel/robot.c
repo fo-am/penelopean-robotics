@@ -45,13 +45,13 @@ void robot_reset(robot_t *r, unsigned char id) {
   r->seq.ms_per_step=500;
 
   // non-zero defaults
-  yarn_poke(&r->machine,REG_SERVO_MS_PER_STEP,500); 
+  /*yarn_poke(&r->machine,REG_SERVO_MS_PER_STEP,500); 
   yarn_poke(&r->machine,REG_SERVO_1_AMP,MAKE_FIXED(1.0));
   yarn_poke(&r->machine,REG_SERVO_2_AMP,MAKE_FIXED(1.0));
   yarn_poke(&r->machine,REG_SERVO_3_AMP,MAKE_FIXED(1.0));
   yarn_poke(&r->machine,REG_SERVO_1_SMOOTH,MAKE_FIXED(0.2));
   yarn_poke(&r->machine,REG_SERVO_2_SMOOTH,MAKE_FIXED(0.2));
-  yarn_poke(&r->machine,REG_SERVO_3_SMOOTH,MAKE_FIXED(0.2));
+  yarn_poke(&r->machine,REG_SERVO_3_SMOOTH,MAKE_FIXED(0.2));*/
 }
 
 void robot_halt(robot_t *r) {
@@ -60,13 +60,13 @@ void robot_halt(robot_t *r) {
 
 void robot_tick(unsigned int delta_ms, robot_t *r) {
   if (r->running) {
-    yarn_machine *m = &r->machine;
-
+	yarn_machine *m = &r->machine;
+	
     // update registers
     // for debugging, but pc should prob be an internal register anyway
     yarn_poke(m,REG_ROBOT_ID,r->id);
-    //robot_update_sensors(r);
-    robot_update_servos(r);
+    robot_update_sensors(r);
+    //robot_update_servos(r);
     yarn_run(m);
     // our ONE led - getting a bit tiresome
     if (yarn_peek(m,REG_LED)!=0) {
@@ -74,29 +74,31 @@ void robot_tick(unsigned int delta_ms, robot_t *r) {
     } else {
       PORTB &= ~0x01;
     }
-    servo_motion_seq_update(delta_ms,&r->seq);
 
-    if (yarn_peek(m,REG_SLEEP)==1) {
-      yarn_poke(m,REG_SLEEP,0);
-      robot_sleep();
-    }
+	if (yarn_peek(m,REG_SLEEP)==1) {
+	  yarn_poke(m,REG_SLEEP,0);
+	  robot_sleep();
+	}
 
-    // direct access to all i2c devices attached
-    if (yarn_peek(m,REG_I2C_CTRL)!=0) {
-      if (yarn_peek(m,REG_I2C_CTRL)==0x01) { // read
-	unsigned char d=0;
-	i2c_read_reg(yarn_peek(m,REG_I2C_DEVICE),yarn_peek(m,REG_I2C_ADDR),&d,1);
-	yarn_poke(m,REG_I2C_DATA,d);
-      }
-      if (yarn_peek(m,REG_I2C_CTRL)==0x02) { // write
-	unsigned char d=yarn_peek(m,REG_I2C_DATA);
-	i2c_write_reg(yarn_peek(m,REG_I2C_DEVICE),yarn_peek(m,REG_I2C_ADDR),&d,1);		
-      }
-      yarn_poke(m,REG_I2C_CTRL,0);
-    }	
+	if (yarn_peek(m,REG_I2C_CTRL)!=0) {
+	  if (yarn_peek(m,REG_I2C_CTRL)==0x01) {
+		unsigned char d=0;
+		i2c_read_reg(yarn_peek(m,REG_I2C_DEVICE),yarn_peek(m,REG_I2C_ADDR),&d,1);
+		yarn_poke(m,REG_I2C_DATA,d);
+	  }
+	  if (yarn_peek(m,REG_I2C_CTRL)==0x02) {
+		unsigned char d=yarn_peek(m,REG_I2C_DATA);
+		i2c_write_reg(yarn_peek(m,REG_I2C_DEVICE),yarn_peek(m,REG_I2C_ADDR),&d,1);		
+	  }
+	  yarn_poke(m,REG_I2C_CTRL,0);
+	}	
 
-    // not sure if adc is init or will mess with servos
-    //yarn_poke(m,REG_VCC,(short)(internal_vcc(3)*100.0f));
+    yarn_poke(m,REG_ADC_1,adc_read(0));
+    yarn_poke(m,REG_ADC_2,adc_read(1));
+    yarn_poke(m,REG_ADC_3,adc_read(2));
+    yarn_poke(m,REG_VCC,(short)(internal_vcc(3)*100.0f));
+	
+    //servo_motion_seq_update(delta_ms,&r->seq);
   }
 }
 
@@ -172,10 +174,6 @@ void robot_update_servos(robot_t *r) {
 
 }
 
-// watchdog interrupt
-/*ISR (WDT_vect) {
-  wdt_disable(); // disable watchdog
-  }*/
  
 void robot_sleep() {
   // disable ADC
@@ -197,6 +195,6 @@ void robot_sleep() {
   sleep_cpu ();
   // cancel sleep as a precaution
   sleep_disable();
-  //adc_init();
+  adc_init();
 }
 

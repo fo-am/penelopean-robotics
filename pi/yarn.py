@@ -1,6 +1,6 @@
 import array
 
-code_start = 64
+code_start = 32
 
 # change robot.c and yarnc.scm registers to match here
 registers = {
@@ -28,14 +28,6 @@ registers = {
     "SERVO_1_SMOOTH": 21,
     "SERVO_2_SMOOTH": 22,
     "SERVO_3_SMOOTH": 23,
-
-    "TEMPERATURE": 24,
-    "SLEEP": 25,
-    "I2C_DEVICE": 26,
-    "I2C_ADDR": 27,
-    "I2C_DATA": 28,
-    "I2C_CTRL": 29,
-    "VCC": 30,
     
     "NULL": 0,
     "ALL_STOP": 1,
@@ -110,7 +102,7 @@ class compiler:
         if l[0].endswith(":"):
             # add new label
             self.labels[l[0][:-1]]=addr+code_start
-            #print("label: "+l[0][:-1],addr+code_start)
+            #print(l[0][:-1],addr+code_start)
             l=l[1:] # strip out label
 
     def assemble_line(self,i,l):
@@ -128,16 +120,18 @@ class compiler:
                 # deal with operand
                 operand = l[1]
                 if self.is_int(operand):
-                    if int(operand)>=0 and int(operand)<1024:
-                        return [(self.instr[l[0]]<<10)|int(operand)]
+                    if int(operand)<1024:
+                        return [(self.instr[l[0]]<<10)&int(operand)]
                     else: # add 16bit value
                         if self.instr[l[0]]!=instructions["ldl16"]:
                             print("yarnasm: trying to add 16bit data for op: "+str(self.instr[l[0]]))
                         return [(self.instr[l[0]]<<10),int(operand)]
                 if operand in self.regs:
-                    return [(self.instr[l[0]]<<10)|self.regs[operand]]
+                    return [(self.instr[l[0]]<<10)&self.regs[operand]]
                 if operand in self.labels.keys():
-                    return [(self.instr[l[0]]<<10)|self.labels[operand]]
+                    return [(self.instr[l[0]]<<10)&self.labels[operand]]
+                if operand == ";;":
+                    return []
                 else:
                     print(l)
                     print("yarnasm: i do not understand "+operand+" on line "+str(i))
@@ -175,38 +169,26 @@ class compiler:
     
     def line_size(self,l):
         ls=l.split()
-        #print(ls)
         if len(ls)==0: return 0
         # strip out label
         if ls[0].endswith(":"):
             ls=ls[1:]
-        
-        if len(ls)>0:
-            if ls[0]=="ldl16":
-                #print(2)
-                return 2
-            else:
-                #print(1)
-                return 1
-        else:
-            #print(0)
-            return 0
+        return len(ls)
 
     def assemble(self,s):
-        print("yarnasm 2.0")
         s = s.split("\n")
         print("yarnasm: "+str(len(s))+" lines in asm")
         s = self.remove_comments(s)
         print("yarnasm: "+str(len(s))+" with comments removed")
         s = self.optimise(s)
-        print("yarnasm: "+str(len(s))+" optimised instructions + labels")
+        print("yarnasm: "+str(len(s))+" optimised instructions")
+        
         addr=0
         for i,line in enumerate(s):
             sl = line.strip()
             self.collect_label(addr,sl)
-            if len(sl)>0: 
+            if len(sl)>0:
                 addr+=self.line_size(sl)
-        print("yarnasm: "+str(len(self.labels))+ " labels")
         code = []
         for i,line in enumerate(s):
             sl=line.strip()
