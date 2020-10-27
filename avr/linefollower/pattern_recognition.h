@@ -31,6 +31,7 @@ typedef struct {
 // assumed start is dark - so first one is a change to light
 // returns number of features found
 unsigned long pattern_to_features(unsigned char *img, unsigned long img_len,
+				  unsigned char mode,
 				  unsigned char thresh,
 				  unsigned char sensitivity,
 				  unsigned char min_width,

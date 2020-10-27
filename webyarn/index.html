@@ -1,0 +1,112 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>yarn</title>
+  <meta name="description" content="yarn">
+  <meta name="author" content="FoAM Kernow">
+  
+  <link rel="stylesheet" href="css/styles.css">
+
+</head>
+
+<body>
+  <script src="blockly/blockly_uncompressed.js"></script>
+  <script src="blockly/msg/messages.js"></script>
+  <script src="blockly/blocks/logic.js"></script>
+  <script src="blockly/blocks/loops.js"></script>
+  <script src="blockly/blocks/math.js"></script>
+  <script src="blockly/blocks/text.js"></script>
+  <script src="blockly/blocks/lists.js"></script>
+  <script src="blockly/blocks/colour.js"></script>
+  <script src="blockly/blocks/variables.js"></script>
+  <script src="blockly/blocks/variables_dynamic.js"></script>
+  <script src="blockly/blocks/procedures.js"></script>
+  <script src="blockly/themes/test_themes.js"></script>
+  <script src="blockly/screenshot.js"></script>
+  <script src="js/yarn.js"></script>
+  <script src="js/yarn_blocks.js"></script>
+  <script src="js/yarn_generator.js"></script>
+
+  <div id="blocklyDiv" style="height: 480px; width: 100%;"></div>
+
+  <xml id="toolbox" style="display: none">
+    <category name="Logic">
+      <block type="logic_when"></block>
+      <block type="logic_if"></block>
+      <block type="loops_forever"></block>
+      <block type="loops_while"></block>
+      <block type="loops_do"></block>
+    </category>
+    <category name="Maths">
+      <block type="logic_compare"></block>      
+      <block type="math_arithmetic"></block>
+      <block type="math_bitwise"></block>
+      <block type="math_number"></block>
+    </category>
+    <category name="Actions">
+      <block type="actions_led"></block>
+      <block type="actions_walk"></block>
+      <block type="actions_walk_steps"></block>
+      <block type="actions_walk_speed"></block>
+      <block type="actions_sleep"></block>
+    </category>
+    <category name="Sensors">
+      <block type="sensor_accel"></block>
+      <block type="sensor_gyro"></block>
+      <block type="sensor_magnetometer"></block>
+      <block type="sensor_compass"></block>
+      <block type="sensor_battery_level"></block>
+      <block type="sensor_temperature"></block>
+    </category>
+    <category name="Functions">
+      <block type="procedures_defreturn"></block>
+      <block type="procedures_callreturn"></block>
+    </category>
+    <category name="Variables">
+      <block type="variables_get"></block>
+      <block type="variables_set"></block>
+    </category>
+  </xml>
+  <script>
+    var workspace = Blockly.inject('blocklyDiv',
+    {
+        toolbox:  document.getElementById('toolbox'),
+        comments: true,
+        collapse: true,
+        disable: true,
+        move: {
+          scrollbars: true,
+          drag: true,
+          wheel: false,
+        },
+        grid:
+          {
+            spacing: 25,
+            length: 3,
+            colour: '#ccc',
+            snap: true
+          },
+        zoom:
+          {
+            controls: true,
+            wheel: true,
+            startScale: 1.0,
+            maxScale: 4,
+            minScale: 0.25,
+            scaleSpeed: 1.1
+          }
+    });
+
+    function myUpdateFunction(event) {
+
+    var code = Blockly.Yarn.workspaceToCode(workspace);
+    console.log(code);
+    }
+    workspace.addChangeListener(myUpdateFunction);
+  </script>
+
+</body>
+</html>

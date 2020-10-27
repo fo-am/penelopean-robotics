@@ -22,8 +22,8 @@
 #include <robot.h>
 #include <insect.h>
 
-#define ROBOT_ID 0x07 // also change the id below!
-#define RADIO_ID 0xA7A7A7A707
+#define ROBOT_ID 0x08 // also change the id below!
+#define RADIO_ID 0xA7A7A7A708
 #define RADIO_PI 0xA7A7A7A7AA
 
 #define UPDATE_FREQ_HZ 50
@@ -79,7 +79,13 @@ int main (void) {
   DDRB |= 0x01;
   PORTB |= 0x01;
   _delay_ms(1000);
+
   PORTB &= ~0x01;
+  _delay_ms(100);
+  PORTB |= 0x01;
+  _delay_ms(100);
+  PORTB &= ~0x01;
+  _delay_ms(100);
 
 
   char msg[32];

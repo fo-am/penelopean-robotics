@@ -30,6 +30,7 @@ unsigned char pattern_avg(unsigned char *img, unsigned long len) {
 // assumed start is dark - so first one is a change to light
 // returns number of features found
 unsigned long pattern_to_features(unsigned char *img, unsigned long img_len,
+				  unsigned char mode,
 				  unsigned char thresh,
 				  unsigned char courseness,
 				  unsigned char min_width,
@@ -37,14 +38,18 @@ unsigned long pattern_to_features(unsigned char *img, unsigned long img_len,
 				  feature *features, unsigned long feature_len) {
   unsigned long feature_i=0;
   unsigned char state=0; // 0=under 1=over
+
+  // if mode = 0 then the line we search for is black, otherwise
+  // look for white lines
+  
   for (unsigned int n=0; n<img_len; n++) {
     if (feature_i<feature_len) {
-      if (state==0) { // dark, searching for light
+      if (state==mode) { // 0=dark, searching for light
 	if (img[n]>thresh+courseness) {
 	  state=1;
 	  features[feature_i].start=n;
 	}
-      } else { // light, searching for dark
+      } else { // mode 0 = light, searching for dark
 	if (img[n]<thresh-courseness) {
 	  state=0;
 	  features[feature_i].end=n;

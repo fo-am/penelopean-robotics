@@ -71,9 +71,9 @@ int main(int argc, char **argv) {
   
   while(1) {
 
-    //print_info(&m);
+    print_info(&m);
     char c;
-    //    scanf("%c",&c);
+        scanf("%c",&c);
 
       if (yarn_stack_pos(&m)<min_stack) {
 	min_stack=yarn_stack_pos(&m);
@@ -86,7 +86,7 @@ int main(int argc, char **argv) {
 	exit(0);
       }
       
-    if (m.m_heap[REG_LED]!=0 ||
+      if (//m.m_heap[REG_LED]!=0 ||
 	m.m_heap[yarn_pc(&m)]==0) {
       print_info(&m);
       printf("halt: %d (stk:%d)\n",m.m_heap[REG_LED],yarn_stack_pos(&m));

@@ -15,7 +15,6 @@
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
-//#include <avr/eeprom.h>
 #include <util/delay_basic.h>
 #include <util/delay.h>
 #include "usiTwiSlave.h"
@@ -49,6 +48,7 @@ unsigned char counter=0;
 #define ADDR_LINE_ERROR 13
 #define ADDR_BARCODE_ERROR 14
 #define ADDR_AUTOEXPOSURE 15 // r/w
+#define ADDR_MODE 16 // r/w
 #define ADDR_NUM_FEATURES 31
 #define ADDR_FEATURES_START 32
 #define ADDR_RAW_IMAGE_START 127
@@ -65,6 +65,7 @@ unsigned char g_barcode_data=0;
 unsigned char g_line_error=0;
 unsigned char g_barcode_error=0;
 unsigned char g_autoexposure=100;
+unsigned char g_mode=0;
 
 uint8_t i2c_read(uint8_t reg) {
   switch (reg) {
@@ -84,6 +85,7 @@ uint8_t i2c_read(uint8_t reg) {
   case ADDR_LINE_ERROR: return g_line_error; break;
   case ADDR_BARCODE_ERROR: return g_barcode_error; break;
   case ADDR_AUTOEXPOSURE: return g_autoexposure; break;
+  case ADDR_MODE: return g_mode; break;
     // feature outputs
   case ADDR_NUM_FEATURES: return num_features; break;
   default:
@@ -118,6 +120,7 @@ void i2c_write(uint8_t reg, uint8_t value) {
   case ADDR_BARCODE_BITS: g_barcode_bits=value; break;
   case ADDR_BARCODE_SKIP: g_barcode_skip=value; break;
   case ADDR_AUTOEXPOSURE: g_autoexposure=value; break;
+  case ADDR_MODE: g_mode=value; break;
   }
 }
 
@@ -142,6 +145,7 @@ int main() {
     }
 
     num_features=pattern_to_features(image,IMAGE_SIZE,
+				     g_mode,
 				     g_average,
 				     g_courseness,
 				     g_min_width,
