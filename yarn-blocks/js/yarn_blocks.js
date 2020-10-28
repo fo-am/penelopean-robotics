@@ -79,7 +79,7 @@ Blockly.Blocks['logic_if'] = {
 		},
 		{
 		    "type": "input_statement",
-		    "name": "DO"
+		    "name": "ELSE"
 		}],
 	    "colour": LOGIC_COL,
 	    "previousStatement": null,
@@ -131,6 +131,8 @@ Blockly.Blocks['loops_do'] = {
 		    "name": "DO"
 		}],
 	    "colour": LOGIC_COL,
+	    "previousStatement": null,
+	    "nextStatement": null,
 	})}}
 
 Blockly.Blocks['math_number'] = {
@@ -229,9 +231,9 @@ Blockly.Blocks['actions_led'] = {
 	    "args0": [
 		{
 		    "type": "field_dropdown",
-		    "name": "PATTERN",
-		    "options": [["on","on"],
-				["off","off"]]
+		    "name": "VALUE",
+		    "options": [["on","ON"],
+				["off","OFF"]]
 		}],
 	    "colour": ACTIONS_COL,
 	    "previousStatement": null,
@@ -319,6 +321,76 @@ Blockly.Blocks['actions_walk_speed'] = {
 	    "nextStatement": null,
 	})}};
 
+Blockly.Blocks['actions_servo_amp'] = {
+    init: function() {
+	this.jsonInit({
+	    "type": "actions_servo_amp",
+	    "message0": "servo %1 amp %2",
+	    "args0": [
+		{
+		    "type": "field_dropdown",
+		    "name": "SERVO",
+		    "options": [["front","1"],
+				["middle","2"],
+				["back","3"]]
+		},
+		{
+		    "type": "input_value",
+		    "name": "A",
+		    "check": "Number"
+		}],
+	    "colour": ACTIONS_COL,
+	    "previousStatement": null,
+	    "nextStatement": null,
+	})}};
+
+Blockly.Blocks['actions_servo_bias'] = {
+    init: function() {
+	this.jsonInit({
+	    "type": "actions_servo_bias",
+	    "message0": "servo %1 bias %2",
+	    "args0": [
+		{
+		    "type": "field_dropdown",
+		    "name": "SERVO",
+		    "options": [["front","1"],
+				["middle","2"],
+				["back","3"]]
+		},
+		{
+		    "type": "input_value",
+		    "name": "A",
+		    "check": "Number"
+		}],
+	    "colour": ACTIONS_COL,
+	    "previousStatement": null,
+	    "nextStatement": null,
+	})}};
+
+Blockly.Blocks['actions_servo_smooth'] = {
+    init: function() {
+	this.jsonInit({
+	    "type": "actions_servo_smooth",
+	    "message0": "servo %1 smooth %2",
+	    "args0": [
+		{
+		    "type": "field_dropdown",
+		    "name": "SERVO",
+		    "options": [["front","1"],
+				["middle","2"],
+				["back","3"]]
+		},
+		{
+		    "type": "input_value",
+		    "name": "A",
+		    "check": "Number"
+		}],
+	    "colour": ACTIONS_COL,
+	    "previousStatement": null,
+	    "nextStatement": null,
+	})}};
+
+
 Blockly.Blocks['sensor_accel'] = {
     init: function() {
 	this.jsonInit({
@@ -327,10 +399,10 @@ Blockly.Blocks['sensor_accel'] = {
 	    "args0": [
 		{
 		    "type": "field_dropdown",
-		    "name": "PATTERN",
-		    "options": [["x","X"],
-				["y","Y"],
-				["z","Z"]]
+		    "name": "DIM",
+		    "options": [["x","x"],
+				["y","y"],
+				["z","z"]]
 		}
 	    ],
 	    "output": "Number",
@@ -345,10 +417,10 @@ Blockly.Blocks['sensor_gyro'] = {
 	    "args0": [
 		{
 		    "type": "field_dropdown",
-		    "name": "PATTERN",
-		    "options": [["x","X"],
-				["y","Y"],
-				["z","Z"]]
+		    "name": "DIM",
+		    "options": [["x","x"],
+				["y","y"],
+				["z","z"]]
 		}
 	    ],
 	    "output": "Number",
@@ -363,10 +435,10 @@ Blockly.Blocks['sensor_magnetometer'] = {
 	    "args0": [
 		{
 		    "type": "field_dropdown",
-		    "name": "PATTERN",
-		    "options": [["x","X"],
-				["y","Y"],
-				["z","Z"]]
+		    "name": "DIM",
+		    "options": [["x","x"],
+				["y","y"],
+				["z","z"]]
 		}
 	    ],
 	    "output": "Number",
@@ -387,7 +459,7 @@ Blockly.Blocks['sensor_battery_level'] = {
     init: function() {
 	this.jsonInit({
 	    "type": "sensor_battery_level",
-	    "message0": "battery level",
+	    "message0": "battery voltage",
 	    "args0": [],
 	    "output": "Number",
 	    "colour": SENSORS_COL,

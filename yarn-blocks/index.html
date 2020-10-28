@@ -3,13 +3,10 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-
   <title>yarn</title>
   <meta name="description" content="yarn">
   <meta name="author" content="FoAM Kernow">
-  
   <link rel="stylesheet" href="css/styles.css">
-
 </head>
 
 <body>
@@ -29,8 +26,31 @@
   <script src="js/yarn.js"></script>
   <script src="js/yarn_blocks.js"></script>
   <script src="js/yarn_generator.js"></script>
+  <script src="js/misc.js"></script>
 
   <div id="blocklyDiv" style="height: 480px; width: 100%;"></div>
+
+  Select robot:
+  <input type="radio" id="robot-a" name="robots"\> 
+  <label for="robot-a">A</label>
+  <input type="radio" id="robot-b" name="robots"\> 
+  <label for="robot-b">B</label>
+  <input type="radio" id="robot-c" name="robots"\> 
+  <label for="robot-c">C</label>
+  <input type="radio" id="robot-d" name="robots"\> 
+  <label for="robot-d">D</label>
+  <input type="radio" id="robot-e" name="robots"\> 
+  <label for="robot-e">E</label>
+  <input type="radio" id="robot-f" name="robots"\> 
+  <label for="robot-f">F</label>
+  <input type="radio" id="robot-g" name="robots"\> 
+  <label for="robot-g">G</label>
+  <input type="radio" id="robot-e" name="robots"\> 
+  <label for="robot-e">E</label>
+
+  <button onclick="transmitBlocks();" style="background: pink;">Transmit</button>
+  <button onclick="exportBlocks();">Save blocks</button>
+  <button onclick="importBlocks();">Load blocks</button>
 
   <xml id="toolbox" style="display: none">
     <category name="Logic">
@@ -51,6 +71,9 @@
       <block type="actions_walk"></block>
       <block type="actions_walk_steps"></block>
       <block type="actions_walk_speed"></block>
+      <block type="actions_servo_amp"></block>
+      <block type="actions_servo_bias"></block>
+      <block type="actions_servo_smooth"></block>
       <block type="actions_sleep"></block>
     </category>
     <category name="Sensors">
