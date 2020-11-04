@@ -129,6 +129,13 @@ Blockly.Yarn.init = function(workspace) {
     Blockly.Yarn.variableDB_.reset();
   }
 
+  if (!Blockly.Yarn.constantDB_) {
+    Blockly.Yarn.constantDB_ =
+        new Blockly.Names(Blockly.Yarn.RESERVED_WORDS_);
+  } else {
+    Blockly.Yarn.constantDB_.reset();
+  }
+
   Blockly.Yarn.variableDB_.setVariableMap(workspace.getVariableMap());
 
   var defvars = [];

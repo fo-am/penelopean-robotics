@@ -161,6 +161,14 @@ Blockly.Yarn['actions_led'] = function(block) {
     return code;
 };
 
+Blockly.Yarn['actions_wait'] = function(block) {
+    var code;    
+    var argument0 = Blockly.Yarn.valueToCode(block, 'A', 0) || '0';
+    // current cycle rate is 50hz
+    code = '(set! usr-d (* ' + argument0 + ' 50))\n(while (> usr-d 0) (set! usr-d (- usr-d 1)))'; 
+    return code;
+};
+
 Blockly.Yarn['actions_walk'] = function(block) {
     // Basic arithmetic operators, and power.
     var OPERATORS = {

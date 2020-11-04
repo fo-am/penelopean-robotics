@@ -15,6 +15,16 @@ function importBlocks() {
   }
 }
 
+function exampleBlocks(id) {
+  try {
+      var xml = document.getElementById(id);
+      workspace.clear();
+      Blockly.Xml.domToWorkspace(xml, workspace);
+  } catch (e) {
+      alert(e);
+  }
+}
+
 function transmitBlocks() {
     var code = "("+Blockly.Yarn.workspaceToCode(workspace)+")";
 

@@ -6,7 +6,7 @@
   <title>yarn</title>
   <meta name="description" content="yarn">
   <meta name="author" content="FoAM Kernow">
-  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
@@ -26,11 +26,10 @@
   <script src="js/yarn.js"></script>
   <script src="js/yarn_blocks.js"></script>
   <script src="js/yarn_generator.js"></script>
+  <script src="js/yarn_procedures.js"></script>
   <script src="js/misc.js"></script>
 
-  <div id="blocklyDiv" style="height: 480px; width: 100%;"></div>
-
-  Select robot:
+  Penelopean robot:
   <input type="radio" id="robot-a" name="robots"\> 
   <label for="robot-a">A</label>
   <input type="radio" id="robot-b" name="robots"\> 
@@ -49,25 +48,38 @@
   <label for="robot-e">E</label>
 
   <button onclick="transmitBlocks();" style="background: pink;">Transmit</button>
-  <button onclick="exportBlocks();">Save blocks</button>
   <button onclick="importBlocks();">Load blocks</button>
+  <button onclick="exportBlocks();">Save blocks</button>
 
+  <div id="blocklyDiv" style="height: 480px; width: 100%;"></div>
+
+  Examples:
+  <xml id="ledflash" style="display: none" xmlns="https://developers.google.com/blockly/xml"><block type="loops_forever" id="k8-dNRrmrPWPo8_O!dUI" x="263" y="138"><statement name="DO"><block type="actions_led" id="?;sNL:jQ9p7D-KsC]nK("><field name="VALUE">ON</field><next><block type="actions_led" id="u3g#I_kH2XB(.=ewW|V~"><field name="VALUE">OFF</field></block></next></block></statement></block></xml>
+  <button onclick="exampleBlocks('ledflash');">LED Flash</button>
+
+  
   <xml id="toolbox" style="display: none">
-    <category name="Logic">
+    <category name="Logic" categorystyle="logic_category">
+      <block type="loops_forever"></block>
+      <block type="logic_compare"></block>      
       <block type="logic_when"></block>
       <block type="logic_if"></block>
-      <block type="loops_forever"></block>
       <block type="loops_while"></block>
-      <block type="loops_do"></block>
+<!--      <block type="loops_do"></block> -->
     </category>
-    <category name="Maths">
-      <block type="logic_compare"></block>      
+    <category name="Numbers" categorystyle="math_category">
+      <block type="math_number"></block>
       <block type="math_arithmetic"></block>
       <block type="math_bitwise"></block>
-      <block type="math_number"></block>
     </category>
-    <category name="Actions">
+    <category name="Variables"
+	      categorystyle="variable_category">
+      <block type="variables_get"></block>
+      <block type="variables_set"></block>
+    </category>
+    <category name="Actions" categorystyle="loop_category">
       <block type="actions_led"></block>
+      <block type="actions_wait"></block>
       <block type="actions_walk"></block>
       <block type="actions_walk_steps"></block>
       <block type="actions_walk_speed"></block>
@@ -75,8 +87,8 @@
       <block type="actions_servo_bias"></block>
       <block type="actions_servo_smooth"></block>
       <block type="actions_sleep"></block>
-    </category>
-    <category name="Sensors">
+    </category >
+    <category name="Sensors" categorystyle="text_category">
       <block type="sensor_accel"></block>
       <block type="sensor_gyro"></block>
       <block type="sensor_magnetometer"></block>
@@ -84,14 +96,9 @@
       <block type="sensor_battery_level"></block>
       <block type="sensor_temperature"></block>
     </category>
-    <category name="Functions">
-      <block type="procedures_defreturn"></block>
-      <block type="procedures_callreturn"></block>
-    </category>
-    <category name="Variables">
-      <block type="variables_get"></block>
-      <block type="variables_set"></block>
-    </category>
+    <category name="Functions"
+	      categorystyle="procedure_category"
+	      custom="PROCEDURE"></category>
   </xml>
   <script>
     var workspace = Blockly.inject('blocklyDiv',

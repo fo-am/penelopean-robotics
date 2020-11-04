@@ -1,0 +1,15 @@
+body {
+    font-family: Roboto, Arial, Helvetica, sans-serif;
+}
+
+button {
+    padding: 0.25em;
+    font-size: 100%;
+    border: none;
+    border-radius: 0.5em;
+    margin-bottom: 0.25em;
+}
+
+button:hover {
+    background: yellow;
+}

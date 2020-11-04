@@ -2,7 +2,10 @@ var LOGIC_COL = 100;
 var MATHS_COL = 150;
 var ACTIONS_COL = 200;
 var SENSORS_COL = 250;
-var VARIABLES_COL = 300;
+var VARIABLES_COL = "300";
+
+var VARIABLES_STYLE = { "colour": VARIABLES_COL };
+
 
 Blockly.Blocks['logic_compare'] = {
     init: function() {
@@ -36,7 +39,7 @@ Blockly.Blocks['logic_compare'] = {
 	    ],
 	    "inputsInline": true,
 	    "output": "Boolean",
-	    "colour": MATHS_COL,
+	    "style": "logic_blocks",
 	    "helpUrl": "%{BKY_LOGIC_COMPARE_HELPURL}",
 	    "extensions": ["logic_compare", "logic_op_tooltip"]
 	})}}
@@ -56,7 +59,7 @@ Blockly.Blocks['logic_when'] = {
 		    "type": "input_statement",
 		    "name": "DO"
 		}],
-	    "colour": LOGIC_COL,
+	    "style": "logic_blocks",
 	    "previousStatement": null,
 	    "nextStatement": null,
 	})}}
@@ -81,7 +84,7 @@ Blockly.Blocks['logic_if'] = {
 		    "type": "input_statement",
 		    "name": "ELSE"
 		}],
-	    "colour": LOGIC_COL,
+	    "style": "logic_blocks",
 	    "previousStatement": null,
 	    "nextStatement": null,
 	})}}
@@ -90,13 +93,13 @@ Blockly.Blocks['loops_forever'] = {
     init: function() {
 	this.jsonInit({
 	    "type": "loops_forever",
-	    "message0": "forever %1",
+	    "message0": "loop %1",
 	    "args0": [
 		{
 		    "type": "input_statement",
 		    "name": "DO"
 		}],
-	    "colour": LOGIC_COL,
+	    "style": "logic_blocks",
 	})}}
 
 
@@ -115,7 +118,7 @@ Blockly.Blocks['loops_while'] = {
 		    "type": "input_statement",
 		    "name": "DO"
 		}],
-	    "colour": LOGIC_COL,
+	    "style": "logic_blocks",
 	    "previousStatement": null,
 	    "nextStatement": null,
 	})}}
@@ -130,7 +133,7 @@ Blockly.Blocks['loops_do'] = {
 		    "type": "input_statement",
 		    "name": "DO"
 		}],
-	    "colour": LOGIC_COL,
+	    "style": "logic_blocks",
 	    "previousStatement": null,
 	    "nextStatement": null,
 	})}}
@@ -147,7 +150,7 @@ Blockly.Blocks['math_number'] = {
 	    }],
 	    "output": "Number",
 	    "helpUrl": "%{BKY_MATH_NUMBER_HELPURL}",
-	    "colour": MATHS_COL,
+	    "style": "math_blocks",
 	    "tooltip": "%{BKY_MATH_NUMBER_TOOLTIP}",
 	    "extensions": ["parent_tooltip_when_inline"]
 	})}}
@@ -182,7 +185,7 @@ Blockly.Blocks['math_arithmetic'] = {
 	    ],
 	    "inputsInline": true,
 	    "output": "Number",
-	    "colour": MATHS_COL,
+	    "style": "math_blocks",
 	    "helpUrl": "%{BKY_MATH_ARITHMETIC_HELPURL}",
 	    "extensions": ["math_op_tooltip"]
 	})}};
@@ -220,7 +223,7 @@ Blockly.Blocks['math_bitwise'] = {
 	    ],
 	    "inputsInline": true,
 	    "output": "Number",
-	    "colour": MATHS_COL,
+	    "style": "math_blocks",
 	})}};
 
 Blockly.Blocks['actions_led'] = {
@@ -235,11 +238,26 @@ Blockly.Blocks['actions_led'] = {
 		    "options": [["on","ON"],
 				["off","OFF"]]
 		}],
-	    "colour": ACTIONS_COL,
+	    "style": "loop_blocks",
 	    "previousStatement": null,
 	    "nextStatement": null,
 	})}};
 
+Blockly.Blocks['actions_wait'] = {
+    init: function() {
+	this.jsonInit({
+	    "type": "actions_wait",
+	    "message0": "wait for %1 secs",
+	    "args0": [
+		{
+		    "type": "input_value",
+		    "name": "A",
+		    "check": "Number"
+		},],
+	    "style": "loop_blocks",
+	    "previousStatement": null,
+	    "nextStatement": null,
+	})}};
 
 Blockly.Blocks['actions_walk'] = {
     init: function() {
@@ -260,7 +278,7 @@ Blockly.Blocks['actions_walk'] = {
 				["silly","WALK-SILLY"]]			
 		}
 	    ],
-	    "colour": ACTIONS_COL,
+	    "style": "loop_blocks",
 	    "previousStatement": null,
 	    "nextStatement": null,
 	})}};
@@ -288,7 +306,7 @@ Blockly.Blocks['actions_walk_steps'] = {
 		    "name": "A",
 		    "check": "Number"
 		},],
-	    "colour": ACTIONS_COL,
+	    "style": "loop_blocks",
 	    "previousStatement": null,
 	    "nextStatement": null,
 	})}};
@@ -300,7 +318,7 @@ Blockly.Blocks['actions_sleep'] = {
 	    "type": "actions_sleep",
 	    "message0": "sleep",
 	    "args0": [],
-	    "colour": ACTIONS_COL,
+	    "style": "loop_blocks",
 	    "previousStatement": null,
 	    "nextStatement": null,
 	})}};
@@ -316,7 +334,7 @@ Blockly.Blocks['actions_walk_speed'] = {
 		    "name": "A",
 		    "check": "Number"
 		}],
-	    "colour": ACTIONS_COL,
+	    "style": "loop_blocks",
 	    "previousStatement": null,
 	    "nextStatement": null,
 	})}};
@@ -339,7 +357,7 @@ Blockly.Blocks['actions_servo_amp'] = {
 		    "name": "A",
 		    "check": "Number"
 		}],
-	    "colour": ACTIONS_COL,
+	    "style": "loop_blocks",
 	    "previousStatement": null,
 	    "nextStatement": null,
 	})}};
@@ -362,7 +380,7 @@ Blockly.Blocks['actions_servo_bias'] = {
 		    "name": "A",
 		    "check": "Number"
 		}],
-	    "colour": ACTIONS_COL,
+	    "style": "loop_blocks",
 	    "previousStatement": null,
 	    "nextStatement": null,
 	})}};
@@ -385,7 +403,7 @@ Blockly.Blocks['actions_servo_smooth'] = {
 		    "name": "A",
 		    "check": "Number"
 		}],
-	    "colour": ACTIONS_COL,
+	    "style": "loop_blocks",
 	    "previousStatement": null,
 	    "nextStatement": null,
 	})}};
@@ -406,7 +424,7 @@ Blockly.Blocks['sensor_accel'] = {
 		}
 	    ],
 	    "output": "Number",
-	    "colour": SENSORS_COL,
+	    "style": "text_blocks",
 	})}};
 
 Blockly.Blocks['sensor_gyro'] = {
@@ -424,7 +442,7 @@ Blockly.Blocks['sensor_gyro'] = {
 		}
 	    ],
 	    "output": "Number",
-	    "colour": SENSORS_COL,
+	    "style": "text_blocks",
 	})}};
 
 Blockly.Blocks['sensor_magnetometer'] = {
@@ -442,7 +460,7 @@ Blockly.Blocks['sensor_magnetometer'] = {
 		}
 	    ],
 	    "output": "Number",
-	    "colour": SENSORS_COL,
+	    "style": "text_blocks",
 	})}};
 
 Blockly.Blocks['sensor_compass'] = {
@@ -452,7 +470,7 @@ Blockly.Blocks['sensor_compass'] = {
 	    "message0": "compass heading",
 	    "args0": [],
 	    "output": "Number",
-	    "colour": SENSORS_COL,
+	    "style": "text_blocks",
 	})}};
 
 Blockly.Blocks['sensor_battery_level'] = {
@@ -462,7 +480,7 @@ Blockly.Blocks['sensor_battery_level'] = {
 	    "message0": "battery voltage",
 	    "args0": [],
 	    "output": "Number",
-	    "colour": SENSORS_COL,
+	    "style": "text_blocks",
 	})}};
 
 Blockly.Blocks['sensor_temperature'] = {
@@ -472,7 +490,7 @@ Blockly.Blocks['sensor_temperature'] = {
 	    "message0": "temperature",
 	    "args0": [],
 	    "output": "Number",
-	    "colour": SENSORS_COL,
+	    "style": "text_blocks",
 	})}};
 
 Blockly.Blocks['variables_get'] = {
@@ -488,7 +506,7 @@ Blockly.Blocks['variables_get'] = {
 		}
 	    ],
 	    "output": null,
-	    "colour": VARIABLES_COL,
+	    "style": "variable_blocks",
 	    "helpUrl": "%{BKY_VARIABLES_GET_HELPURL}",
 	    "tooltip": "%{BKY_VARIABLES_GET_TOOLTIP}",
 	    "extensions": ["contextMenu_variableSetterGetter"]
@@ -512,27 +530,9 @@ Blockly.Blocks['variables_set'] = {
 	    ],
 	    "previousStatement": null,
 	    "nextStatement": null,
-	    "colour": VARIABLES_COL,
+	    "style": "variable_blocks",
 	    "tooltip": "%{BKY_VARIABLES_SET_TOOLTIP}",
 	    "helpUrl": "%{BKY_VARIABLES_SET_HELPURL}",
 	    "extensions": ["contextMenu_variableSetterGetter"]
 	})}};
 
-
-
-/*
-
-
--------------------------------
-variables
-
-set!
-
--------------------------------
-procedures
-
-defun
-defconst
-
-
-*/
