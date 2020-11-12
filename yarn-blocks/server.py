@@ -13,11 +13,12 @@ class server(SimpleHTTPServer.SimpleHTTPRequestHandler):
         print("POST",self.path)
         data_string = self.rfile.read(int(self.headers['Content-Length']))
         print(data_string)
-        with open("robot.lisp", "w") as outfile:
+        with open("code.lisp", "w") as outfile:
             outfile.write(data_string)
-        transmitter.program(3,"robot.lisp")
-        #os.system("../compiler/compile.sh robot.lisp")
-        self.send_response(200)
+        if transmitter.program(3,"code.lisp"):
+            self.send_response(200)
+        else:
+            self.send_response(404)
         
     def do_GET(self):
         return SimpleHTTPServer.SimpleHTTPRequestHandler.do_GET(self)

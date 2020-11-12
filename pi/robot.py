@@ -66,7 +66,7 @@ class robot:
             self.source=f.read()
         print(self.source)
         self.code = compiler.assemble_file(fn)
-        radio.send_code(self.address,self.code)
+        return radio.send_code(self.address,self.code)
 
     def write(self,addr,val,radio):
         radio.send_set(self.address,addr,val)

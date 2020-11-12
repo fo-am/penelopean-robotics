@@ -85,8 +85,9 @@ class radio:
                 # make time for receipt?
         else:
             self.send(self.build_write(yarnasm.code_start,code))
-        self.send(self.build_reset())                
-        #self.send(self.build_eewrite())
+        # hmm, only checks the reset message, could be cleverer
+        return self.send(self.build_reset())                
+
         
     def send_sync(self,addr,beat,ms_per_step,reg_sets):
         self.set_destination(addr)
@@ -101,10 +102,15 @@ class radio:
         #print("sending "+b[0]+" to "+str(self.destination_address))
         if len(b)!=32:
             print("wrong number of bytes in message: "+str(len(b)))
+            return False
         else:
             status = self.device.write(b)
             if status!=32:
                 print("send failed to "+str(self.destination_address[4])+" "+str(status))
+                # not sure if we need to flush the payload in this case
+                time.sleep(0.05)
+                self.update()
+                return False
                 
             time.sleep(0.05)
             self.update()
