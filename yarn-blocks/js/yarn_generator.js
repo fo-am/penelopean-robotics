@@ -165,7 +165,7 @@ Blockly.Yarn['actions_wait'] = function(block) {
     var code;    
     var argument0 = Blockly.Yarn.valueToCode(block, 'A', 0) || '0';
     // current cycle rate is 50hz
-    code = '(set! usr-d (* ' + argument0 + ' 50))\n(while (> usr-d 0) (set! usr-d (- usr-d 1)))'; 
+    code = '(set! usr-d (* ' + argument0 + ' 4))\n(while (> usr-d 0) (set! usr-d (- usr-d 1)))'; 
     return code;
 };
 

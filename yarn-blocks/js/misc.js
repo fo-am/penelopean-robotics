@@ -25,12 +25,32 @@ function exampleBlocks(id) {
   }
 }
 
-function transmitBlocks() {
-    var code = "("+Blockly.Yarn.workspaceToCode(workspace)+")";
+var sending = false;
 
-      var xhr = new XMLHttpRequest();
-    xhr.open("POST", "/transmit-1", true);
-    xhr.setRequestHeader('Content-Type', 'application/json');
-    xhr.send(code);
+function transmitBlocks() {
+    if (sending==false) {
+	sending=true;
+	document.getElementById("transmit").style.display="block";
+
+	var code = "("+Blockly.Yarn.workspaceToCode(workspace)+")";
+
+	var xhr = new XMLHttpRequest();
+	xhr.open("POST", "/transmit-1", true);
+	xhr.setRequestHeader('Content-Type', 'application/json');
+	xhr.addEventListener("load",function() {
+	    sending=false;
+	    document.getElementById("transmit").style.display="none";
+	});
+	xhr.addEventListener("error",function() {
+	    sending=false;
+	    document.getElementById("transmit").style.display="none";
+	    document.getElementById("error").style.display="block";
+	    setTimeout(function() {
+		document.getElementById("error").style.display="none";
+	    }, 2000);
+	});
+	xhr.send(code);
+    }
 }
+
 

@@ -6,7 +6,7 @@ import time
 import spidev
 import struct
 import math
-import yarn
+import yarnasm
 
 class radio:
     def __init__(self,address):
@@ -15,7 +15,7 @@ class radio:
         self.max_retries = 1 # can be a bit cleverer than this
         self.time_between_sends=0
         self.startup()
-        #self.debug()
+        self.debug()
         self.stop_osc=False
         self.telemetry=[]
         
@@ -23,7 +23,8 @@ class radio:
         self.device.printDetails()        
 
     def startup(self):
-        self.device = NRF24(GPIO, spidev.SpiDev())
+	spi=spidev.SpiDev()
+        self.device = NRF24(GPIO, spi)
         self.device.begin(0, 17)
         time.sleep(0.1)
         self.device.setRetries(15,15)
@@ -79,11 +80,11 @@ class radio:
                     else:
                         buf+='\0'
                     pos+=1
-                self.send(self.build_write(yarn.code_start+pos16,buf)) 
+                self.send(self.build_write(yarnasm.code_start+pos16,buf)) 
                 pos16+=max_code_size/2
                 # make time for receipt?
         else:
-            self.send(self.build_write(yarn.code_start,code))
+            self.send(self.build_write(yarnasm.code_start,code))
         self.send(self.build_reset())                
         #self.send(self.build_eewrite())
         

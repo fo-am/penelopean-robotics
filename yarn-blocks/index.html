@@ -47,7 +47,11 @@
   <input type="radio" id="robot-e" name="robots"\> 
   <label for="robot-e">E</label>
 
-  <button onclick="transmitBlocks();" style="background: pink;">Transmit</button>
+  <div id="transmit-container">
+    <button onclick="transmitBlocks();" style="background: pink;">Transmit</button>
+    <div id="transmit">Transmitting to Pi - Robot...</div>
+    <div id="error">Problem compiling or transmitting :(</div>
+  </div>
   <button onclick="importBlocks();">Load blocks</button>
   <button onclick="exportBlocks();">Save blocks</button>
 

@@ -13,3 +13,32 @@ button {
 button:hover {
     background: yellow;
 }
+
+#transmit-container {
+    display: inline;
+    position: relative;
+}
+
+#transmit {
+    top: 50px;
+    left: -50px;
+    width: 10em;
+    position: absolute;
+    background: green;
+    z-index: 999;
+    padding: 1.5em;
+    border-radius: 1.5em;
+    display: none;
+}
+
+#error {
+    top: 50px;
+    left: -50px;
+    width: 10em;
+    position: absolute;
+    background: red;
+    z-index: 999;
+    padding: 1.5em;
+    border-radius: 1.5em;
+    display: none;
+}
