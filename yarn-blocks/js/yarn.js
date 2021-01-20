@@ -188,7 +188,7 @@ Blockly.Yarn.finish = function(code) {
  * @return {string} Legal line of code.
  */
 Blockly.Yarn.scrubNakedValue = function(line) {
-  return line + ';\n';
+  return line + '\n';
 };
 
 /**

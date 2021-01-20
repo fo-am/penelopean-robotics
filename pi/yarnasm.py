@@ -165,8 +165,8 @@ class compiler:
         start=len(s)
         ret=[s[0]]
         for p in range(1,len(s)):
-            if (s[p].startswith("ld") and s[p+1].startswith("drop 1")) or\
-               (s[p-1].startswith("ld") and s[p].startswith("drop 1")):
+            if (s[p-1].startswith("ld") and s[p].startswith("drop 1")) or\
+               (p+1<len(s) and (s[p].startswith("ld") and s[p+1].startswith("drop 1"))):
                 pass
             else:
                 ret.append(s[p])

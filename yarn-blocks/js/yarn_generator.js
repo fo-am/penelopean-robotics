@@ -26,7 +26,7 @@ Blockly.Yarn['logic_when'] = function(block) {
     var n = 0;
     var code = '', branchCode, conditionCode;
     conditionCode = Blockly.Yarn.valueToCode(block, 'BOOL',
-					     Blockly.Yarn.ORDER_NONE) || '#f';
+					     Blockly.Yarn.ORDER_NONE) || '0';
     branchCode = Blockly.Yarn.statementToCode(block, 'DO');
     if (Blockly.Yarn.STATEMENT_SUFFIX) {
 	branchCode = Blockly.Yarn.prefixLines(
@@ -42,7 +42,7 @@ Blockly.Yarn['logic_if'] = function(block) {
     var n = 0;
     var code = '', branchCode, conditionCode, elseCode;
     conditionCode = Blockly.Yarn.valueToCode(block, 'BOOL',
-					     Blockly.Yarn.ORDER_NONE) || '#f';
+					     Blockly.Yarn.ORDER_NONE) || '0';
     branchCode = Blockly.Yarn.statementToCode(block, 'DO');
     if (Blockly.Yarn.STATEMENT_SUFFIX) {
 	branchCode = Blockly.Yarn.prefixLines(
@@ -56,7 +56,7 @@ Blockly.Yarn['logic_if'] = function(block) {
             Blockly.Yarn.injectId(Blockly.Yarn.STATEMENT_SUFFIX,
 				  block), Blockly.Yarn.INDENT) + elseCode;
     }    
-    code = '(cond \n (' + conditionCode + "\n" + branchCode + ")\n(else \n" + elseCode + '))';
+    code = '(if \n' + conditionCode + "\n (do " + branchCode + ")\n (do" + elseCode + '))';
     return code + '\n';
 };
 
@@ -77,7 +77,7 @@ Blockly.Yarn['loops_while'] = function(block) {
     var n = 0;
     var code = '', branchCode, conditionCode;
     conditionCode = Blockly.Yarn.valueToCode(block, 'BOOL',
-					     Blockly.Yarn.ORDER_NONE) || '#f';
+					     Blockly.Yarn.ORDER_NONE) || '0';
     branchCode = Blockly.Yarn.statementToCode(block, 'DO');
     if (Blockly.Yarn.STATEMENT_SUFFIX) {
 	branchCode = Blockly.Yarn.prefixLines(
@@ -203,7 +203,8 @@ Blockly.Yarn['actions_walk_steps'] = function(block) {
 
     code = '(set! next-pattern ' + OPERATORS[block.getFieldValue('PATTERN')] + ')\n' +
 	'(set! step-count-reset 1)\n'+
-	'(while (< step-count '+argument0+') 0)\n';
+	'(while (< step-count '+argument0+') 0)\n'+
+	'(set! next-pattern walk-stop)\n';
     return code;
 };
 

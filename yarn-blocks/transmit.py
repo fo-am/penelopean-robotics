@@ -46,6 +46,8 @@ class transmit:
             asm+=line
         fifo.close()
 
+        print(asm)
+        
         if self.swarm[robot_id].send_asm(asm,self.compiler,self.radio) == False:
             return False
         return True
