@@ -79,7 +79,7 @@
 (define var-start 55)
 
 ;; constants lookup
-(define constants 
+(define constants-table
   '((walk-null "0")
     (walk-stop "1")
     (walk-forward "2")
@@ -117,7 +117,7 @@
 
     ))
 
-
+(define constants constants-table)
 
 (define (reg-table-lookup x)
   (let ((lu (assoc x reg-table)))
@@ -556,6 +556,12 @@
 
 (define histogram '())
 
+(define (reset-compiler)
+  (set! label-id 99)
+  (set! variables '())
+  (set! histogram '())
+  (set! constants constants-table))
+
 (define (add-histogram name count hist)
   (cond
    ((null? hist) (list (list name count)))
@@ -648,6 +654,11 @@
     ;;(histogram-print histogram)
     ))
 
+(define (output-error fn)
+  (let ((f (open-output-file fn #:exists 'update)))
+    (display "error" f)(newline f)
+    (close-output-port f)))
+
 (define (assert fn x)
   (when (not x)
     (display "assert failed: ")(display fn)(newline)))
@@ -666,14 +677,16 @@
   ;;(msg "compiler: opening lisp_fifo")
   (let ((f (open-input-file input-file)))
     (msg "compiler: waiting for lisp to compile")
+    (reset-compiler)
     (let ((data (read f)))
       (msg data)
       (cond
        ((list? data) (output output-file data))
        (else
 	(msg "data seems corrupted, ignoring")
-	(output output-file '())))
-      (msg "compiler: sent asm"))
+	(output-error output-file))))
+    (msg "compiler: sent asm")
     (close-input-port f))
   (loop))
+
 (loop)

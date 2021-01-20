@@ -51,7 +51,6 @@ function transmitBlocks() {
 	xhr.open("POST", "/transmit-"+robot_id, true);
 	xhr.setRequestHeader('Content-Type', 'application/json');
 	xhr.addEventListener("load",function() {
-	    console.log(xhr.status);
 	    sending=false;
 	    document.getElementById("transmit").style.display="none";
 	    if (xhr.status!=200) {
