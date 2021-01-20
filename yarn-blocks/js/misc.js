@@ -25,21 +25,41 @@ function exampleBlocks(id) {
   }
 }
 
+function selectedRobot() {
+    var num=0;
+    var robots=["a","b","c","d","e","f","g","h"]
+    var ret=-1;
+    robots.forEach(function (id) {
+	var radio = document.getElementById('robot-'+id);
+	if (radio.checked) ret=num;
+	num++;
+    });
+    return ret;
+}
+
 var sending = false;
 
 function transmitBlocks() {
-    if (sending==false) {
+    robot_id = selectedRobot();
+    if (robot_id!=-1 && sending==false) {
 	sending=true;
 	document.getElementById("transmit").style.display="block";
 
 	var code = "("+Blockly.Yarn.workspaceToCode(workspace)+")";
-
+	
 	var xhr = new XMLHttpRequest();
-	xhr.open("POST", "/transmit-1", true);
+	xhr.open("POST", "/transmit-"+robot_id, true);
 	xhr.setRequestHeader('Content-Type', 'application/json');
 	xhr.addEventListener("load",function() {
+	    console.log(xhr.status);
 	    sending=false;
 	    document.getElementById("transmit").style.display="none";
+	    if (xhr.status!=200) {
+	  	    document.getElementById("error").style.display="block";
+		setTimeout(function() {
+		    document.getElementById("error").style.display="none";
+		}, 2000);
+	    }
 	});
 	xhr.addEventListener("error",function() {
 	    sending=false;

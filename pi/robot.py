@@ -64,8 +64,11 @@ class robot:
     def load_asm(self,fn,compiler,radio):
         with open(fn, 'r') as f:
             self.source=f.read()
-        print(self.source)
         self.code = compiler.assemble_file(fn)
+        return radio.send_code(self.address,self.code)
+
+    def send_asm(self,asm,compiler,radio):
+        self.code = compiler.assemble_bytes(asm)
         return radio.send_code(self.address,self.code)
 
     def write(self,addr,val,radio):

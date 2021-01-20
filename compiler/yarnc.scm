@@ -638,12 +638,13 @@
     done))
 
 (define (output fn x)
-  (let ((f (open-output-file fn #:exists 'replace)))
+  (let ((f (open-output-file fn #:exists 'update)))
     (for-each
      (lambda (line)
        (display line f)(newline f))
      (compile-program x))
     (close-output-port f)
+    ;;(msg (string-append "server: closing " fn))
     ;;(histogram-print histogram)
     ))
 
@@ -657,6 +658,22 @@
 (define (msg x)
   (display x)(newline))
 
-(let ((f (open-input-file (command-line #:args (input) input))))
-  (output "out.asm" (read f))
-  (close-input-port f))
+
+(define input-file "../fifo/lisp_fifo")
+(define output-file "../fifo/asm_fifo")
+
+(define (loop)
+  ;;(msg "compiler: opening lisp_fifo")
+  (let ((f (open-input-file input-file)))
+    (msg "compiler: waiting for lisp to compile")
+    (let ((data (read f)))
+      (msg data)
+      (cond
+       ((list? data) (output output-file data))
+       (else
+	(msg "data seems corrupted, ignoring")
+	(output output-file '())))
+      (msg "compiler: sent asm"))
+    (close-input-port f))
+  (loop))
+(loop)
