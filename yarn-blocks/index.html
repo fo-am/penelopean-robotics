@@ -74,6 +74,13 @@
   <xml id="ledflash" style="display: none" xmlns="https://developers.google.com/blockly/xml"><block type="loops_forever" id="k8-dNRrmrPWPo8_O!dUI" x="263" y="138"><statement name="DO"><block type="actions_led" id="?;sNL:jQ9p7D-KsC]nK("><field name="VALUE">ON</field><next><block type="actions_led" id="u3g#I_kH2XB(.=ewW|V~"><field name="VALUE">OFF</field></block></next></block></statement></block></xml>
   <button onclick="exampleBlocks('ledflash');">LED Flash</button>
 
+  <xml id="stop" style="display: none" xmlns="https://developers.google.com/blockly/xml"><block type="loops_forever" id="x4g_1VvP!%VRC3+4HIqz" x="363" y="163"><statement name="DO"><block type="actions_walk" id="8/Vf#=U2UT?ZlpuDch$m"><field name="PATTERN">WALK-STOP</field></block></statement></block></xml>
+  <button onclick="exampleBlocks('stop');">STOP!</button>
+  
+  <xml id="forwardback" style="display: none" xmlns="https://developers.google.com/blockly/xml"><block type="loops_forever" id="=lTf3Sa*[xS[U?d0sP0$" x="188" y="113"><statement name="DO"><block type="actions_led" id="bO1Y^Q66.#{X6MHn3-.#"><field name="VALUE">ON</field><next><block type="actions_walk_steps" id="yg(D,YX;$!nwcroLitpG"><field name="PATTERN">WALK-FORWARD</field><value name="A"><block type="math_number" id="9%|iGKQLlfe8OJetMUTp"><field name="NUM">3</field></block></value><next><block type="actions_wait" id="O$p34mj+(=mCJPY*p;:/"><value name="A"><block type="math_number" id="`Mv0df]jpIjZnkj5iCz:"><field name="NUM">5</field></block></value><next><block type="actions_walk_steps" id="~ZsRn-1`=;lr#f,:Jk4w"><field name="PATTERN">WALK-BACKWARD</field><value name="A"><block type="math_number" id="JD_7F#y^h#}]UdEMh!xp"><field name="NUM">3</field></block></value><next><block type="actions_led" id="m,HZ4iaUCRb].#^.Hn);"><field name="VALUE">OFF</field><next><block type="actions_wait" id="0582x8)vfVm{T^IXx6si"><value name="A"><block type="math_number" id="K.!L5MFKx,o`kvn,VxGx"><field name="NUM">5</field></block></value></block></next></block></next></block></next></block></next></block></next></block></statement></block></xml>
+  <button onclick="exampleBlocks('forwardback');">Forward/Backward</button>
+  
+
   <div style="position: relative;">
   <div style="position: absolute; left:0; top:0;">
 
