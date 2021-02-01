@@ -78,7 +78,7 @@ Blockly.Css.inject = function(hasCss, pathToMedia) {
 Blockly.Css.CONTENT = [
   /* eslint-disable indent */
   '.blocklySvg {',
-    'background-color: #fff;',
+    'background-color: rgba(0,0,0,0);',
     'outline: none;',
     'overflow: hidden;',  /* IE overflows by default. */
     'position: absolute;',

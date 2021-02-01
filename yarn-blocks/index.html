@@ -30,37 +30,69 @@
   <script src="js/misc.js"></script>
 
   Penelopean robot:
-  <input type="radio" id="robot-a" name="robots"\> 
-  <label for="robot-a">A</label>
-  <input type="radio" id="robot-b" name="robots"\> 
-  <label for="robot-b">B</label>
-  <input type="radio" id="robot-c" name="robots"\> 
-  <label for="robot-c">C</label>
-  <input type="radio" id="robot-d" name="robots"\> 
-  <label for="robot-d">D</label>
-  <input type="radio" id="robot-e" name="robots"\> 
-  <label for="robot-e">E</label>
-  <input type="radio" id="robot-f" name="robots"\> 
-  <label for="robot-f">F</label>
-  <input type="radio" id="robot-g" name="robots"\> 
-  <label for="robot-g">G</label>
-  <input type="radio" id="robot-h" name="robots"\> 
-  <label for="robot-h">H</label>
+  <div style="display:inline; background:#f00; padding:3px; margin:3px;">
+    <input type="radio" id="robot-a" name="robots"\> 
+    <label for="robot-a">A</label>
+  </div>
+  <div style="display:inline; background:#0f0; padding:3px; margin:3px;">
+    <input type="radio" id="robot-b" name="robots"\> 
+    <label for="robot-b">B</label>
+  </div>
+  <div style="display:inline; background:#00f; padding:3px; margin:3px;">
+    <input type="radio" id="robot-c" name="robots"\> 
+    <label for="robot-c">C</label>
+  </div>
+  <div style="display:inline; background:#f73; padding:3px; margin:3px;">
+    <input type="radio" id="robot-d" name="robots"\> 
+    <label for="robot-d">D</label>
+  </div>
+  <div style="display:inline; background:#f0f; padding:3px; margin:3px;">
+    <input type="radio" id="robot-e" name="robots"\> 
+    <label for="robot-e">E</label>
+  </div>
+  <div style="display:inline; background:#fff; padding:3px; margin:3px;">
+    <input type="radio" id="robot-f" name="robots"\> 
+    <label for="robot-f">F</label>
+  </div>
+  <div style="display:inline; background:#ff0; padding:3px; margin:3px;">
+    <input type="radio" id="robot-g" name="robots"\> 
+    <label for="robot-g">G</label>
+  </div>
+  <div style="display:inline; background:#a52; padding:3px; margin:3px;">
+    <input type="radio" id="robot-h" name="robots"\> 
+    <label for="robot-h">H</label>
+  </div>
 
-  <div id="transmit-container">
+  <div id="transmit-container" style="margin-left: 50px;">
     <button onclick="transmitBlocks();" style="background: pink;">Transmit</button>
     <div id="transmit">Transmitting to Pi - Robot...</div>
     <div id="error">Problem compiling or transmitting :(</div>
   </div>
   <button onclick="importBlocks();">Load blocks</button>
   <button onclick="exportBlocks();">Save blocks</button>
-
-  <div id="blocklyDiv" style="height: 480px; width: 100%;"></div>
-
   Examples:
   <xml id="ledflash" style="display: none" xmlns="https://developers.google.com/blockly/xml"><block type="loops_forever" id="k8-dNRrmrPWPo8_O!dUI" x="263" y="138"><statement name="DO"><block type="actions_led" id="?;sNL:jQ9p7D-KsC]nK("><field name="VALUE">ON</field><next><block type="actions_led" id="u3g#I_kH2XB(.=ewW|V~"><field name="VALUE">OFF</field></block></next></block></statement></block></xml>
   <button onclick="exampleBlocks('ledflash');">LED Flash</button>
 
+  <div style="position: relative;">
+  <div style="position: absolute; left:0; top:0;">
+
+    <!-- 560 315 -->
+  <iframe onload="this.width=screen.width;this.height=screen.height;" src="https://www.youtube.com/embed/wH5WA-nsFKA" frameborder="0" allowfullscreen></iframe>
+
+  </div>
+
+  <div>
+
+  <div id="blocklyDiv" style="background: rgba(0,0,0,0); height: 480px; width: 100%;"></div>
+
+
+  
+
+  </div>
+  </div>
+
+  </div>
   
   <xml id="toolbox" style="display: none">
     <category name="Logic" categorystyle="logic_category">
