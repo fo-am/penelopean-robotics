@@ -51,7 +51,10 @@ class transmit:
         if self.swarm[robot_id].send_asm(asm,self.compiler,self.radio) == False:
             return False
         return True
-    
+
+    def save_eeprom(self,robot_id):
+        self.swarm[robot_id].save_eeprom(self.radio)
+
 
 
     

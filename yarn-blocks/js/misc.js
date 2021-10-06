@@ -72,4 +72,13 @@ function transmitBlocks() {
     }
 }
 
+function transmitEepromWrite() {
+    robot_id = selectedRobot();
+    if (robot_id!=-1) {
+	var xhr = new XMLHttpRequest();
+	xhr.open("POST", "/eeprom-"+robot_id, true);
+	xhr.setRequestHeader('Content-Type', 'application/json');
+	xhr.send();
+    }
+}
 
