@@ -106,7 +106,7 @@ Blockly.Yarn['math_number'] = function(block) {
   var code = Number(block.getFieldValue('NUM'));
   var order = code >= 0 ? Blockly.Yarn.ORDER_ATOMIC :
               Blockly.Yarn.ORDER_UNARY_NEGATION;
-  return [code, order];
+  return [code, Blockly.Yarn.ORDER_ATOMIC];
 };
 
 Blockly.Yarn['math_arithmetic'] = function(block) {

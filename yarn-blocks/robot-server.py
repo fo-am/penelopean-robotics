@@ -18,13 +18,21 @@ class server(SimpleHTTPServer.SimpleHTTPRequestHandler):
             return
                         
         robot_id = -1
+        command = ""
         try:
+            command = self.path.split("-")[0]
             robot_id = int(self.path.split("-")[1])
         except:
             pass
         print(robot_id)
-
+        
         if robot_id!=-1:
+
+            if command=="/eeprom":
+                transmitter.save_eeprom(robot_id)
+                self.send_response(200)
+                return
+            
             data_string = self.rfile.read(int(self.headers['Content-Length']))
             print("data_string is: "+data_string)
 
