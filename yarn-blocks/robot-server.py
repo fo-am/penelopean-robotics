@@ -3,7 +3,7 @@
 import SimpleHTTPServer
 import SocketServer
 import os
-import transmit
+#import transmit
 import time
 
 global transmitter
@@ -28,10 +28,10 @@ class server(SimpleHTTPServer.SimpleHTTPRequestHandler):
             data_string = self.rfile.read(int(self.headers['Content-Length']))
             print("data_string is: "+data_string)
 
-            if transmitter.program(robot_id,data_string):
-                self.send_response(200)
-            else:
-                self.send_response(500)
+            #if transmitter.program(robot_id,data_string):
+            #    self.send_response(200)
+            #else:
+            #    self.send_response(500)
         else:
             self.send_response(501)
         
@@ -39,12 +39,13 @@ class server(SimpleHTTPServer.SimpleHTTPRequestHandler):
         return SimpleHTTPServer.SimpleHTTPRequestHandler.do_GET(self)
 
 
-os.chdir("/home/pi/code/penelopean-robotics/yarn-blocks")
+#os.chdir("/home/pi/code/penelopean-robotics/yarn-blocks")
+os.chdir("/home/dave/code/penelopean-robotics/yarn-blocks")
 os.system("pkill yarnc")
 
 PORT = 8888
 SocketServer.TCPServer.allow_reuse_address = True
 httpd = SocketServer.TCPServer(("", PORT), server)
-transmitter = transmit.transmit()
+#transmitter = transmit.transmit()
 httpd.serve_forever()
 

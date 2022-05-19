@@ -669,9 +669,11 @@
 (define (msg x)
   (display x)(newline))
 
+(define input-file "../lisp/block-code.lisp")
+(define output-file "out.asm")
 
-(define input-file "../fifo/lisp_fifo")
-(define output-file "../fifo/asm_fifo")
+;;(define input-file "../fifo/lisp_fifo")
+;;(define output-file "../fifo/asm_fifo")
 
 (define (loop)
   ;;(msg "compiler: opening lisp_fifo")

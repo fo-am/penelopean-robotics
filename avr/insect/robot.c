@@ -119,18 +119,18 @@ float angle_compare(float a1, float a2) {
 void robot_update_sensors(robot_t *r) {
   yarn_machine *m = &r->machine;
   float x,y,z;
-/*  gy91_read_accel(&x,&y,&z);
+  gy91_read_accel(&x,&y,&z);
   yarn_poke(m,REG_ACCEL_X,MAKE_FIXED(x));
   yarn_poke(m,REG_ACCEL_Y,MAKE_FIXED(y));
   yarn_poke(m,REG_ACCEL_Z,MAKE_FIXED(z));
   gy91_read_gyro(&x,&y,&z);
   yarn_poke(m,REG_GYRO_X,MAKE_FIXED(x));
   yarn_poke(m,REG_GYRO_Y,MAKE_FIXED(y));
-  yarn_poke(m,REG_GYRO_Z,MAKE_FIXED(z));*/
+  yarn_poke(m,REG_GYRO_Z,MAKE_FIXED(z));
   gy91_read_mag(&x,&y,&z);
-/*  yarn_poke(m,REG_COMP_X,MAKE_FIXED(x/100.0f));
+  yarn_poke(m,REG_COMP_X,MAKE_FIXED(x/100.0f));
   yarn_poke(m,REG_COMP_Y,MAKE_FIXED(y/100.0f));
-  yarn_poke(m,REG_COMP_Z,MAKE_FIXED(z/100.0f));*/
+  yarn_poke(m,REG_COMP_Z,MAKE_FIXED(z/100.0f));
   float angle=180+atan2(y,x)*57.2958;
   //angle+=180; // set range to 0-360
   yarn_poke(m,REG_COMP_ANGLE,(short)angle);

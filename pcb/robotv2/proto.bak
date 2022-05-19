@@ -1,5 +1,38 @@
-EESchema Schematic File Version 4
-EELAYER 30 0
+EESchema Schematic File Version 2
+LIBS:power
+LIBS:device
+LIBS:switches
+LIBS:relays
+LIBS:motors
+LIBS:transistors
+LIBS:conn
+LIBS:linear
+LIBS:regul
+LIBS:74xx
+LIBS:cmos4000
+LIBS:adc-dac
+LIBS:memory
+LIBS:xilinx
+LIBS:microcontrollers
+LIBS:dsp
+LIBS:microchip
+LIBS:analog_switches
+LIBS:motorola
+LIBS:texas
+LIBS:intel
+LIBS:audio
+LIBS:interface
+LIBS:digital-audio
+LIBS:philips
+LIBS:display
+LIBS:cypress
+LIBS:siliconi
+LIBS:opto
+LIBS:atmel
+LIBS:contrib
+LIBS:valves
+LIBS:proto-cache
+EELAYER 25 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
@@ -14,7 +47,7 @@ Comment3 ""
 Comment4 ""
 $EndDescr
 $Comp
-L proto-rescue:Conn_01x04 J2
+L Conn_01x04 J2
 U 1 1 5AB7BCE5
 P 2100 2250
 F 0 "J2" H 2100 2450 50  0000 C CNN
@@ -25,7 +58,7 @@ F 3 "" H 2100 2250 50  0001 C CNN
 	-1   0    0    1   
 $EndComp
 $Comp
-L proto-rescue:Conn_01x07 J4
+L Conn_01x07 J4
 U 1 1 5AB7C2DC
 P 3100 2250
 F 0 "J4" H 3100 2650 50  0000 C CNN
@@ -36,7 +69,7 @@ F 3 "" H 3100 2250 50  0001 C CNN
 	-1   0    0    1   
 $EndComp
 $Comp
-L proto-rescue:Conn_01x06 J3
+L Conn_01x06 J3
 U 1 1 5AB7CA31
 P 6300 2750
 F 0 "J3" H 6300 3050 50  0000 C CNN
@@ -47,7 +80,7 @@ F 3 "" H 6300 2750 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L proto-rescue:Conn_01x01 J9
+L Conn_01x01 J9
 U 1 1 5ACA1E49
 P 8850 3350
 F 0 "J9" H 8850 3450 50  0000 C CNN
@@ -58,7 +91,7 @@ F 3 "" H 8850 3350 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L proto-rescue:Conn_01x01 J10
+L Conn_01x01 J10
 U 1 1 5ACA1EC1
 P 8850 3500
 F 0 "J10" H 8850 3600 50  0000 C CNN
@@ -69,7 +102,7 @@ F 3 "" H 8850 3500 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L proto-rescue:Conn_01x03 J1
+L Conn_01x03 J1
 U 1 1 5BBB4667
 P 4000 1850
 F 0 "J1" H 4000 2050 50  0000 C CNN
@@ -80,7 +113,7 @@ F 3 "" H 4000 1850 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L proto-rescue:Conn_01x03 J6
+L Conn_01x03 J6
 U 1 1 5BBB46C0
 P 4000 2300
 F 0 "J6" H 4000 2500 50  0000 C CNN
@@ -91,7 +124,7 @@ F 3 "" H 4000 2300 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L proto-rescue:Conn_01x03 J7
+L Conn_01x03 J7
 U 1 1 5BBB46E7
 P 4000 2750
 F 0 "J7" H 4000 2950 50  0000 C CNN
@@ -102,7 +135,7 @@ F 3 "" H 4000 2750 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L proto-rescue:Earth #PWR01
+L Earth #PWR01
 U 1 1 5BBB4A4F
 P 2300 2050
 F 0 "#PWR01" H 2300 1800 50  0001 C CNN
@@ -113,7 +146,7 @@ F 3 "" H 2300 2050 50  0001 C CNN
 	0    -1   -1   0   
 $EndComp
 $Comp
-L proto-rescue:+5V #PWR02
+L +5V #PWR02
 U 1 1 5BBB4A75
 P 2300 2150
 F 0 "#PWR02" H 2300 2000 50  0001 C CNN
@@ -124,7 +157,7 @@ F 3 "" H 2300 2150 50  0001 C CNN
 	0    1    1    0   
 $EndComp
 $Comp
-L proto-rescue:Earth #PWR03
+L Earth #PWR03
 U 1 1 5BBB4F2D
 P 3800 1950
 F 0 "#PWR03" H 3800 1700 50  0001 C CNN
@@ -135,7 +168,7 @@ F 3 "" H 3800 1950 50  0001 C CNN
 	0    1    1    0   
 $EndComp
 $Comp
-L proto-rescue:Earth #PWR04
+L Earth #PWR04
 U 1 1 5BBB5010
 P 3800 2400
 F 0 "#PWR04" H 3800 2150 50  0001 C CNN
@@ -146,7 +179,7 @@ F 3 "" H 3800 2400 50  0001 C CNN
 	0    1    1    0   
 $EndComp
 $Comp
-L proto-rescue:Earth #PWR05
+L Earth #PWR05
 U 1 1 5BBB5195
 P 3800 2850
 F 0 "#PWR05" H 3800 2600 50  0001 C CNN
@@ -157,7 +190,7 @@ F 3 "" H 3800 2850 50  0001 C CNN
 	0    1    1    0   
 $EndComp
 $Comp
-L proto-rescue:+5V #PWR06
+L +5V #PWR06
 U 1 1 5BBB548B
 P 3800 1850
 F 0 "#PWR06" H 3800 1700 50  0001 C CNN
@@ -168,7 +201,7 @@ F 3 "" H 3800 1850 50  0001 C CNN
 	0    -1   -1   0   
 $EndComp
 $Comp
-L proto-rescue:+5V #PWR07
+L +5V #PWR07
 U 1 1 5BBB5622
 P 3800 2300
 F 0 "#PWR07" H 3800 2150 50  0001 C CNN
@@ -179,7 +212,7 @@ F 3 "" H 3800 2300 50  0001 C CNN
 	0    -1   -1   0   
 $EndComp
 $Comp
-L proto-rescue:+5V #PWR08
+L +5V #PWR08
 U 1 1 5BBB5705
 P 3800 2750
 F 0 "#PWR08" H 3800 2600 50  0001 C CNN
@@ -190,7 +223,7 @@ F 3 "" H 3800 2750 50  0001 C CNN
 	0    -1   -1   0   
 $EndComp
 $Comp
-L proto-rescue:Conn_02x04_Counter_Clockwise J8
+L Conn_02x04_Counter_Clockwise J8
 U 1 1 5BBB6AFE
 P 4950 2700
 F 0 "J8" H 5000 2900 50  0000 C CNN
@@ -201,7 +234,7 @@ F 3 "" H 4950 2700 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L proto-rescue:Earth #PWR09
+L Earth #PWR09
 U 1 1 5BBB71DA
 P 4750 2600
 F 0 "#PWR09" H 4750 2350 50  0001 C CNN
@@ -212,7 +245,7 @@ F 3 "" H 4750 2600 50  0001 C CNN
 	0    1    1    0   
 $EndComp
 $Comp
-L proto-rescue:+5V #PWR010
+L +5V #PWR010
 U 1 1 5BBB7322
 P 4450 1700
 F 0 "#PWR010" H 4450 1550 50  0001 C CNN
@@ -223,7 +256,7 @@ F 3 "" H 4450 1700 50  0001 C CNN
 	0    -1   -1   0   
 $EndComp
 $Comp
-L proto-rescue:Earth #PWR011
+L Earth #PWR011
 U 1 1 5BBB7616
 P 4850 1900
 F 0 "#PWR011" H 4850 1650 50  0001 C CNN
@@ -234,7 +267,7 @@ F 3 "" H 4850 1900 50  0001 C CNN
 	-1   0    0    1   
 $EndComp
 $Comp
-L proto-rescue:CP C2
+L CP C2
 U 1 1 5BBB7B4C
 P 5150 2150
 F 0 "C2" H 5175 2250 50  0000 L CNN
@@ -245,7 +278,7 @@ F 3 "" H 5150 2150 50  0001 C CNN
 	0    1    1    0   
 $EndComp
 $Comp
-L proto-rescue:LED D1
+L LED D1
 U 1 1 5BBB94A5
 P 6050 2250
 F 0 "D1" H 6050 2350 50  0000 C CNN
@@ -256,7 +289,7 @@ F 3 "" H 6050 2250 50  0001 C CNN
 	0    1    1    0   
 $EndComp
 $Comp
-L proto-rescue:R R1
+L R R1
 U 1 1 5BBB950A
 P 6050 1900
 F 0 "R1" V 6130 1900 50  0000 C CNN
@@ -267,7 +300,7 @@ F 3 "" H 6050 1900 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L proto-rescue:Earth #PWR012
+L Earth #PWR012
 U 1 1 5BBB9541
 P 6050 1650
 F 0 "#PWR012" H 6050 1400 50  0001 C CNN
@@ -294,7 +327,7 @@ CSN
 Text Label 5350 2000 0    60   ~ 0
 Reg3v
 $Comp
-L proto-rescue:Conn_01x05 J11
+L Conn_01x05 J11
 U 1 1 5C81939A
 P 2150 3150
 F 0 "J11" H 2150 3450 50  0000 C CNN
@@ -305,7 +338,7 @@ F 3 "" H 2150 3150 50  0001 C CNN
 	-1   0    0    1   
 $EndComp
 $Comp
-L proto-rescue:+5V #PWR013
+L +5V #PWR013
 U 1 1 5C819423
 P 2350 2950
 F 0 "#PWR013" H 2350 2800 50  0001 C CNN
@@ -316,7 +349,7 @@ F 3 "" H 2350 2950 50  0001 C CNN
 	0    1    1    0   
 $EndComp
 $Comp
-L proto-rescue:Earth #PWR014
+L Earth #PWR014
 U 1 1 5C819457
 P 2350 3150
 F 0 "#PWR014" H 2350 2900 50  0001 C CNN
@@ -331,7 +364,7 @@ SCL
 Text Label 2450 3350 0    60   ~ 0
 SDA
 $Comp
-L proto-rescue:Conn_01x02 J12
+L Conn_01x02 J12
 U 1 1 5C9285A3
 P 2100 1750
 F 0 "J12" H 2100 1850 50  0000 C CNN
@@ -342,7 +375,7 @@ F 3 "" H 2100 1750 50  0001 C CNN
 	-1   0    0    1   
 $EndComp
 $Comp
-L proto-rescue:+5V #PWR015
+L +5V #PWR015
 U 1 1 5C92868A
 P 2300 1650
 F 0 "#PWR015" H 2300 1500 50  0001 C CNN
@@ -353,7 +386,7 @@ F 3 "" H 2300 1650 50  0001 C CNN
 	0    1    1    0   
 $EndComp
 $Comp
-L proto-rescue:Earth #PWR016
+L Earth #PWR016
 U 1 1 5C9286C0
 P 2300 1750
 F 0 "#PWR016" H 2300 1500 50  0001 C CNN
@@ -364,7 +397,7 @@ F 3 "" H 2300 1750 50  0001 C CNN
 	0    -1   -1   0   
 $EndComp
 $Comp
-L proto-rescue:Conn_01x08 J5
+L Conn_01x08 J5
 U 1 1 5AB7BD68
 P 6700 4100
 F 0 "J5" H 6700 4500 50  0000 C CNN
@@ -377,8 +410,9 @@ $EndComp
 Wire Wire Line
 	5250 1700 5350 1700
 Wire Wire Line
-	4450 1700 4550 1700
+	4450 1700 4650 1700
 Connection ~ 4550 1700
+Connection ~ 5350 1700
 Wire Wire Line
 	3300 2550 3400 2550
 Wire Wire Line
@@ -424,7 +458,7 @@ Wire Wire Line
 Wire Wire Line
 	4600 2700 4750 2700
 Wire Wire Line
-	5350 1700 5350 2150
+	5350 1700 5350 2500
 Wire Wire Line
 	4350 3250 4350 2800
 Wire Wire Line
@@ -460,7 +494,7 @@ Wire Wire Line
 Wire Wire Line
 	3350 2050 3350 3250
 $Comp
-L proto-rescue:LP2950-3.0_TO92 U1
+L LP2950-3.0_TO92 U1
 U 1 1 5CABB898
 P 4950 1700
 F 0 "U1" H 4800 1825 50  0000 C CNN
@@ -471,7 +505,7 @@ F 3 "" H 4950 1650 50  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L proto-rescue:CP C1
+L CP C1
 U 1 1 5BBB776B
 P 4700 2150
 F 0 "C1" H 4725 2250 50  0000 L CNN
@@ -486,7 +520,7 @@ Wire Wire Line
 Wire Wire Line
 	4950 2000 4950 2150
 Wire Wire Line
-	4850 2150 4950 2150
+	4850 2150 5000 2150
 Connection ~ 4950 2150
 Wire Wire Line
 	5300 2150 5350 2150
@@ -504,22 +538,14 @@ Wire Wire Line
 Wire Wire Line
 	3450 2150 3300 2150
 $Comp
-L proto-rescue:Earth #PWR?
+L Earth #PWR?
 U 1 1 5CABEB6C
-P 4950 2250
-F 0 "#PWR?" H 4950 2000 50  0001 C CNN
-F 1 "Earth" H 4950 2100 50  0001 C CNN
-F 2 "" H 4950 2250 50  0001 C CNN
-F 3 "" H 4950 2250 50  0001 C CNN
-	1    4950 2250
+P 4950 2150
+F 0 "#PWR?" H 4950 1900 50  0001 C CNN
+F 1 "Earth" H 4950 2000 50  0001 C CNN
+F 2 "" H 4950 2150 50  0001 C CNN
+F 3 "" H 4950 2150 50  0001 C CNN
+	1    4950 2150
 	1    0    0    -1  
 $EndComp
-Wire Wire Line
-	4550 1700 4650 1700
-Wire Wire Line
-	4950 2150 4950 2250
-Wire Wire Line
-	4950 2150 5000 2150
-Wire Wire Line
-	5350 2150 5350 2500
 $EndSCHEMATC

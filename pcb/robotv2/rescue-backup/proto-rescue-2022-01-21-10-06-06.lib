@@ -1,11 +1,11 @@
 EESchema-LIBRARY Version 2.4
 #encoding utf-8
 #
-# proto-rescue_+5V
+# +5V
 #
-DEF proto-rescue_+5V #PWR 0 0 Y Y 1 F P
+DEF +5V #PWR 0 0 Y Y 1 F P
 F0 "#PWR" 0 -150 50 H I C CNN
-F1 "proto-rescue_+5V" 0 140 50 H V C CNN
+F1 "+5V" 0 140 50 H V C CNN
 F2 "" 0 0 50 H I C CNN
 F3 "" 0 0 50 H I C CNN
 DRAW
@@ -16,11 +16,11 @@ X +5V 1 0 0 0 U 50 50 1 1 W N
 ENDDRAW
 ENDDEF
 #
-# proto-rescue_CP
+# CP
 #
-DEF proto-rescue_CP C 0 10 N Y 1 F N
+DEF CP C 0 10 N Y 1 F N
 F0 "C" 25 100 50 H V L CNN
-F1 "proto-rescue_CP" 25 -100 50 H V L CNN
+F1 "CP" 25 -100 50 H V L CNN
 F2 "" 38 -150 50 H I C CNN
 F3 "" 0 0 50 H I C CNN
 $FPLIST
@@ -39,11 +39,11 @@ X ~ 2 0 -150 110 U 50 50 1 1 P
 ENDDRAW
 ENDDEF
 #
-# proto-rescue_Conn_01x01
+# Conn_01x01
 #
-DEF proto-rescue_Conn_01x01 J 0 40 Y N 1 F N
+DEF Conn_01x01 J 0 40 Y N 1 F N
 F0 "J" 0 100 50 H V C CNN
-F1 "proto-rescue_Conn_01x01" 0 -100 50 H V C CNN
+F1 "Conn_01x01" 0 -100 50 H V C CNN
 F2 "" 0 0 50 H I C CNN
 F3 "" 0 0 50 H I C CNN
 $FPLIST
@@ -61,11 +61,11 @@ X Pin_1 1 -200 0 150 R 50 50 1 1 P
 ENDDRAW
 ENDDEF
 #
-# proto-rescue_Conn_01x02
+# Conn_01x02
 #
-DEF proto-rescue_Conn_01x02 J 0 40 Y N 1 F N
+DEF Conn_01x02 J 0 40 Y N 1 F N
 F0 "J" 0 100 50 H V C CNN
-F1 "proto-rescue_Conn_01x02" 0 -200 50 H V C CNN
+F1 "Conn_01x02" 0 -200 50 H V C CNN
 F2 "" 0 0 50 H I C CNN
 F3 "" 0 0 50 H I C CNN
 $FPLIST
@@ -85,11 +85,11 @@ X Pin_2 2 -200 -100 150 R 50 50 1 1 P
 ENDDRAW
 ENDDEF
 #
-# proto-rescue_Conn_01x03
+# Conn_01x03
 #
-DEF proto-rescue_Conn_01x03 J 0 40 Y N 1 F N
+DEF Conn_01x03 J 0 40 Y N 1 F N
 F0 "J" 0 200 50 H V C CNN
-F1 "proto-rescue_Conn_01x03" 0 -200 50 H V C CNN
+F1 "Conn_01x03" 0 -200 50 H V C CNN
 F2 "" 0 0 50 H I C CNN
 F3 "" 0 0 50 H I C CNN
 $FPLIST
@@ -111,11 +111,11 @@ X Pin_3 3 -200 -100 150 R 50 50 1 1 P
 ENDDRAW
 ENDDEF
 #
-# proto-rescue_Conn_01x04
+# Conn_01x04
 #
-DEF proto-rescue_Conn_01x04 J 0 40 Y N 1 F N
+DEF Conn_01x04 J 0 40 Y N 1 F N
 F0 "J" 0 200 50 H V C CNN
-F1 "proto-rescue_Conn_01x04" 0 -300 50 H V C CNN
+F1 "Conn_01x04" 0 -300 50 H V C CNN
 F2 "" 0 0 50 H I C CNN
 F3 "" 0 0 50 H I C CNN
 $FPLIST
@@ -139,11 +139,11 @@ X Pin_4 4 -200 -200 150 R 50 50 1 1 P
 ENDDRAW
 ENDDEF
 #
-# proto-rescue_Conn_01x05
+# Conn_01x05
 #
-DEF proto-rescue_Conn_01x05 J 0 40 Y N 1 F N
+DEF Conn_01x05 J 0 40 Y N 1 F N
 F0 "J" 0 300 50 H V C CNN
-F1 "proto-rescue_Conn_01x05" 0 -300 50 H V C CNN
+F1 "Conn_01x05" 0 -300 50 H V C CNN
 F2 "" 0 0 50 H I C CNN
 F3 "" 0 0 50 H I C CNN
 $FPLIST
@@ -169,11 +169,11 @@ X Pin_5 5 -200 -200 150 R 50 50 1 1 P
 ENDDRAW
 ENDDEF
 #
-# proto-rescue_Conn_01x06
+# Conn_01x06
 #
-DEF proto-rescue_Conn_01x06 J 0 40 Y N 1 F N
+DEF Conn_01x06 J 0 40 Y N 1 F N
 F0 "J" 0 300 50 H V C CNN
-F1 "proto-rescue_Conn_01x06" 0 -400 50 H V C CNN
+F1 "Conn_01x06" 0 -400 50 H V C CNN
 F2 "" 0 0 50 H I C CNN
 F3 "" 0 0 50 H I C CNN
 $FPLIST
@@ -201,11 +201,11 @@ X Pin_6 6 -200 -300 150 R 50 50 1 1 P
 ENDDRAW
 ENDDEF
 #
-# proto-rescue_Conn_01x07
+# Conn_01x07
 #
-DEF proto-rescue_Conn_01x07 J 0 40 Y N 1 F N
+DEF Conn_01x07 J 0 40 Y N 1 F N
 F0 "J" 0 400 50 H V C CNN
-F1 "proto-rescue_Conn_01x07" 0 -400 50 H V C CNN
+F1 "Conn_01x07" 0 -400 50 H V C CNN
 F2 "" 0 0 50 H I C CNN
 F3 "" 0 0 50 H I C CNN
 $FPLIST
@@ -235,11 +235,11 @@ X Pin_7 7 -200 -300 150 R 50 50 1 1 P
 ENDDRAW
 ENDDEF
 #
-# proto-rescue_Conn_01x08
+# Conn_01x08
 #
-DEF proto-rescue_Conn_01x08 J 0 40 Y N 1 F N
+DEF Conn_01x08 J 0 40 Y N 1 F N
 F0 "J" 0 400 50 H V C CNN
-F1 "proto-rescue_Conn_01x08" 0 -500 50 H V C CNN
+F1 "Conn_01x08" 0 -500 50 H V C CNN
 F2 "" 0 0 50 H I C CNN
 F3 "" 0 0 50 H I C CNN
 $FPLIST
@@ -271,11 +271,11 @@ X Pin_8 8 -200 -400 150 R 50 50 1 1 P
 ENDDRAW
 ENDDEF
 #
-# proto-rescue_Conn_02x04_Counter_Clockwise
+# Conn_02x04_Counter_Clockwise
 #
-DEF proto-rescue_Conn_02x04_Counter_Clockwise J 0 40 Y N 1 F N
+DEF Conn_02x04_Counter_Clockwise J 0 40 Y N 1 F N
 F0 "J" 50 200 50 H V C CNN
-F1 "proto-rescue_Conn_02x04_Counter_Clockwise" 50 -300 50 H V C CNN
+F1 "Conn_02x04_Counter_Clockwise" 50 -300 50 H V C CNN
 F2 "" 0 0 50 H I C CNN
 F3 "" 0 0 50 H I C CNN
 $FPLIST
@@ -303,11 +303,11 @@ X Pin_8 8 300 100 150 L 50 50 1 1 P
 ENDDRAW
 ENDDEF
 #
-# proto-rescue_Earth
+# Earth
 #
-DEF proto-rescue_Earth #PWR 0 0 Y Y 1 F P
+DEF Earth #PWR 0 0 Y Y 1 F P
 F0 "#PWR" 0 -250 50 H I C CNN
-F1 "proto-rescue_Earth" 0 -150 50 H I C CNN
+F1 "Earth" 0 -150 50 H I C CNN
 F2 "" 0 0 50 H I C CNN
 F3 "" 0 0 50 H I C CNN
 DRAW
@@ -319,11 +319,11 @@ X Earth 1 0 0 0 D 50 50 1 1 W N
 ENDDRAW
 ENDDEF
 #
-# proto-rescue_LED
+# LED
 #
-DEF proto-rescue_LED D 0 40 Y N 1 F N
+DEF LED D 0 40 Y N 1 F N
 F0 "D" 0 100 50 H V C CNN
-F1 "proto-rescue_LED" 0 -100 50 H V C CNN
+F1 "LED" 0 -100 50 H V C CNN
 F2 "" 0 0 50 H I C CNN
 F3 "" 0 0 50 H I C CNN
 $FPLIST
@@ -340,11 +340,11 @@ X A 2 150 0 100 L 50 50 1 1 P
 ENDDRAW
 ENDDEF
 #
-# proto-rescue_LP2950-3.0_TO92
+# LP2950-3.0_TO92
 #
-DEF proto-rescue_LP2950-3.0_TO92 U 0 10 Y Y 1 F N
+DEF LP2950-3.0_TO92 U 0 10 Y Y 1 F N
 F0 "U" -150 125 50 H V C CNN
-F1 "proto-rescue_LP2950-3.0_TO92" 0 125 50 H V L CNN
+F1 "LP2950-3.0_TO92" 0 125 50 H V L CNN
 F2 "TO_SOT_Packages_THT:TO-92_Inline_Narrow_Oval" 0 225 50 H I C CIN
 F3 "" 0 -50 50 H I C CNN
 $FPLIST
@@ -358,11 +358,11 @@ X VI 3 -300 0 100 R 50 50 1 1 W
 ENDDRAW
 ENDDEF
 #
-# proto-rescue_R
+# R
 #
-DEF proto-rescue_R R 0 0 N Y 1 F N
+DEF R R 0 0 N Y 1 F N
 F0 "R" 80 0 50 V V C CNN
-F1 "proto-rescue_R" 0 0 50 V V C CNN
+F1 "R" 0 0 50 V V C CNN
 F2 "" -70 0 50 V I C CNN
 F3 "" 0 0 50 H I C CNN
 $FPLIST
